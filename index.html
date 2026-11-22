@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; connect-src 'none'">
+<title>官网变更与风险轨迹</title>
+<style>
+:root{--ink:#162634;--muted:#4b6071;--line:#dae5eb;--wash:#f3f7fa;--card:#fff;--blue:#195a77;--soft:#e6f2f7;--green:#166751;--green-soft:#e8f6ef;--amber:#875210;--amber-soft:#fff1d8;--red:#9e3233;--red-soft:#fcebec}
+*{box-sizing:border-box}
+body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+button,input,select{font:inherit;color:inherit}
+button,select,input[type=file]{cursor:pointer}
+button,input,select,a,summary{outline-offset:3px}
+button{background:#fff;border:1px solid var(--line);border-radius:8px;padding:.55rem .8rem}
+button:hover{border-color:var(--blue)}
+button[aria-pressed=true]{background:var(--soft);border-color:#92bbcd;color:#144764}
+a{color:#145674;overflow-wrap:anywhere}
+h1,h2,h3,p{margin:0}
+header{background:#122b3a;color:#fff}
+.top{max-width:1380px;margin:auto;padding:1.45rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+h1{font-size:clamp(1.45rem,3vw,2rem);letter-spacing:.01em;font-weight:680}
+header p{margin-top:.35rem;color:#d0e1e9;font-size:.925rem}
+.top-actions{display:flex;flex-wrap:wrap;gap:.55rem}
+.top-actions button{color:#fff;background:#213c4b;border-color:#557181;white-space:nowrap;font-size:.925rem}
+.top-actions button:hover{background:#335565}
+main{display:grid;grid-template-columns:minmax(204px,242px) minmax(0,1fr);gap:1.35rem;max-width:1380px;margin:auto;padding:1.35rem 2rem 3rem}
+aside{align-self:start;min-width:0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.site-panel{padding:1rem}
+.site-panel h2{font-size:1rem;margin-bottom:.76rem}
+.site-group{display:grid;gap:.38rem}
+.site-group + .site-group{margin-top:1.05rem}
+.site-group h3{font-size:.9rem;color:var(--muted);margin-bottom:.13rem}
+.site-button{text-align:left;display:flex;justify-content:space-between;align-items:center;gap:.45rem;width:100%;font-size:.94rem}
+.site-button strong{font-weight:630}
+.site-button span:last-child{color:var(--muted);font-size:.84rem;flex:none}
+.sidebar-note{margin-top:1rem;font-size:.86rem;color:var(--muted);overflow-wrap:anywhere}
+#status{margin-bottom:.85rem;color:var(--muted);font-size:.9rem}
+#status:empty{display:none}
+.thread-filter{display:flex;align-items:center;justify-content:space-between;gap:.65rem;margin:0 0 .85rem;padding:.55rem .75rem;background:var(--soft);border-radius:7px;font-size:.91rem}
+.thread-filter button,.thread-open{color:var(--blue);padding:.35rem .55rem;font-size:.88rem}
+.thread-open{align-self:start;justify-self:start}
+.overview{display:flex;justify-content:space-between;gap:1rem;align-items:end;margin-bottom:.95rem}
+.overview h2{font-size:1.43rem;font-weight:690}
+.overview p{color:var(--muted);font-size:.9rem;margin-top:.25rem}
+.workspace-block{margin-bottom:1.25rem}
+.workspace-heading{display:flex;flex-wrap:wrap;gap:.4rem .8rem;align-items:baseline;margin-bottom:.55rem}
+.workspace-heading h2{font-size:1.12rem}
+.workspace-heading span{color:var(--muted);font-size:.86rem}
+.site-roster{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.66rem}
+.site-overview-card,.review-card{min-width:0;padding:.75rem .85rem}
+.site-overview-card{display:flex;flex-direction:column;gap:.32rem}
+.site-overview-card h3,.review-card h3{font-size:1rem;line-height:1.4}
+.site-overview-card .row-mini{min-height:1.3em}
+.site-observation{font-size:.9rem}
+.site-observation strong{font-weight:650}
+.site-overview-card button,.review-card button{align-self:start;margin-top:.25rem;font-size:.86rem;color:var(--blue);padding:.35rem .55rem}
+.review-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.66rem}
+.review-card{display:grid;gap:.34rem;align-content:start}
+.review-card p,.assessment-card p,.scope-check{overflow-wrap:anywhere}
+.review-card p{font-size:.91rem}
+.review-card .row-mini{font-size:.86rem}
+.assessment-card{display:grid;gap:.42rem;border:1px solid var(--line);border-radius:8px;background:#f8fbfc;padding:.75rem}
+.assessment-card .scope-checks{display:grid;gap:.35rem}
+.scope-check{border-left:2px solid #a6c4ce;padding:.12rem .55rem}
+.scope-check p{margin-top:.22rem}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;margin-bottom:1.1rem}
+.metric{padding:.8rem .9rem}
+.metric strong{display:block;font-size:1.55rem;font-weight:690;line-height:1.15;font-variant-numeric:tabular-nums;margin-top:.25rem}
+.metric span{font-size:.87rem;color:var(--muted)}
+.filters{padding:.85rem;display:grid;grid-template-columns:minmax(150px,1.65fr) repeat(3,minmax(102px,1fr));gap:.65rem;margin-bottom:1.1rem}
+.filters label{display:grid;gap:.22rem;min-width:0;font-size:.875rem;font-weight:620}
+.filters input,.filters select{width:100%;min-width:0;border:1px solid #b8c9d2;border-radius:7px;padding:.48rem .55rem;background:#fff;font-weight:400;font-size:.91rem}
+.day{margin-bottom:1.4rem}
+.day-heading{display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap;margin-bottom:.48rem}
+.day time{font-size:1.15rem;letter-spacing:.025em;font-weight:700;font-variant-numeric:tabular-nums}
+.day-heading .count{color:var(--muted);font-size:.88rem}
+.coverage{display:grid;gap:.3rem;margin:0 0 .6rem;padding:.6rem .75rem;border-left:3px solid #8baebe;background:#eaf2f6;color:#324e5e;font-size:.9rem;border-radius:5px}
+.entries{display:grid;gap:.5rem;padding-left:.75rem;border-left:2px solid #cbdce4}
+.entry{position:relative;padding:.8rem .95rem}
+.entry::before{content:"";position:absolute;top:1.09rem;left:-1.07rem;width:.56rem;height:.56rem;border:2px solid var(--wash);border-radius:100%;background:#648d9f}
+.entry summary{display:grid;gap:.36rem;cursor:pointer;list-style:none}
+.entry summary::-webkit-details-marker{display:none}
+.row-head{display:flex;justify-content:space-between;align-items:start;gap:.65rem}
+.row-head strong{font-size:1.01rem;line-height:1.4}
+.row-head .toggle{font-size:.82rem;white-space:nowrap;color:var(--blue);font-weight:600}
+.entry[open] .toggle::after{content:"收起"}
+.entry:not([open]) .toggle::after{content:"证据与判断"}
+.row-mini{color:var(--muted);font-size:.875rem;overflow-wrap:anywhere}
+.summary-text{font-size:.94rem}
+.tags{display:flex;gap:.35rem;flex-wrap:wrap}
+.badge{display:inline-block;border-radius:5px;background:#edf2f5;color:#314c5c;padding:.12rem .44rem;font-size:.82rem;font-weight:640}
+.badge.amber{background:var(--amber-soft);color:var(--amber)}
+.badge.green{background:var(--green-soft);color:var(--green)}
+.badge.red{background:var(--red-soft);color:var(--red)}
+.badge.blue{background:var(--soft);color:var(--blue)}
+.detail{margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--line);display:grid;gap:.65rem;font-size:.92rem}
+.comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}
+.comparison div{border:1px solid var(--line);background:#f8fbfc;padding:.6rem .7rem;border-radius:7px;white-space:pre-wrap;overflow-wrap:anywhere}
+.comparison strong{display:block;margin-bottom:.28rem}
+.detail p,.detail li{overflow-wrap:anywhere}
+.detail ul{margin:.18rem 0 0;padding-left:1.2rem}
+.detail-links{display:flex;flex-wrap:wrap;gap:.55rem}
+.empty{padding:1.25rem}
+.empty p{color:var(--muted);margin-top:.4rem}
+dialog{width:min(680px,calc(100% - 2rem));max-height:90vh;border:1px solid var(--line);border-radius:13px;padding:1.2rem;color:var(--ink)}
+dialog::backdrop{background:#0d293780}
+.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+dialog p,dialog li{margin-top:.55rem}
+dialog ol{padding-left:1.4rem}
+[hidden]{display:none!important}
+@media(max-width:890px){main{grid-template-columns:185px minmax(0,1fr);padding-inline:1rem;gap:.85rem}.top{padding-inline:1rem}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1030px){.site-roster{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.top{align-items:start;flex-direction:column;padding-block:1rem}main{display:block}aside{margin-bottom:1rem}.site-panel{padding:.7rem}.site-group{display:flex;flex-wrap:wrap;align-items:center}.site-group + .site-group{margin-top:.55rem}.site-group h3{width:100%}.site-button{width:auto;gap:.4rem;padding:.35rem .55rem}.sidebar-note{margin-top:.65rem}.overview{display:block}.row-head .toggle{font-size:.78rem}.comparison{grid-template-columns:1fr}}
+@media(max-width:460px){.site-overview-card,.review-card{padding:.65rem}.review-list{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div>
+      <h1>官网变更与风险轨迹</h1>
+      <p>查看各官网最新变化、知产复核事项和跨站联动范围</p>
+    </div>
+    <div class="top-actions">
+      <button id="open-method" type="button">评估口径</button>
+      <button id="open-import" type="button">载入历史 JSON</button>
+      <input id="file" type="file" accept=".json,application/json" multiple hidden aria-label="选择历史 JSON 文件">
+    </div>
+  </div>
+</header>
+<main>
+  <aside class="panel site-panel" aria-label="站点导航">
+    <h2>按站点筛选</h2>
+    <nav id="sites"></nav>
+    <p class="sidebar-note" id="scope-note"></p>
+  </aside>
+  <section aria-labelledby="scope-title">
+    <section id="site-overview" class="workspace-block" aria-labelledby="site-overview-title">
+      <div class="workspace-heading"><h2 id="site-overview-title">网站总览</h2><span id="site-count"></span></div>
+      <div id="site-roster" class="site-roster"></div>
+    </section>
+    <section id="review-queue" class="workspace-block" aria-labelledby="review-queue-title" hidden>
+      <div class="workspace-heading"><h2 id="review-queue-title">知产复核清单</h2><span id="review-count"></span></div>
+      <div id="review-list" class="review-list"></div>
+    </section>
+    <div class="overview">
+      <div><h2 id="scope-title" tabindex="-1">全部站点</h2><p id="scope-subtitle"></p></div>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+    <div class="cards" id="metrics" aria-label="当前站点摘要"></div>
+    <div class="panel filters">
+      <label>搜索<input id="search" type="search" placeholder="标题、域名或证据"></label>
+      <label>日期<select id="date"><option value="">所有日期</option></select></label>
+      <label>记录类型<select id="type"><option value="">所有类型</option><option>变更</option><option>复核观察</option><option>基线快照</option><option>采集异常</option><option>无变更</option></select></label>
+      <label>处置筛选<select id="risk"><option value="">全部</option><option value="review">新增或升高</option><option value="lower">风险降低</option><option value="unknown">证据不足</option><option value="stable">风险不变</option></select></label>
+    </div>
+    <div class="thread-filter" id="thread-filter" hidden><strong id="thread-title"></strong><button id="reset-thread" type="button">返回完整时间线</button></div>
+    <div id="timeline"></div>
+  </section>
+</main>
+<dialog id="method" aria-labelledby="method-title">
+  <div class="dialog-head"><h2 id="method-title">评估口径</h2><button id="close-method" type="button">关闭</button></div>
+  <ol>
+    <li><strong>先确认发生了什么</strong>　按主体、站点、日期、页面及内容位置关联前后证据。正文、图片或链接均以对应版本为准。抓取失败、链接 404 和有覆盖的无变更单列。</li>
+    <li><strong>识别具体风险线索</strong>　结合标识、图片、版权署名、文案和实际使用语境，区分活动报道、兼容说明、联合呈现和授权声明。地区、权利状态、相关商品和授权范围纳入人工复核。</li>
+    <li><strong>核对我方权利与发布</strong>　遇到新产品外观、技术细节、下载资料或专利声明，查首次可见时间、内部审批和对应申请。尺寸或型号变化先核对资料与实际版本，再评估是否触发知产事项。</li>
+    <li><strong>判断变化方向</strong>　新增或更显著使用可出现新增或升高。确认移除只影响对应位置。其他页面的历史使用保留最后成功观测的时间。新旧证据不齐时显示无法判断。</li>
+    <li><strong>按证据安排复核</strong>　高优先级需有明确的权利和实际使用依据。可定位的普通线索列中，证据足够且相关性低时列低。授权未核实单独标注。优先级用于安排人工复核。</li>
+    <li><strong>核对其他发布位置</strong>　先确认是否引用同一素材、安装包或同型号同版本资料，再结合各站运营主体、用途和目标市场决定同步修订、保留差异或继续取证。</li>
+  </ol>
+  <p>历史日期取自原日报。补充公开来源以实际核查日期注明。导入文件在当前浏览器会话中读取处理。</p>
+</dialog>
+<script type="application/json" id="seed">{"sites":[{"id":"fjd-global-main","label":"丰疆国际主站","group":"丰疆智能","subject":"丰疆智能","host":"www.fjdynamics.com","note":"以下为国际主站首页的公开存档，显示留存范围内可逐版核对的记录。"},{"id":"sveaverken-global","label":"斯维垦国际官网","group":"斯维垦","subject":"斯维垦（Sveaverken）","host":"www.sveaverken.com","note":"已收录国际首页和 Nimbo 产品页的公开存档，分站完整日报仍待补充。"},{"id":"fjd-cn","label":"丰疆中国官网","group":"丰疆智能","subject":"丰疆智能（FJDynamics）","note":"现有公开档案尚未定位到中国官网的分站快照。","host":"www.fjdynamics.cn"},{"id":"fjd-agriculture","label":"丰疆国际农业官网","group":"丰疆智能","subject":"丰疆智能（FJDynamics）","host":"agriculture.fjdynamics.com","note":"尚未收录该域名的公开历史快照。可在当前会话载入已授权的历史数据。"},{"id":"fjd-landscaping","label":"丰疆国际园林官网","group":"丰疆智能","subject":"丰疆智能（FJDynamics）","host":"landscaping.fjdynamics.com","note":"尚未收录该域名的公开历史快照。可在当前会话载入已授权的历史数据。"},{"id":"sveaverken-cn","label":"斯维垦中国官网","group":"斯维垦","subject":"斯维垦（Sveaverken）","host":"www.sveaverken.cn","note":"已定位官网入口，现有公开档案暂无连续快照。"}],"events":[{"id":"archive-7b6d6d6a79d172edba18b47592d5b05c61a35704","siteId":"fjd-global-main","date":"2026-10-24","page":"https://www.fjdynamics.com","source":"公开快照 · 北京时间 08:14:21","title":"丰疆国际首页 · 建立历史基线","type":"基线快照","action":"基线快照","risk":"无法判断","priority":"证据不足","confidence":"摘录","summary":"首份可追溯快照。 尚无可比对基线。","checks":["首份快照用于后续比对，当前缺少更早版本。","该快照留存 2 张图片、3 个链接。"],"links":[{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d1e58860d7763eeab9ec038e8a5e80289ad48ce3/archives/pages/dff54cf966b2559fb01dd774.json.gz"}]},{"id":"archive-7d064d14c2e59fe2474d391d812ca24cf072a78c","siteId":"fjd-global-main","date":"2026-10-31","page":"https://www.fjdynamics.com","source":"公开快照 · 北京时间 11:43:56","title":"丰疆国际首页 · Logo 图片地址参数更新","type":"无变更","action":"仅参数变化","risk":"不变","priority":"不适用","confidence":"摘录","summary":"留存图片字节一致。留存标题、正文及链接清单一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 2 张图片、3 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d1e58860d7763eeab9ec038e8a5e80289ad48ce3/archives/pages/dff54cf966b2559fb01dd774.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/4c410229f251051a0284ad780d6fdec70ec33a0d/archives/pages/dff54cf966b2559fb01dd774.json.gz"}]},{"id":"archive-15a4793076e2daa096a4809b9db27c5eec49bc07","siteId":"fjd-global-main","date":"2026-11-07","page":"https://www.fjdynamics.com","source":"公开快照 · 北京时间 11:57:16","title":"丰疆国际首页 · 留存内容一致","type":"无变更","action":"留存内容一致","risk":"不变","priority":"不适用","confidence":"摘录","summary":"两次保存的标题、正文、链接清单及图片字节一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 2 张图片、3 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/4c410229f251051a0284ad780d6fdec70ec33a0d/archives/pages/dff54cf966b2559fb01dd774.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/ebaac098a12e17fd91b7cfd4101113d7efa8002a/archives/pages/dff54cf966b2559fb01dd774.json.gz"}]},{"id":"archive-8828fbe14802f8285cb2cecadf77fd7d592d7cf2","siteId":"fjd-global-main","date":"2026-11-14","page":"https://www.fjdynamics.com","source":"公开快照 · 北京时间 12:28:21","title":"丰疆国际首页 · Logo 图片地址参数更新","type":"无变更","action":"仅参数变化","risk":"不变","priority":"不适用","confidence":"摘录","summary":"留存图片字节一致。留存标题、正文及链接清单一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 2 张图片、3 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/ebaac098a12e17fd91b7cfd4101113d7efa8002a/archives/pages/dff54cf966b2559fb01dd774.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/bd6fc7a2320e0c4d8d1612e377984c3ed4a59ecf/archives/pages/dff54cf966b2559fb01dd774.json.gz"}]},{"id":"archive-1f04cd1e00f80f2565592ee441fe1da5cbb9128d","siteId":"sveaverken-global","date":"2026-10-24","page":"https://www.sveaverken.com","source":"公开快照 · 北京时间 08:14:32","title":"斯维垦国际首页 · 建立历史基线","type":"基线快照","action":"基线快照","risk":"无法判断","priority":"证据不足","confidence":"摘录","summary":"首份可追溯快照。 尚无可比对基线。","checks":["首份快照用于后续比对，当前缺少更早版本。","该快照留存 2 张图片、17 个链接。"],"links":[{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d1e58860d7763eeab9ec038e8a5e80289ad48ce3/archives/pages/39301969d7e98d2dc520b638.json.gz"}]},{"id":"archive-8054f5d5daf02b6b9d85d2cdc6c8d39a00bc3f72","siteId":"sveaverken-global","date":"2026-11-01","page":"https://www.sveaverken.com","source":"公开快照 · 北京时间 03:54:56","title":"斯维垦国际首页 · Logo 图片地址参数更新","type":"无变更","action":"仅参数变化","risk":"不变","priority":"不适用","confidence":"摘录","summary":"留存图片字节一致。留存标题、正文及链接清单一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 2 张图片、17 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d1e58860d7763eeab9ec038e8a5e80289ad48ce3/archives/pages/39301969d7e98d2dc520b638.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/186792232966b8a73cbba8f640c9344aede2cb27/archives/pages/39301969d7e98d2dc520b638.json.gz"}]},{"id":"archive-9af738274a98ef62a79545b0b76c2e2ec1c5e9ea","siteId":"sveaverken-global","date":"2026-11-08","page":"https://www.sveaverken.com","source":"公开快照 · 北京时间 04:04:11","title":"斯维垦国际首页 · 首页产品及展会卡片更新","type":"变更","action":"替换","risk":"无法判断","priority":"证据不足","confidence":"摘录","summary":"首页 Events 栏目改为 New Products & Events，新增 Nimbo X Kraft+ 产品发布及 EuroTier 展会卡片，对应入口更新。 文案为产品与参展信息，暂未发现明确的授权或背书声明。卡片图片权利证据不足。","checks":["核查新增卡片原图、展会标识及素材来源。","两张留存图片的字节相同，档案的图片覆盖不足以核对新增卡片。","该快照留存 2 张图片、15 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/186792232966b8a73cbba8f640c9344aede2cb27/archives/pages/39301969d7e98d2dc520b638.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/8765bcf3f4ec04f1675c5908d2418df735d2a269/archives/pages/39301969d7e98d2dc520b638.json.gz"}],"before":"Glide Flo 比利时演示、AGRO SHOW 2026、SPACE & SOMMET 2026 及 AgroTechniek Holland 2026。","after":"Nimbo X Kraft+ Feed Pusher 发布，以及 EuroTier 展会 Han­over 13 号馆 F46 展位。"},{"id":"archive-4a2b6e27a666d7decd4e179d83ab12f7ff6164e3","siteId":"sveaverken-global","date":"2026-10-29","page":"https://www.sveaverken.com/products/robopusher-nimbo","source":"公开快照 · 北京时间 11:52:34","title":"Nimbo 产品页 · 建立历史基线","type":"基线快照","action":"基线快照","risk":"无法判断","priority":"证据不足","confidence":"摘录","summary":"首份可追溯快照。 尚无可比对基线。","checks":["首份快照用于后续比对，当前缺少更早版本。","该快照留存 1 张图片、12 个链接。"],"links":[{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/9ba220fc1fe4e9732246382a66662de436bf5e1a/archives/pages/245e9361c83b134bb5f70835.json.gz"}]},{"id":"archive-f44cd5109683e4eb51507dab7cd8ddeff35ac3bd","siteId":"sveaverken-global","date":"2026-11-05","page":"https://www.sveaverken.com/products/robopusher-nimbo","source":"公开快照 · 北京时间 12:35:53","title":"Nimbo 产品页 · 留存内容一致","type":"无变更","action":"留存内容一致","risk":"不变","priority":"不适用","confidence":"摘录","summary":"两次保存的标题、正文、链接清单及图片字节一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 1 张图片、12 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/9ba220fc1fe4e9732246382a66662de436bf5e1a/archives/pages/245e9361c83b134bb5f70835.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d471c98fa95500238d139662129ecf76a11be6fe/archives/pages/245e9361c83b134bb5f70835.json.gz"}]},{"id":"archive-8c5fb8237eee95a8197ef7bd308f6faf8d05bd25","siteId":"sveaverken-global","date":"2026-11-12","page":"https://www.sveaverken.com/products/robopusher-nimbo","source":"公开快照 · 北京时间 13:17:15","title":"Nimbo 产品页 · Logo 图片地址参数更新","type":"无变更","action":"仅参数变化","risk":"不变","priority":"不适用","confidence":"摘录","summary":"留存图片字节一致。留存标题、正文及链接清单一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 1 张图片、12 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d471c98fa95500238d139662129ecf76a11be6fe/archives/pages/245e9361c83b134bb5f70835.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/4206ed7a62bcba6da83593f62ed5d5e25c5d01ea/archives/pages/245e9361c83b134bb5f70835.json.gz"}]}],"windows":[]}</script>
+<script>
+'use strict';
+const el = id => document.getElementById(id);
+const state = {site:'', thread:'', data:{sites:[], windows:[], events:[]}};
+const doc = (tag, cls, content) => {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (content !== undefined && content !== null) node.textContent = content;
+  return node;
+};
+const clean = (parent,...children) => { parent.replaceChildren(...children); };
+const dateOK = value => {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const time = new Date(value + 'T00:00:00Z');
+  return !Number.isNaN(time.valueOf()) && time.toISOString().slice(0,10) === value;
+};
+function normalize(data) {
+  if (!data || !['sites','windows','events'].every(field => Array.isArray(data[field]))) {
+    throw new Error('需要 sites、windows、events 三个数组。');
+  }
+  const sites = new Set(state.data.sites.map(s => s.id));
+  const keys = new Set();
+  for (const site of data.sites) {
+    if (!site || typeof site.id !== 'string' || !site.id || typeof site.label !== 'string' || !site.label || keys.has(site.id)) {
+      throw new Error('站点需有唯一的 id 和名称。');
+    }
+    keys.add(site.id);
+    sites.add(site.id);
+  }
+  keys.clear();
+  for (const e of data.events) {
+    if (!e || typeof e.id !== 'string' || !e.id || keys.has(e.id) || !sites.has(e.siteId) ||
+        !dateOK(e.date) || typeof e.title !== 'string' || !['变更','复核观察','基线快照','采集异常','无变更'].includes(e.type)) {
+      throw new Error('历史事件需要唯一 id、站点、有效日期、标题和记录类型。');
+    }
+    keys.add(e.id);
+  }
+  for (const window of data.windows) {
+    if (!window || !sites.has(window.siteId) || !dateOK(window.date)) throw new Error('覆盖记录的站点或日期无效。');
+  }
+  return data;
+}
+function merge(data) {
+  const index = (rows, incoming, key) => {
+    const combined = new Map(rows.map(row => [key(row), row]));
+    incoming.forEach(row => combined.set(key(row), row));
+    return [...combined.values()];
+  };
+  state.data = {
+    sites:index(state.data.sites,data.sites,s=>s.id),
+    events:index(state.data.events,data.events,e=>e.id),
+    windows:index(state.data.windows,data.windows,w=>JSON.stringify([w.siteId,w.date,w.source]))
+  };
+}
+function filteredScope() {
+  const scope = row => !state.site || row.siteId === state.site;
+  return {events:state.data.events.filter(scope),windows:state.data.windows.filter(scope)};
+}
+const eventDays = scope => [...new Set([...scope.events,...scope.windows].map(r=>r.date))].sort().reverse();
+const priorityTone = p => ({'高':'red','中':'amber','低':'green','证据不足':'amber'}[p] || '');
+const riskTone = p => ({'新增':'blue','升高':'red','降低':'green','无法判断':'amber'}[p] || '');
+const priorityRank = p => ({'高':0,'中':1,'证据不足':2,'低':3}[p] ?? 4);
+const newest = (a,b) => b.date.localeCompare(a.date);
+const substantive = e => e.type==='变更' && !['文字一致','仅参数变化'].includes(e.action);
+function badge(label, color) { return doc('span', 'badge' + (color?' '+color:''), label); }
+function safeLink(label, value) {
+  try {
+    const url = new URL(value);
+    if (!['http:','https:'].includes(url.protocol) || url.username || url.password) return null;
+    const link = doc('a', '', label);
+    link.href=url.href;
+    link.target='_blank';
+    link.rel='noreferrer noopener';
+    return link;
+  } catch { return null; }
+}
+function chooseSite(key, resetFilters=false) {
+  state.site=key;
+  state.thread='';
+  el('date').value='';
+  if(resetFilters) for(const id of ['search','type','risk']) el(id).value='';
+  render(true);
+}
+function nav() {
+  const grouped = Map.groupBy ? Map.groupBy(state.data.sites, s=>s.group||s.subject||'站点') :
+    state.data.sites.reduce((m,s)=>{ const g=s.group||s.subject||'站点'; m.set(g,[...(m.get(g)||[]),s]); return m; },new Map());
+  function choose(key, text, count) {
+    const control=doc('button','site-button');
+    control.type='button';
+    control.setAttribute('aria-pressed',key===state.site?'true':'false');
+    control.append(doc('strong','',text),doc('span','',count));
+    control.addEventListener('click',()=>{
+      chooseSite(key);
+      el('sites').querySelector('[aria-pressed=true]')?.focus({preventScroll:true});
+    });
+    return control;
+  }
+  const all=doc('div','site-group');
+  all.append(choose('','全部站点',state.data.events.length));
+  const groups=[all];
+  for (const [name, sites] of grouped) {
+    const group=doc('div','site-group');
+    group.append(doc('h3','',name));
+    for (const site of sites) group.append(choose(site.id,site.label,state.data.events.filter(e=>e.siteId===site.id).length||'—'));
+    groups.push(group);
+  }
+  clean(el('sites'),...groups);
+}
+function siteRoster() {
+  const sites=state.data.sites.filter(s=>s.host);
+  el('site-overview').hidden=Boolean(state.site);
+  el('site-count').textContent=sites.length+' 个网站';
+  if(state.site) return;
+  const cards=sites.map(site=>{
+    const events=state.data.events.filter(e=>e.siteId===site.id).sort(newest);
+    const windows=state.data.windows.filter(w=>w.siteId===site.id).sort(newest);
+    const observation=events.find(e=>e.type!=='采集异常');
+    const failure=events.find(e=>e.type==='采集异常');
+    const reporting=windows[0];
+    const useReport=reporting&&(!observation||reporting.date>=observation.date);
+    const date=(useReport?reporting:observation)?.date;
+    const changes=events.filter(substantive);
+    const latest=changes[0];
+    const sameDay=latest?changes.filter(e=>e.date===latest.date):[];
+    const dateLine=useReport?['最近分站日报',reporting.date,reporting.coverage].filter(Boolean).join(' · '):
+      (date?'最近页面记录 · '+date:'暂无页面记录');
+    const changeLine=latest?latest.date+(sameDay.length>1?' · '+sameDay.length+' 条记录：':' · ')+latest.title:
+      (date?'现有记录未显示实质变更':'暂无可比对记录');
+    const card=doc('article','panel site-overview-card');
+    const observed=doc('p','site-observation',dateLine);
+    const latestChange=doc('p','site-observation');
+    latestChange.append(doc('strong','','最近上报变化'),document.createTextNode(' '+changeLine));
+    card.append(doc('h3','',site.label),doc('p','row-mini',[site.subject,site.host].filter(Boolean).join(' · ')),observed,latestChange);
+    if(failure&&(!date||failure.date>=date)) card.append(doc('p','row-mini','采集异常 · '+failure.date+' · '+failure.title));
+    if(!useReport&&observation) card.append(doc('p','row-mini','日期对应已收录页面证据。'));
+    const button=doc('button','','查看站点时间线');
+    button.type='button';
+    button.setAttribute('aria-label','查看'+site.label+'时间线');
+    button.addEventListener('click',()=>{chooseSite(site.id,true);el('scope-title').focus();});
+    card.append(button);
+    return card;
+  });
+  if(!cards.length) cards.push(doc('p','empty','暂无可用官网入口。'));
+  clean(el('site-roster'),...cards);
+}
+function reviewDetails(review) {
+  const block=doc('section','assessment-card');
+  block.append(doc('strong','',review.topic||'知产复核'));
+  if(review.judgment) block.append(doc('p','',review.judgment));
+  if(review.disposition) block.append(doc('p','row-mini','建议处置 · '+review.disposition));
+  if(review.owner) block.append(doc('p','row-mini','建议协同 · '+review.owner));
+  const checks=Array.isArray(review.scopeChecks)?review.scopeChecks.filter(Boolean):[];
+  if(checks.length){
+    const targets=doc('div','scope-checks');
+    targets.append(doc('strong','','联动核对'));
+    for(const check of checks){
+      const line=doc('div','scope-check');
+      if(check.status) line.append(badge(check.status,'blue'),document.createTextNode(' '));
+      if(check.scope) line.append(doc('strong','',check.scope));
+      if(check.action) line.append(doc('p','',check.action));
+      targets.append(line);
+    }
+    block.append(targets);
+  }
+  return block;
+}
+function openReview(event) {
+  state.site=event.siteId;
+  state.thread=event.thread||'';
+  for(const id of ['search','date','type','risk']) el(id).value='';
+  render(true);
+  if(!state.thread){
+    el('date').value=event.date;
+    render();
+  }
+  const card=[...el('timeline').querySelectorAll('details')].find(item=>item.dataset.eventId===event.id);
+  if(card){card.open=true;card.querySelector('summary').focus();}
+}
+function reviewQueue(scope) {
+  const groups=new Map();
+  const date=el('date').value;
+  const eligible=scope.events.filter(e=>e.ipReview&&typeof e.ipReview==='object'&&(!date||e.date===date)).sort(newest);
+  for(const event of eligible){
+    const key=event.thread||event.id;
+    if(!groups.has(key)) groups.set(key,event);
+  }
+  const queue=[...groups.values()].sort((a,b)=>priorityRank(a.priority)-priorityRank(b.priority)||newest(a,b));
+  el('review-queue').hidden=!queue.length||Boolean(state.thread);
+  el('review-count').textContent=[date,queue.length+' 项已整理复核事项'].filter(Boolean).join(' · ');
+  if(el('review-queue').hidden) return;
+  const labels=new Map(state.data.sites.map(s=>[s.id,s.label]));
+  clean(el('review-list'),...queue.map(event=>{
+    const review=event.ipReview;
+    const checks=Array.isArray(review.scopeChecks)?review.scopeChecks.filter(Boolean):[];
+    const targets=[...new Set(checks.map(c=>c.scope).filter(Boolean))];
+    const card=doc('article','panel review-card');
+    card.append(doc('h3','',event.threadLabel||event.title),doc('p','row-mini',event.date+' · '+(labels.get(event.siteId)||'')+' · '+(review.topic||'知产线索')));
+    if(event.priority&&event.priority!=='不适用') card.append(badge(event.priority==='证据不足'?event.priority:event.priority+'优先级',priorityTone(event.priority)));
+    if(review.disposition) card.append(doc('p','',review.disposition));
+    if(targets.length) card.append(doc('p','row-mini','联动核对 · '+targets.join('、')));
+    const button=doc('button','','查看判断与证据');
+    button.type='button';
+    button.setAttribute('aria-label','查看'+(event.threadLabel||event.title)+'判断与证据');
+    button.addEventListener('click',()=>openReview(event));
+    card.append(button);
+    return card;
+  }));
+}
+function numbered(scope) {
+  const dates=eventDays(scope);
+  const review=scope.events.filter(e=>['新增','升高'].includes(e.risk)).length;
+  const unknown=scope.events.filter(e=>e.risk==='无法判断'||e.priority==='证据不足').length;
+  const failed=scope.events.filter(e=>e.type==='采集异常').length;
+  clean(el('metrics'),...[['已收录日期',dates.length],['新增或升高',review],['证据不足',unknown],['采集异常',failed]].map(([title,value])=>{
+    const node=doc('div','panel metric');
+    node.append(doc('span','',title),doc('strong','',value));
+    return node;
+  }));
+  return dates;
+}
+function eventCard(event, siteLabels) {
+  const card=doc('details','panel entry');
+  card.dataset.eventId=event.id;
+  const summary=doc('summary');
+  const top=doc('div','row-head');
+  top.append(doc('strong','',event.title),doc('span','toggle'));
+  const tags=doc('div','tags');
+  tags.append(badge(event.action||event.type));
+  if(event.risk&&event.risk!=='不适用') tags.append(badge('风险 '+event.risk,riskTone(event.risk)));
+  if(event.priority&&event.priority!=='不适用') tags.append(badge(event.priority==='证据不足'?event.priority:event.priority+'优先级',priorityTone(event.priority)));
+  summary.append(top,doc('div','row-mini',[siteLabels.get(event.siteId),event.page].filter(Boolean).join(' · ')),tags);
+  if(event.summary) summary.append(doc('p','summary-text',event.summary));
+  card.append(summary);
+  const detail=doc('div','detail');
+  if (event.before || event.after) {
+    const pair=doc('div','comparison');
+    for (const [label,value] of [['变更前',event.before],['变更后',event.after]]) {
+      const cell=doc('div');
+      cell.append(doc('strong','',label),document.createTextNode(value||'缺少对应证据'));
+      pair.append(cell);
+    }
+    detail.append(pair);
+  }
+  const meta=[event.confidence?'证据 '+event.confidence:'',event.reviewStatus?'复核 '+event.reviewStatus:'',event.source?'来源 '+event.source:''].filter(Boolean);
+  if(meta.length) detail.append(doc('p','row-mini',meta.join(' · ')));
+  if(event.ipReview&&typeof event.ipReview==='object') detail.append(reviewDetails(event.ipReview));
+  if(Array.isArray(event.checks)&&event.checks.length){
+    const checklist=doc('div');
+    const list=doc('ul');
+    for (const value of event.checks) list.append(doc('li','',value));
+    checklist.append(doc('strong','','复核事项'),list);
+    detail.append(checklist);
+  }
+  if(event.thread){
+    const related = state.data.events.filter(item=>item.thread===event.thread);
+    if(related.length>1 && state.thread!==event.thread){
+      const control=doc('button','thread-open','查看关联轨迹（'+related.length+' 条）');
+      control.type='button';
+      control.addEventListener('click',()=>{
+        state.thread=event.thread;
+        for(const id of ['search','date','type','risk']) el(id).value='';
+        render();
+        el('reset-thread').focus({preventScroll:true});
+      });
+      detail.append(control);
+    }
+  }
+  const options=Array.isArray(event.links)?event.links:[];
+  const links=options.map(item=>item&&safeLink(item.label||'查看来源',item.url)).filter(Boolean);
+  if(links.length){const row=doc('div','detail-links');row.append(...links);detail.append(row);}
+  card.append(detail);
+  return card;
+}
+function render(resetDate=false) {
+  if(resetDate){nav();siteRoster();}
+  const scope=filteredScope();
+  const site=state.data.sites.find(s=>s.id===state.site);
+  el('scope-title').textContent=site?.label||'全部站点';
+  el('scope-note').textContent=site?.note||'覆盖数据沿用原日报的统计范围。';
+  const dates=numbered(scope);
+  const range=dates.length>1?dates.at(-1)+' 至 '+dates[0]:dates[0];
+  el('scope-subtitle').textContent=[site?.host,range?('已载入 '+range):'暂无可核验记录'].filter(Boolean).join(' · ');
+  if(resetDate){
+    const selected=el('date').value;
+    clean(el('date'),new Option('所有日期',''),...dates.map(day=>new Option(day,day)));
+    if(dates.includes(selected))el('date').value=selected;
+  }
+  reviewQueue(scope);
+  const query=el('search').value.trim().toLocaleLowerCase();
+  const type=el('type').value;
+  const date=el('date').value;
+  const risk=el('risk').value;
+  const selectedThread=scope.events.find(item=>item.thread===state.thread);
+  el('thread-filter').hidden=!selectedThread;
+  el('thread-title').textContent=selectedThread?'关联轨迹 · '+(selectedThread.threadLabel||selectedThread.title):'';
+  const results=scope.events.filter(e=>{
+    const matchesRisk = !risk || (risk==='review'&&['新增','升高'].includes(e.risk)) ||
+      (risk==='lower'&&e.risk==='降低') || (risk==='unknown'&&(e.priority==='证据不足'||e.risk==='无法判断')) ||
+      (risk==='stable'&&e.risk==='不变');
+    return matchesRisk && (!state.thread||e.thread===state.thread) && (!date||e.date===date) && (!type||e.type===type) &&
+      (!query||[e.title,e.summary,e.page,e.before,e.after,e.source,e.reviewStatus,...(Array.isArray(e.pages)?e.pages:[])].filter(Boolean).join(' ').toLocaleLowerCase().includes(query));
+  });
+  const windows=(!query&&!risk&&!type&&!state.thread) ? scope.windows.filter(w=>!date||w.date===date) : [];
+  const visibleDates=eventDays({events:results,windows});
+  const labels=new Map(state.data.sites.map(s=>[s.id,s.label]));
+  if(!visibleDates.length){
+    const box=doc('div','panel empty');
+    const label=dates.length?'未找到符合筛选条件的记录':'暂无历史记录';
+    const hint=dates.length?'调整日期、风险或搜索条件后可查看其他记录。':
+      site?.note||'选择历史 JSON 后，可以按站点和日期查看变化。';
+    box.append(doc('strong','',label),doc('p','',hint));
+    if(site?.host){
+      const entry=safeLink('官网入口','https://'+site.host+'/');
+      if(entry){const p=doc('p');p.append(entry);box.append(p);}
+    }
+    clean(el('timeline'),box);
+    return;
+  }
+  clean(el('timeline'),...visibleDates.map(day=>{
+    const group=doc('section','day');
+    const heading=doc('h3','day-heading');
+    const time=doc('time','',day);
+    time.dateTime=day;
+    const items=results.filter(e=>e.date===day).sort((a,b)=>priorityRank(a.priority)-priorityRank(b.priority));
+    heading.append(time,doc('span','count',items.length+' 条记录'));
+    group.append(heading);
+    const dayWindows=windows.filter(w=>w.date===day);
+    if(dayWindows.length){
+      const box=doc('div','coverage');
+      dayWindows.forEach(w=>{
+        const line=doc('p','',[labels.get(w.siteId),w.coverage,w.summary].filter(Boolean).join(' · '));
+        const source=w.link&&safeLink(w.link.label,w.link.url);
+        if(source) line.append(document.createTextNode(' '),source);
+        box.append(line);
+      });
+      group.append(box);
+    }
+    if(items.length){const list=doc('div','entries');list.append(...items.map(e=>eventCard(e,labels)));group.append(list);}
+    return group;
+  }));
+}
+el('file').addEventListener('change',async event=>{
+  let count=0;
+  const errors=[];
+  for(const file of event.target.files){
+    try {merge(normalize(JSON.parse((await file.text()).replace(/^\uFEFF/,''))));count++;}
+    catch(error){errors.push(file.name+' · '+error.message);}
+  }
+  el('status').textContent=[count?('已载入 '+count+' 份历史文件'):'',...errors].filter(Boolean).join('；');
+  event.target.value='';
+  render(true);
+});
+el('open-import').addEventListener('click',()=>el('file').click());
+el('open-method').addEventListener('click',()=>el('method').showModal());
+el('close-method').addEventListener('click',()=>el('method').close());
+el('reset-thread').addEventListener('click',()=>{state.thread='';render();el('search').focus({preventScroll:true});});
+for(const field of ['date','type','risk'])el(field).addEventListener('change',()=>render());
+el('search').addEventListener('input',()=>render());
+merge(normalize(JSON.parse(el('seed').textContent)));
+render(true);
+</script>
+</body>
+</html>
