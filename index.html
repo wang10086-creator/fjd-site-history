@@ -44,6 +44,8 @@ aside{align-self:start;min-width:0}
 .overview{display:flex;justify-content:space-between;gap:1rem;align-items:end;margin-bottom:.95rem}
 .overview h2{font-size:1.43rem;font-weight:690}
 .overview p{color:var(--muted);font-size:.9rem;margin-top:.25rem}
+.report-state{margin-bottom:1rem;padding:.65rem .85rem;background:var(--soft);border-color:#b9d1dc;font-size:.9rem}
+.report-state p+ p{margin-top:.2rem;color:var(--muted)}
 .workspace-block{margin-bottom:1.25rem}
 .workspace-heading{display:flex;flex-wrap:wrap;gap:.4rem .8rem;align-items:baseline;margin-bottom:.55rem}
 .workspace-heading h2{font-size:1.12rem}
@@ -61,6 +63,7 @@ aside{align-self:start;min-width:0}
 .review-card p,.assessment-card p,.scope-check{overflow-wrap:anywhere}
 .review-card p{font-size:.91rem}
 .review-card .row-mini{font-size:.86rem}
+.review-field>strong{font-weight:655}
 .assessment-card{display:grid;gap:.42rem;border:1px solid var(--line);border-radius:8px;background:#f8fbfc;padding:.75rem}
 .assessment-card .scope-checks{display:grid;gap:.35rem}
 .scope-check{border-left:2px solid #a6c4ce;padding:.12rem .55rem}
@@ -125,8 +128,8 @@ dialog ol{padding-left:1.4rem}
     </div>
     <div class="top-actions">
       <button id="open-method" type="button">评估口径</button>
-      <button id="open-import" type="button">载入历史 JSON</button>
-      <input id="file" type="file" accept=".json,application/json" multiple hidden aria-label="选择历史 JSON 文件">
+      <button id="open-import" type="button">载入日报数据</button>
+      <input id="file" type="file" accept=".json,application/json" multiple hidden aria-label="选择日报数据 JSON">
     </div>
   </div>
 </header>
@@ -137,6 +140,7 @@ dialog ol{padding-left:1.4rem}
     <p class="sidebar-note" id="scope-note"></p>
   </aside>
   <section aria-labelledby="scope-title">
+    <div class="panel report-state" id="report-state" role="status" aria-live="polite"></div>
     <section id="site-overview" class="workspace-block" aria-labelledby="site-overview-title">
       <div class="workspace-heading"><h2 id="site-overview-title">网站总览</h2><span id="site-count"></span></div>
       <div id="site-roster" class="site-roster"></div>
@@ -153,8 +157,8 @@ dialog ol{padding-left:1.4rem}
     <div class="panel filters">
       <label>搜索<input id="search" type="search" placeholder="标题、域名或证据"></label>
       <label>日期<select id="date"><option value="">所有日期</option></select></label>
-      <label>记录类型<select id="type"><option value="">所有类型</option><option>变更</option><option>复核观察</option><option>基线快照</option><option>采集异常</option><option>无变更</option></select></label>
-      <label>处置筛选<select id="risk"><option value="">全部</option><option value="review">新增或升高</option><option value="lower">风险降低</option><option value="unknown">证据不足</option><option value="stable">风险不变</option></select></label>
+      <label>记录类型<select id="type"><option value="">所有类型</option><option>变更</option><option>复核观察</option><option>采集异常</option><option>无变更</option></select></label>
+      <label>处置筛选<select id="risk"><option value="">全部</option><option value="review">新增线索或风险升高</option><option value="lower">风险降低</option><option value="unknown">证据不足</option><option value="stable">风险不变</option></select></label>
     </div>
     <div class="thread-filter" id="thread-filter" hidden><strong id="thread-title"></strong><button id="reset-thread" type="button">返回完整时间线</button></div>
     <div id="timeline"></div>
@@ -166,13 +170,13 @@ dialog ol{padding-left:1.4rem}
     <li><strong>先确认发生了什么</strong>　按主体、站点、日期、页面及内容位置关联前后证据。正文、图片或链接均以对应版本为准。抓取失败、链接 404 和有覆盖的无变更单列。</li>
     <li><strong>识别具体风险线索</strong>　结合标识、图片、版权署名、文案和实际使用语境，区分活动报道、兼容说明、联合呈现和授权声明。地区、权利状态、相关商品和授权范围纳入人工复核。</li>
     <li><strong>核对我方权利与发布</strong>　遇到新产品外观、技术细节、下载资料或专利声明，查首次可见时间、内部审批和对应申请。尺寸或型号变化先核对资料与实际版本，再评估是否触发知产事项。</li>
-    <li><strong>判断变化方向</strong>　新增或更显著使用可出现新增或升高。确认移除只影响对应位置。其他页面的历史使用保留最后成功观测的时间。新旧证据不齐时显示无法判断。</li>
+    <li><strong>判断变化方向</strong>　新出现的名称、图片或链接先记为线索。风险变化结合权利、实际使用和对应证据另行判断。确认移除仅更新对应位置的记录。其他位置以日报最后一次有证据的日期为准。</li>
     <li><strong>按证据安排复核</strong>　高优先级需有明确的权利和实际使用依据。可定位的普通线索列中，证据足够且相关性低时列低。授权未核实单独标注。优先级用于安排人工复核。</li>
     <li><strong>核对其他发布位置</strong>　先确认是否引用同一素材、安装包或同型号同版本资料，再结合各站运营主体、用途和目标市场决定同步修订、保留差异或继续取证。</li>
   </ol>
-  <p>历史日期取自原日报。补充公开来源以实际核查日期注明。导入文件在当前浏览器会话中读取处理。</p>
+  <p>数据来源为用户提供的官网监控日报，日期取自原日报。导入文件仅在当前浏览器会话中读取处理。</p>
 </dialog>
-<script type="application/json" id="seed">{"sites":[{"id":"fjd-global-main","label":"丰疆国际主站","group":"丰疆智能","subject":"丰疆智能","host":"www.fjdynamics.com","note":"以下为国际主站首页的公开存档，显示留存范围内可逐版核对的记录。"},{"id":"sveaverken-global","label":"斯维垦国际官网","group":"斯维垦","subject":"斯维垦（Sveaverken）","host":"www.sveaverken.com","note":"已收录国际首页和 Nimbo 产品页的公开存档，分站完整日报仍待补充。"},{"id":"fjd-cn","label":"丰疆中国官网","group":"丰疆智能","subject":"丰疆智能（FJDynamics）","note":"现有公开档案尚未定位到中国官网的分站快照。","host":"www.fjdynamics.cn"},{"id":"fjd-agriculture","label":"丰疆国际农业官网","group":"丰疆智能","subject":"丰疆智能（FJDynamics）","host":"agriculture.fjdynamics.com","note":"尚未收录该域名的公开历史快照。可在当前会话载入已授权的历史数据。"},{"id":"fjd-landscaping","label":"丰疆国际园林官网","group":"丰疆智能","subject":"丰疆智能（FJDynamics）","host":"landscaping.fjdynamics.com","note":"尚未收录该域名的公开历史快照。可在当前会话载入已授权的历史数据。"},{"id":"sveaverken-cn","label":"斯维垦中国官网","group":"斯维垦","subject":"斯维垦（Sveaverken）","host":"www.sveaverken.cn","note":"已定位官网入口，现有公开档案暂无连续快照。"}],"events":[{"id":"archive-7b6d6d6a79d172edba18b47592d5b05c61a35704","siteId":"fjd-global-main","date":"2026-10-24","page":"https://www.fjdynamics.com","source":"公开快照 · 北京时间 08:14:21","title":"丰疆国际首页 · 建立历史基线","type":"基线快照","action":"基线快照","risk":"无法判断","priority":"证据不足","confidence":"摘录","summary":"首份可追溯快照。 尚无可比对基线。","checks":["首份快照用于后续比对，当前缺少更早版本。","该快照留存 2 张图片、3 个链接。"],"links":[{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d1e58860d7763eeab9ec038e8a5e80289ad48ce3/archives/pages/dff54cf966b2559fb01dd774.json.gz"}]},{"id":"archive-7d064d14c2e59fe2474d391d812ca24cf072a78c","siteId":"fjd-global-main","date":"2026-10-31","page":"https://www.fjdynamics.com","source":"公开快照 · 北京时间 11:43:56","title":"丰疆国际首页 · Logo 图片地址参数更新","type":"无变更","action":"仅参数变化","risk":"不变","priority":"不适用","confidence":"摘录","summary":"留存图片字节一致。留存标题、正文及链接清单一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 2 张图片、3 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d1e58860d7763eeab9ec038e8a5e80289ad48ce3/archives/pages/dff54cf966b2559fb01dd774.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/4c410229f251051a0284ad780d6fdec70ec33a0d/archives/pages/dff54cf966b2559fb01dd774.json.gz"}]},{"id":"archive-15a4793076e2daa096a4809b9db27c5eec49bc07","siteId":"fjd-global-main","date":"2026-11-07","page":"https://www.fjdynamics.com","source":"公开快照 · 北京时间 11:57:16","title":"丰疆国际首页 · 留存内容一致","type":"无变更","action":"留存内容一致","risk":"不变","priority":"不适用","confidence":"摘录","summary":"两次保存的标题、正文、链接清单及图片字节一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 2 张图片、3 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/4c410229f251051a0284ad780d6fdec70ec33a0d/archives/pages/dff54cf966b2559fb01dd774.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/ebaac098a12e17fd91b7cfd4101113d7efa8002a/archives/pages/dff54cf966b2559fb01dd774.json.gz"}]},{"id":"archive-8828fbe14802f8285cb2cecadf77fd7d592d7cf2","siteId":"fjd-global-main","date":"2026-11-14","page":"https://www.fjdynamics.com","source":"公开快照 · 北京时间 12:28:21","title":"丰疆国际首页 · Logo 图片地址参数更新","type":"无变更","action":"仅参数变化","risk":"不变","priority":"不适用","confidence":"摘录","summary":"留存图片字节一致。留存标题、正文及链接清单一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 2 张图片、3 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/ebaac098a12e17fd91b7cfd4101113d7efa8002a/archives/pages/dff54cf966b2559fb01dd774.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/bd6fc7a2320e0c4d8d1612e377984c3ed4a59ecf/archives/pages/dff54cf966b2559fb01dd774.json.gz"}]},{"id":"archive-1f04cd1e00f80f2565592ee441fe1da5cbb9128d","siteId":"sveaverken-global","date":"2026-10-24","page":"https://www.sveaverken.com","source":"公开快照 · 北京时间 08:14:32","title":"斯维垦国际首页 · 建立历史基线","type":"基线快照","action":"基线快照","risk":"无法判断","priority":"证据不足","confidence":"摘录","summary":"首份可追溯快照。 尚无可比对基线。","checks":["首份快照用于后续比对，当前缺少更早版本。","该快照留存 2 张图片、17 个链接。"],"links":[{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d1e58860d7763eeab9ec038e8a5e80289ad48ce3/archives/pages/39301969d7e98d2dc520b638.json.gz"}]},{"id":"archive-8054f5d5daf02b6b9d85d2cdc6c8d39a00bc3f72","siteId":"sveaverken-global","date":"2026-11-01","page":"https://www.sveaverken.com","source":"公开快照 · 北京时间 03:54:56","title":"斯维垦国际首页 · Logo 图片地址参数更新","type":"无变更","action":"仅参数变化","risk":"不变","priority":"不适用","confidence":"摘录","summary":"留存图片字节一致。留存标题、正文及链接清单一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 2 张图片、17 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d1e58860d7763eeab9ec038e8a5e80289ad48ce3/archives/pages/39301969d7e98d2dc520b638.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/186792232966b8a73cbba8f640c9344aede2cb27/archives/pages/39301969d7e98d2dc520b638.json.gz"}]},{"id":"archive-9af738274a98ef62a79545b0b76c2e2ec1c5e9ea","siteId":"sveaverken-global","date":"2026-11-08","page":"https://www.sveaverken.com","source":"公开快照 · 北京时间 04:04:11","title":"斯维垦国际首页 · 首页产品及展会卡片更新","type":"变更","action":"替换","risk":"无法判断","priority":"证据不足","confidence":"摘录","summary":"首页 Events 栏目改为 New Products & Events，新增 Nimbo X Kraft+ 产品发布及 EuroTier 展会卡片，对应入口更新。 文案为产品与参展信息，暂未发现明确的授权或背书声明。卡片图片权利证据不足。","checks":["核查新增卡片原图、展会标识及素材来源。","两张留存图片的字节相同，档案的图片覆盖不足以核对新增卡片。","该快照留存 2 张图片、15 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/186792232966b8a73cbba8f640c9344aede2cb27/archives/pages/39301969d7e98d2dc520b638.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/8765bcf3f4ec04f1675c5908d2418df735d2a269/archives/pages/39301969d7e98d2dc520b638.json.gz"}],"before":"Glide Flo 比利时演示、AGRO SHOW 2026、SPACE & SOMMET 2026 及 AgroTechniek Holland 2026。","after":"Nimbo X Kraft+ Feed Pusher 发布，以及 EuroTier 展会 Han­over 13 号馆 F46 展位。"},{"id":"archive-4a2b6e27a666d7decd4e179d83ab12f7ff6164e3","siteId":"sveaverken-global","date":"2026-10-29","page":"https://www.sveaverken.com/products/robopusher-nimbo","source":"公开快照 · 北京时间 11:52:34","title":"Nimbo 产品页 · 建立历史基线","type":"基线快照","action":"基线快照","risk":"无法判断","priority":"证据不足","confidence":"摘录","summary":"首份可追溯快照。 尚无可比对基线。","checks":["首份快照用于后续比对，当前缺少更早版本。","该快照留存 1 张图片、12 个链接。"],"links":[{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/9ba220fc1fe4e9732246382a66662de436bf5e1a/archives/pages/245e9361c83b134bb5f70835.json.gz"}]},{"id":"archive-f44cd5109683e4eb51507dab7cd8ddeff35ac3bd","siteId":"sveaverken-global","date":"2026-11-05","page":"https://www.sveaverken.com/products/robopusher-nimbo","source":"公开快照 · 北京时间 12:35:53","title":"Nimbo 产品页 · 留存内容一致","type":"无变更","action":"留存内容一致","risk":"不变","priority":"不适用","confidence":"摘录","summary":"两次保存的标题、正文、链接清单及图片字节一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 1 张图片、12 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/9ba220fc1fe4e9732246382a66662de436bf5e1a/archives/pages/245e9361c83b134bb5f70835.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d471c98fa95500238d139662129ecf76a11be6fe/archives/pages/245e9361c83b134bb5f70835.json.gz"}]},{"id":"archive-8c5fb8237eee95a8197ef7bd308f6faf8d05bd25","siteId":"sveaverken-global","date":"2026-11-12","page":"https://www.sveaverken.com/products/robopusher-nimbo","source":"公开快照 · 北京时间 13:17:15","title":"Nimbo 产品页 · Logo 图片地址参数更新","type":"无变更","action":"仅参数变化","risk":"不变","priority":"不适用","confidence":"摘录","summary":"留存图片字节一致。留存标题、正文及链接清单一致。 当前留存范围未见新增风险信号。","checks":["该快照留存 1 张图片、12 个链接。"],"links":[{"label":"上一次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/d471c98fa95500238d139662129ecf76a11be6fe/archives/pages/245e9361c83b134bb5f70835.json.gz"},{"label":"该次 GitHub 存档","url":"https://github.com/wang10086-creator/fjd-brand-watch-/blob/4206ed7a62bcba6da83593f62ed5d5e25c5d01ea/archives/pages/245e9361c83b134bb5f70835.json.gz"}]}],"windows":[]}</script>
+<script type="application/json" id="seed">{"sites":[{"id":"fjd-global-main","label":"丰疆国际主站","group":"丰疆智能","subject":"丰疆智能","host":"www.fjdynamics.com","note":"载入日报后查看该站有据可查的记录。"},{"id":"fjd-cn","label":"丰疆中国官网","group":"丰疆智能","subject":"丰疆智能（FJDynamics）","note":"载入日报后查看该站有据可查的记录。","host":"www.fjdynamics.cn"},{"id":"fjd-agriculture","label":"丰疆国际农业官网","group":"丰疆智能","subject":"丰疆智能（FJDynamics）","host":"agriculture.fjdynamics.com","note":"载入日报后查看该站有据可查的记录。"},{"id":"fjd-landscaping","label":"丰疆国际园林官网","group":"丰疆智能","subject":"丰疆智能（FJDynamics）","host":"landscaping.fjdynamics.com","note":"载入日报后查看该站有据可查的记录。"},{"id":"sveaverken-cn","label":"斯维垦中国官网","group":"斯维垦","subject":"斯维垦（Sveaverken）","host":"www.sveaverken.cn","note":"载入日报后查看该站有据可查的记录。"},{"id":"sveaverken-global","label":"斯维垦国际官网","group":"斯维垦","subject":"斯维垦（Sveaverken）","host":"www.sveaverken.com","note":"载入日报后查看该站有据可查的记录。"}],"events":[],"windows":[]}</script>
 <script>
 'use strict';
 const el = id => document.getElementById(id);
@@ -206,8 +210,9 @@ function normalize(data) {
   for (const e of data.events) {
     if (!e || typeof e.id !== 'string' || !e.id || keys.has(e.id) || !sites.has(e.siteId) ||
         !dateOK(e.date) || typeof e.title !== 'string' || !['变更','复核观察','基线快照','采集异常','无变更'].includes(e.type)) {
-      throw new Error('历史事件需要唯一 id、站点、有效日期、标题和记录类型。');
+      throw new Error('日报记录需要唯一 id、站点、有效日期、标题和记录类型。');
     }
+    if(e.id.startsWith('archive-')) throw new Error('请载入官网日报数据 JSON。');
     keys.add(e.id);
   }
   for (const window of data.windows) {
@@ -232,6 +237,7 @@ function filteredScope() {
   return {events:state.data.events.filter(scope),windows:state.data.windows.filter(scope)};
 }
 const eventDays = scope => [...new Set([...scope.events,...scope.windows].map(r=>r.date))].sort().reverse();
+const reviewSignal = e => e.signalChange==='新增线索'||['新增','升高'].includes(e.risk);
 const priorityTone = p => ({'高':'red','中':'amber','低':'green','证据不足':'amber'}[p] || '');
 const riskTone = p => ({'新增':'blue','升高':'red','降低':'green','无法判断':'amber'}[p] || '');
 const priorityRank = p => ({'高':0,'中':1,'证据不足':2,'低':3}[p] ?? 4);
@@ -318,10 +324,28 @@ function siteRoster() {
   if(!cards.length) cards.push(doc('p','empty','暂无可用官网入口。'));
   clean(el('site-roster'),...cards);
 }
+function reportState() {
+  const dates=eventDays(state.data);
+  if(!dates.length){
+    clean(el('report-state'),doc('p','','当前没有预载日报。点击「载入日报数据」，选择配套的日报数据 JSON。'),
+      doc('p','','文件仅在当前浏览器会话读取。'));
+    return;
+  }
+  const period=dates.length>1?dates.at(-1)+' 至 '+dates[0]:dates[0];
+  clean(el('report-state'),doc('p','','已收录日报数据 · '+period),doc('p','','仅展示该批日报所覆盖的站点和记录。'));
+}
+function reviewField(title, value, subtle=false) {
+  const field=doc('p','review-field'+(subtle?' row-mini':''));
+  field.append(doc('strong','',title),document.createTextNode(' · '+value));
+  return field;
+}
 function reviewDetails(review) {
   const block=doc('section','assessment-card');
   block.append(doc('strong','',review.topic||'知产复核'));
+  if(review.riskType) block.append(reviewField('风险类型',review.riskType));
+  if(review.assessment) block.append(reviewField('初步评估',review.assessment));
   if(review.judgment) block.append(doc('p','',review.judgment));
+  if(review.evidenceGap) block.append(reviewField('证据缺口',review.evidenceGap,true));
   if(review.disposition) block.append(doc('p','row-mini','建议处置 · '+review.disposition));
   if(review.owner) block.append(doc('p','row-mini','建议协同 · '+review.owner));
   const checks=Array.isArray(review.scopeChecks)?review.scopeChecks.filter(Boolean):[];
@@ -354,7 +378,7 @@ function openReview(event) {
 function reviewQueue(scope) {
   const groups=new Map();
   const date=el('date').value;
-  const eligible=scope.events.filter(e=>e.ipReview&&typeof e.ipReview==='object'&&(!date||e.date===date)).sort(newest);
+  const eligible=scope.events.filter(e=>e.ipReview&&typeof e.ipReview==='object'&&e.ipReview.queue!==false&&(!date||e.date===date)).sort(newest);
   for(const event of eligible){
     const key=event.thread||event.id;
     if(!groups.has(key)) groups.set(key,event);
@@ -370,6 +394,9 @@ function reviewQueue(scope) {
     const targets=[...new Set(checks.map(c=>c.scope).filter(Boolean))];
     const card=doc('article','panel review-card');
     card.append(doc('h3','',event.threadLabel||event.title),doc('p','row-mini',event.date+' · '+(labels.get(event.siteId)||'')+' · '+(review.topic||'知产线索')));
+    if(review.riskType) card.append(reviewField('风险类型',review.riskType));
+    if(review.assessment) card.append(reviewField('初步评估',review.assessment));
+    if(review.evidenceGap) card.append(reviewField('证据缺口',review.evidenceGap,true));
     if(event.priority&&event.priority!=='不适用') card.append(badge(event.priority==='证据不足'?event.priority:event.priority+'优先级',priorityTone(event.priority)));
     if(review.disposition) card.append(doc('p','',review.disposition));
     if(targets.length) card.append(doc('p','row-mini','联动核对 · '+targets.join('、')));
@@ -383,10 +410,10 @@ function reviewQueue(scope) {
 }
 function numbered(scope) {
   const dates=eventDays(scope);
-  const review=scope.events.filter(e=>['新增','升高'].includes(e.risk)).length;
+  const review=scope.events.filter(reviewSignal).length;
   const unknown=scope.events.filter(e=>e.risk==='无法判断'||e.priority==='证据不足').length;
   const failed=scope.events.filter(e=>e.type==='采集异常').length;
-  clean(el('metrics'),...[['已收录日期',dates.length],['新增或升高',review],['证据不足',unknown],['采集异常',failed]].map(([title,value])=>{
+  clean(el('metrics'),...[['已收录日期',dates.length],['新增线索或风险升高',review],['证据不足',unknown],['采集异常',failed]].map(([title,value])=>{
     const node=doc('div','panel metric');
     node.append(doc('span','',title),doc('strong','',value));
     return node;
@@ -401,7 +428,8 @@ function eventCard(event, siteLabels) {
   top.append(doc('strong','',event.title),doc('span','toggle'));
   const tags=doc('div','tags');
   tags.append(badge(event.action||event.type));
-  if(event.risk&&event.risk!=='不适用') tags.append(badge('风险 '+event.risk,riskTone(event.risk)));
+  if(event.signalChange) tags.append(badge(event.signalChange,'blue'));
+  if(event.risk&&event.risk!=='不适用') tags.append(badge('风险变化 · '+event.risk,riskTone(event.risk)));
   if(event.priority&&event.priority!=='不适用') tags.append(badge(event.priority==='证据不足'?event.priority:event.priority+'优先级',priorityTone(event.priority)));
   summary.append(top,doc('div','row-mini',[siteLabels.get(event.siteId),event.page].filter(Boolean).join(' · ')),tags);
   if(event.summary) summary.append(doc('p','summary-text',event.summary));
@@ -447,7 +475,7 @@ function eventCard(event, siteLabels) {
   return card;
 }
 function render(resetDate=false) {
-  if(resetDate){nav();siteRoster();}
+  if(resetDate){reportState();nav();siteRoster();}
   const scope=filteredScope();
   const site=state.data.sites.find(s=>s.id===state.site);
   el('scope-title').textContent=site?.label||'全部站点';
@@ -469,20 +497,22 @@ function render(resetDate=false) {
   el('thread-filter').hidden=!selectedThread;
   el('thread-title').textContent=selectedThread?'关联轨迹 · '+(selectedThread.threadLabel||selectedThread.title):'';
   const results=scope.events.filter(e=>{
-    const matchesRisk = !risk || (risk==='review'&&['新增','升高'].includes(e.risk)) ||
+    const matchesRisk = !risk || (risk==='review'&&reviewSignal(e)) ||
       (risk==='lower'&&e.risk==='降低') || (risk==='unknown'&&(e.priority==='证据不足'||e.risk==='无法判断')) ||
       (risk==='stable'&&e.risk==='不变');
     return matchesRisk && (!state.thread||e.thread===state.thread) && (!date||e.date===date) && (!type||e.type===type) &&
-      (!query||[e.title,e.summary,e.page,e.before,e.after,e.source,e.reviewStatus,...(Array.isArray(e.pages)?e.pages:[])].filter(Boolean).join(' ').toLocaleLowerCase().includes(query));
+      (!query||[e.title,e.summary,e.page,e.before,e.after,e.source,e.reviewStatus,e.signalChange,
+        e.ipReview?.riskType,e.ipReview?.assessment,e.ipReview?.evidenceGap,...(Array.isArray(e.pages)?e.pages:[])
+      ].filter(Boolean).join(' ').toLocaleLowerCase().includes(query));
   });
   const windows=(!query&&!risk&&!type&&!state.thread) ? scope.windows.filter(w=>!date||w.date===date) : [];
   const visibleDates=eventDays({events:results,windows});
   const labels=new Map(state.data.sites.map(s=>[s.id,s.label]));
   if(!visibleDates.length){
     const box=doc('div','panel empty');
-    const label=dates.length?'未找到符合筛选条件的记录':'暂无历史记录';
+    const label=dates.length?'未找到符合筛选条件的记录':'暂无日报记录';
     const hint=dates.length?'调整日期、风险或搜索条件后可查看其他记录。':
-      site?.note||'选择历史 JSON 后，可以按站点和日期查看变化。';
+      site?.note||'载入日报数据后，可按站点和日期查看变化。';
     box.append(doc('strong','',label),doc('p','',hint));
     if(site?.host){
       const entry=safeLink('官网入口','https://'+site.host+'/');
@@ -521,7 +551,7 @@ el('file').addEventListener('change',async event=>{
     try {merge(normalize(JSON.parse((await file.text()).replace(/^\uFEFF/,''))));count++;}
     catch(error){errors.push(file.name+' · '+error.message);}
   }
-  el('status').textContent=[count?('已载入 '+count+' 份历史文件'):'',...errors].filter(Boolean).join('；');
+  el('status').textContent=[count?('已载入 '+count+' 份日报数据文件'):'',...errors].filter(Boolean).join('；');
   event.target.value='';
   render(true);
 });
