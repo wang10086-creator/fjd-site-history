@@ -575,6 +575,59 @@ dialog ol { padding-left:1.38rem }
 @media(max-width:355px) {
   .workbench-heading .view-meta { flex-basis:100% }
 }
+.site-coverage {
+  margin-top:.7rem;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--card);
+}
+.site-coverage > summary {
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  min-height:46px;
+  padding:.55rem .9rem;
+  border-radius:inherit;
+  list-style:none;
+  font-weight:680;
+}
+.site-coverage > summary:hover { background:var(--wash) }
+.site-coverage > summary::-webkit-details-marker { display:none }
+.site-coverage > summary::before {
+  content:"";
+  width:.35rem;
+  height:.35rem;
+  flex:none;
+  border-right:1.5px solid var(--blue);
+  border-bottom:1.5px solid var(--blue);
+  transform:rotate(-45deg);
+}
+.site-coverage[open] > summary { border-bottom:1px solid var(--line);border-radius:var(--radius) var(--radius) 0 0 }
+.site-coverage[open] > summary::before { transform:rotate(45deg) translateY(-2px) }
+.coverage-count,.coverage-date-line,.coverage-site-label,.coverage-source { color:var(--muted);font-size:.82rem;font-weight:400 }
+.coverage-body { padding:.8rem .9rem 1rem;overflow-wrap:anywhere }
+.coverage-date-line { margin:0 0 .65rem }
+.coverage-domains { width:100%;border-collapse:collapse;text-align:left;font-size:.9rem }
+.coverage-domains th,.coverage-domains td { padding:.6rem .65rem;border-bottom:1px solid var(--line);vertical-align:top }
+.coverage-domains thead { color:var(--muted);background:var(--wash);font-size:.82rem }
+.coverage-domains tbody th { font-weight:620 }
+.coverage-site-label,.coverage-source { display:block;margin-top:.18rem }
+.coverage-host { font-variant-numeric:tabular-nums }
+.coverage-dates { display:block;font-variant-numeric:tabular-nums }
+.coverage-aggregate { margin-top:.85rem;padding:.65rem .72rem;background:var(--wash);border-radius:6px }
+.coverage-aggregate h3 { margin:0 0 .2rem;font-size:.9rem }
+.coverage-aggregate p,.coverage-notes { font-size:.85rem }
+.coverage-notes { margin:.65rem 0 0;padding-inline-start:1.15rem;color:var(--muted) }
+.coverage-notes li + li { margin-top:.2rem }
+@media (max-width:700px) {
+  .coverage-body { padding:.65rem }
+  .coverage-domains,.coverage-domains tbody { display:block }
+  .coverage-domains thead { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%) }
+  .coverage-domains tbody tr { display:grid;gap:.36rem;padding:.65rem 0;border-bottom:1px solid var(--line) }
+  .coverage-domains tbody th,.coverage-domains tbody td { display:block;min-width:0;padding:0;border:0 }
+  .coverage-domains td { font-size:.85rem }
+  .coverage-domains td::before { content:attr(data-title);display:block;color:var(--muted);font-size:.78rem }
+}
 </style>
 </head>
 <body>
@@ -607,8 +660,7 @@ dialog ol { padding-left:1.38rem }
           <select id="review-filter" aria-label="事项类型">
             <option value="">所有类型</option>
             <option>知产风险</option>
-            <option>运营修复</option>
-            <option>资料复核</option>
+            <option>官网运营</option>
           </select>
         </div>
         <div id="review-list" class="review-list"></div>
@@ -636,6 +688,10 @@ dialog ol { padding-left:1.38rem }
       <div class="thread-filter" id="thread-filter" hidden><strong id="thread-title"></strong><button id="reset-thread" type="button">返回完整时间线</button></div>
       <div id="timeline"></div>
     </div>
+  </details>
+  <details id="site-coverage" class="site-coverage" aria-labelledby="site-coverage-title">
+    <summary><span id="site-coverage-title">站点范围</span><span id="site-coverage-count" class="coverage-count"></span></summary>
+    <div id="site-coverage-body" class="coverage-body"></div>
   </details>
 </main>
 <dialog id="method" aria-labelledby="method-title">
@@ -671,7 +727,26 @@ const dateOK = value => {
   return !Number.isNaN(time.valueOf()) && time.toISOString().slice(0,10) === value;
 };
 const analysisFields = ['type','facts','test','reason','threshold'];
-const decisionAreas = new Map([['知产风险','ip'],['运营修复','ops'],['资料复核','reference']]);
+const importedDecisionAreas = new Set(['知产风险','官网运营','运营修复','资料复核']);
+const reviewStates = new Map([
+  ['trion-installer','历史包未留存，尚不能判断许可影响'],
+  ['home-visual','已核实，无需处理'],
+  ['rm21-attachment','已核实，待修复']
+]);
+function reviewCategory(value) {
+  if (value === '知产风险') return value;
+  if (value === '官网运营' || value === '运营修复') return '官网运营';
+  return '';
+}
+function caseArea(event, approvedArea) {
+  const key = reviewKey(event);
+  if (key === 'trion-installer') return '知产风险';
+  if (key === 'home-visual') return '官网运营';
+  return reviewCategory(approvedArea) || (event.ipReview ? '知产风险' : '官网运营');
+}
+function caseReviewStatus(event, check) {
+  return check?.date === '2026-11-22' ? reviewStates.get(reviewKey(event)) : '';
+}
 const decisionFields = ['area','outcome','basis','next'];
 function normalize(data) {
   if (!data || !['sites','windows','events'].every(field => Array.isArray(data[field]))) {
@@ -721,14 +796,14 @@ function normalize(data) {
       throw new Error('首页处置需包含有效事项和最多三项推荐。');
     }
     for(const [key,decision] of Object.entries(decisions.cases)){
-      if(!Object.hasOwn(data.currentChecks||{},key)||!decision||!decisionAreas.has(decision.area)||
+      if(!Object.hasOwn(data.currentChecks||{},key)||!decision||!importedDecisionAreas.has(decision.area)||
         Object.keys(decision).length!==decisionFields.length||
         !decisionFields.every(field=>typeof decision[field]==='string'&&decision[field].trim())){
         throw new Error('首页处置需对应实查事项，并列明结论、依据和下一步。');
       }
     }
-    if(decisions.featured.some(key=>!Object.hasOwn(decisions.cases,key)||decisions.cases[key].area==='资料复核')){
-      throw new Error('首页推荐需对应知产风险或运营修复事项。');
+    if(decisions.featured.some(key=>!Object.hasOwn(decisions.cases,key))){
+      throw new Error('首页推荐需对应有效的复核事项。');
     }
   }
   return data;
@@ -953,7 +1028,7 @@ function renderWorkbenchDetail(event, decision, {openEvent, openThread, caseEven
   detail.id = 'case-' + key;
   const header = doc('header', 'case-detail-header');
   const kicker = doc('div', 'case-kicker');
-  kicker.append(doc('span', 'case-area', decision?.area || '资料复核'), doc('span', 'case-site', siteLabel));
+  kicker.append(doc('span', 'case-area', decision?.area || caseArea(event)), doc('span', 'case-site', siteLabel));
   header.append(kicker, doc('h2', 'case-title', workbenchCaseTitle(event)));
   const summary = doc('section', 'case-decision');
   summary.append(doc('h3', 'case-decision-label', '结论'), doc('p', 'case-conclusion', decision?.outcome || check?.finding || event.summary || event.title));
@@ -961,6 +1036,8 @@ function renderWorkbenchDetail(event, decision, {openEvent, openThread, caseEven
   if (decision?.basis) points.append(workbenchField('依据', decision.basis));
   const next = (date === '2026-11-22' && workbenchNextAction.get(key)) || decision?.next;
   if (next) points.append(workbenchField('下一步', next));
+  const reviewStatus = caseReviewStatus(event, check);
+  if (reviewStatus) points.append(workbenchField('状态', reviewStatus));
   summary.append(points);
   detail.append(header, summary);
 
@@ -998,7 +1075,7 @@ function renderWorkbenchDetail(event, decision, {openEvent, openThread, caseEven
       const analysis = doc('details', 'case-analysis');
       analysis.append(doc('summary', '', '展开判断依据 · ' + check.analysis.type));
       const grounds = doc('dl', 'analysis-points');
-      if (decision?.area === '知产风险' && check.priority) grounds.append(workbenchField('知产复核优先级', check.priority));
+      if (decision?.area === '知产风险' && key !== 'trion-installer' && check.priority) grounds.append(workbenchField('知产复核优先级', check.priority));
       for (const [name, value] of [['可核对的事实', check.analysis.facts], ['判断条件', check.analysis.test],
         ['处置依据', check.analysis.reason], ['改变判断的条件', check.analysis.threshold]]) {
         if (value) grounds.append(workbenchField(name, value));
@@ -1118,7 +1195,7 @@ function readRoute() {
 function normalizeRoute(values) {
   const next={...values};
   if(!['home','queue','detail'].includes(next.mobile)) next.mobile='home';
-  if(!decisionAreas.has(next.category)) next.category='';
+  next.category=reviewCategory(next.category);
   if(!state.data.sites.some(site=>site.id===next.site)) next.site='';
   if(!eventDays(state.data).includes(next.date)) next.date='';
   if(!['变更','复核观察','基线快照','采集异常','无变更'].includes(next.type)) next.type='';
@@ -1237,9 +1314,12 @@ function openThread(thread) {
 }
 
 function caseDecision(event) {
-  return state.data.publicDecisions?.cases?.[reviewKey(event)]||{
-    area:'资料复核',outcome:caseCheck(event)?.finding||event.ipReview?.assessment||event.summary||event.title,
-    basis:caseCheck(event)?.evidence||event.ipReview?.judgment||'',next:''
+  const approved = state.data.publicDecisions?.cases?.[reviewKey(event)];
+  const area = caseArea(event, approved?.area);
+  if (approved) return {...approved, area};
+  return {
+    area, outcome:caseCheck(event)?.finding||event.ipReview?.assessment||event.summary||event.title,
+    basis:caseCheck(event)?.evidence||event.ipReview?.judgment||'', next:''
   };
 }
 
@@ -1374,15 +1454,37 @@ function archiveCard(event, siteLabels, hasCase) {
   return card;
 }
 
+function updateArchiveSiteOptions(sites, selected) {
+  const select = el('site');
+  const options = sites.map(site => [site.id, site.label]);
+  const key = JSON.stringify(options);
+  if (select.dataset.options !== key) {
+    const entries = [new Option('全部记录', '')];
+    const sitesGroup = doc('optgroup');
+    sitesGroup.label = '站点';
+    const statsGroup = doc('optgroup');
+    statsGroup.label = '统计口径';
+    for (const [id, label] of options) {
+      if (id === 'fjd-international') statsGroup.append(new Option('国际站汇总（跨域统计）', id));
+      else sitesGroup.append(new Option(label, id));
+    }
+    if (sitesGroup.childElementCount) entries.push(sitesGroup);
+    if (statsGroup.childElementCount) entries.push(statsGroup);
+    clean(select, ...entries);
+    select.dataset.options = key;
+  }
+  select.value = selected;
+}
+
 function renderArchive() {
   const site=state.data.sites.find(item=>item.id===route.site);
   const labels=titlesBySite();
   const scope=filteredScope();
   const dates=eventDays(scope);
   const dateChoices=route.date&&!dates.includes(route.date)?[...dates,route.date].sort().reverse():dates;
-  el('scope-title').textContent=site?.label||'全部站点';
+  el('scope-title').textContent=site?.label||'全部记录';
   el('scope-subtitle').textContent=site?.host||'';
-  updateOptions(el('site'),[['全部站点',''],...state.data.sites.map(entry=>[entry.label,entry.id])],route.site);
+  updateArchiveSiteOptions(state.data.sites, route.site);
   updateOptions(el('date'),[['所有日期',''],...dateChoices.map(day=>[day,day])],route.date);
   for(const [id,field] of archiveFields) if(id!=='site'&&id!=='date'&&el(id).value!==route[field]) el(id).value=route[field];
   const selectedThread=state.data.events.find(item=>reviewKey(item)===route.thread);
@@ -1530,6 +1632,80 @@ el('close-method').addEventListener('click',()=>el('method').close());
 merge(normalize(JSON.parse(el('seed').textContent)));
 useLocation();
 
+function renderSiteCoverage({ checkedDate, period, domains, aggregates = [], notes = [] }) {
+  const fields = ['域名', '监控配置', '本期日报明细', '证据日期与来源'];
+  const table = doc('table', 'coverage-domains');
+  table.setAttribute('role', 'table');
+  table.setAttribute('aria-label', '逐域监控与日报核对');
+  const header = doc('thead');
+  header.setAttribute('role', 'rowgroup');
+  const headerRow = doc('tr');
+  headerRow.setAttribute('role', 'row');
+  for (const field of fields) {
+    const heading = doc('th', '', field);
+    heading.scope = 'col';
+    heading.setAttribute('role', 'columnheader');
+    headerRow.append(heading);
+  }
+  header.append(headerRow);
+
+  const rows = doc('tbody');
+  rows.setAttribute('role', 'rowgroup');
+  for (const { host, label, configuration, report, dates, source } of domains) {
+    const row = doc('tr');
+    row.setAttribute('role', 'row');
+    const site = doc('th');
+    site.scope = 'row';
+    site.setAttribute('role', 'rowheader');
+    const hostLabel = /^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(host)
+      ? safeLink(host, 'https://' + host + '/')
+      : null;
+    if (hostLabel) hostLabel.className = 'coverage-host';
+    site.append(hostLabel || doc('span', 'coverage-host', host));
+    if (label) site.append(doc('span', 'coverage-site-label', label));
+    row.append(site);
+
+    for (const [index, text] of [configuration, report, dates].entries()) {
+      const cell = doc('td');
+      cell.setAttribute('role', 'cell');
+      cell.dataset.title = fields[index + 1];
+      if (index === 2) {
+        cell.append(doc('span', 'coverage-dates', text || '—'));
+        if (source) cell.append(doc('span', 'coverage-source', source));
+      } else cell.textContent = text || '—';
+      row.append(cell);
+    }
+    rows.append(row);
+  }
+  table.append(header, rows);
+
+  const dateLine = doc('p', 'coverage-date-line', [period && '原日报 ' + period, checkedDate && '范围核查 ' + checkedDate].filter(Boolean).join(' · '));
+  const body = [dateLine, table];
+  for (const { label, detail, dates, source } of aggregates) {
+    const group = doc('section', 'coverage-aggregate');
+    group.append(doc('h3', '', label), doc('p', '', detail));
+    const evidence = [dates, source].filter(Boolean).join(' · ');
+    if (evidence) group.append(doc('p', 'coverage-source', evidence));
+    body.push(group);
+  }
+  if (notes.length) {
+    const reminders = doc('ul', 'coverage-notes');
+    reminders.append(...notes.map(note => doc('li', '', note)));
+    body.push(reminders);
+  }
+  el('site-coverage-count').textContent = domains.length + ' 个域名';
+  el('site-coverage-body').replaceChildren(...body);
+}
+
+renderSiteCoverage({"checkedDate":"2026-11-23","period":"2026-11-14 至 2026-11-20","domains":[{"host":"www.fjdynamics.cn","label":"丰疆中国官网","configuration":"任务域名配置未取得。日报确认该域有监控记录。","report":"有页面级明细和中国官网汇总。11 月 20 日只见中国官网汇总。","dates":"11 月 14–19 日明细；14–20 日汇总","source":"原日报中国官网栏：14–16 日列失败页，17–19 日列 Trion 附件变化对应的产品页。"},{"host":"www.fjdynamics.com","label":"丰疆国际主站","configuration":"未确认是否纳入监控。","report":"仅入口，本期无单站明细。无单站覆盖率。","dates":"11 月 14–20 日核对结果","source":"原日报国际官网栏提供跨域汇总，未列该域的页面明细。"},{"host":"agriculture.fjdynamics.com","label":"丰疆国际农业官网","configuration":"任务域名配置未取得。日报确认该域有监控记录。","report":"有页面变更和采集异常。11 月 19 日仅列失败页。无单站覆盖率。","dates":"11 月 14–20 日","source":"原日报国际官网栏：原页面地址及失败页面。"},{"host":"landscaping.fjdynamics.com","label":"丰疆国际园林官网","configuration":"任务域名配置未取得。日报确认该域有监控记录。","report":"有产品页和解决方案页变更明细。无单站覆盖率。","dates":"11 月 14–16 日、20 日","source":"原日报国际官网栏：RM21、S100 Pro R 和运动场解决方案页面。"},{"host":"www.sveaverken.cn","label":"斯维垦中国官网","configuration":"未确认是否纳入监控。","report":"仅入口，本期无单站明细。无单站覆盖率。","dates":"11 月 14–20 日核对结果","source":"看板已有入口，七份原日报未列该域的页面明细。"},{"host":"www.sveaverken.com","label":"斯维垦国际官网","configuration":"未确认是否纳入监控。","report":"仅入口，本期无单站明细。无单站覆盖率。","dates":"11 月 14–20 日核对结果","source":"看板已有入口，七份原日报未列该域的页面明细。"}],"aggregates":[{"label":"国际站汇总 · 跨域统计","detail":"原日报每天报告已抓 98、发现页面或链接 123（79.7%）。这是跨域统计口径，无单站覆盖率。","dates":"11 月 14–20 日","source":"原日报国际官网覆盖栏"}],"notes":["七份日报能定位的中国官网域名为 www.fjdynamics.cn。中国官网栏的汇总数字采用原日报口径。其他 *.fjdynamics.cn 子域未取得配置或完整抓取清单，纳入情况尚不能确认。","导航、跳转和 CDN 地址按各自在记录中的用途保留。有无明细仅指本期已取得的日报，缺少明细时变更情况未知。"]});
+function openLinkedCoverage() {
+  if (location.hash !== '#site-coverage') return;
+  const coverage = el('site-coverage');
+  coverage.open = true;
+  requestAnimationFrame(() => coverage.scrollIntoView({block:'start'}));
+}
+window.addEventListener('hashchange', openLinkedCoverage);
+openLinkedCoverage();
 </script>
 </body>
 </html>
