@@ -3,179 +3,604 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; connect-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src https://agriculture.fjdynamics.com https://landscaping.fjdynamics.com https://sveabot.fjdynamics.com; base-uri 'none'; form-action 'none'; connect-src 'none'">
 <title>官网变更与风险轨迹</title>
 <style>
-:root{--ink:#162634;--muted:#4b6071;--line:#dae5eb;--wash:#f3f7fa;--card:#fff;--blue:#195a77;--soft:#e6f2f7;--green:#166751;--green-soft:#e8f6ef;--amber:#875210;--amber-soft:#fff1d8;--red:#9e3233;--red-soft:#fcebec}
-*{box-sizing:border-box}
-body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
-button,input,select{font:inherit;color:inherit}
-button,select,input[type=file]{cursor:pointer}
-button,input,select,a,summary{outline-offset:3px}
-button{background:#fff;border:1px solid var(--line);border-radius:8px;padding:.55rem .8rem}
-button:hover{border-color:var(--blue)}
-button[aria-pressed=true]{background:var(--soft);border-color:#92bbcd;color:#144764}
-a{color:#145674;overflow-wrap:anywhere}
-h1,h2,h3,p{margin:0}
-header{background:#122b3a;color:#fff}
-.top{max-width:1200px;margin:auto;padding:.8rem 1.75rem;display:flex;align-items:center;justify-content:space-between;gap:.6rem 1rem}
-h1{font-size:clamp(1.3rem,3vw,1.75rem);letter-spacing:.01em;font-weight:680}
-.top-actions{display:flex;flex-wrap:wrap;gap:.55rem}
-.top-actions button{color:#fff;background:#213c4b;border-color:#557181;white-space:nowrap;font-size:.85rem;padding:.37rem .65rem}
-.top-actions button:hover{background:#335565}
-main{max-width:1200px;margin:auto;padding:1.3rem 1.75rem 3rem}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:12px}
-.site-panel{padding:.8rem 1rem}
-.site-panel>summary,.other-reviews>summary{cursor:pointer;color:var(--blue);font-weight:680}
-.site-panel>summary span,.other-reviews>summary span{margin-left:.5rem;color:var(--muted);font-size:.84rem;font-weight:500}
-.site-group{display:grid;gap:.34rem;margin-top:.55rem}
-.site-group h3{font-size:.87rem;color:var(--muted)}
-.site-row{display:grid;grid-template-columns:minmax(10.5rem,max-content) minmax(0,1fr);align-items:center;gap:.25rem .6rem}
-.site-row button,.site-group>button{justify-self:start}
-.site-button{text-align:left;display:flex;align-items:center;gap:.45rem;font-size:.89rem;padding:.35rem .58rem}
-.site-button strong{font-weight:630}
-.site-button span:last-child{color:var(--muted);font-size:.84rem;flex:none}
-.sidebar-note{margin-top:.55rem;font-size:.86rem;color:var(--muted);overflow-wrap:anywhere}
-#status{margin-bottom:.85rem;color:var(--muted);font-size:.9rem}
-#status:empty{display:none}
-.thread-filter{display:flex;align-items:center;justify-content:space-between;gap:.65rem;margin:0 0 .85rem;padding:.55rem .75rem;background:var(--soft);border-radius:7px;font-size:.91rem}
-.thread-filter button,.thread-open{color:var(--blue);padding:.35rem .55rem;font-size:.88rem}
-.thread-open{align-self:start;justify-self:start}
-.overview{display:flex;justify-content:space-between;gap:1rem;align-items:end;margin-bottom:.95rem}
-.overview h2{font-size:1.43rem;font-weight:690}
-.overview p{color:var(--muted);font-size:.9rem;margin-top:.25rem}
-.report-state{margin-bottom:1rem;padding:.65rem .85rem;background:var(--soft);border-color:#b9d1dc;font-size:.9rem}
-.report-state p+ p{margin-top:.2rem;color:var(--muted)}
-.workspace-block{margin-bottom:1.25rem}
-.workspace-heading{display:flex;flex-wrap:wrap;gap:.25rem .8rem;align-items:baseline;margin-bottom:.7rem}
-.workspace-heading h2{font-size:clamp(1.25rem,2.6vw,1.62rem);line-height:1.35}
-.workspace-heading span{color:var(--muted);font-size:.86rem}
-.review-list{display:grid;gap:.65rem}
-.featured-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,23rem),1fr));gap:.85rem}
-.decision-group{display:grid;align-content:start;gap:.4rem;min-width:0}
-.decision-group h3{font-size:.85rem;letter-spacing:.02em}
-.decision-group-ip>h3{color:var(--amber)}
-.decision-group-ops>h3{color:var(--blue)}
-.decision-card,.review-card{min-width:0;padding:.72rem .9rem}
-.review-card{display:grid;gap:.38rem;align-content:start}
-.decision-card-ip{border-left:3px solid #a86d21}
-.decision-card-ops{border-left:3px solid #4386a2}
-.decision-card-title{margin:0;font-size:1.075rem;line-height:1.5}
-.decision-card-label{font-size:.81rem;color:var(--muted)}
-.decision-copy{display:grid;gap:.25rem;margin:0;font-size:.9rem}
-.decision-copy div{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.55rem}
-.decision-copy dt{color:var(--muted);font-weight:650}
-.decision-copy dd{margin:0;overflow-wrap:anywhere}
-.other-reviews{padding:.65rem .85rem}
-.other-review-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,21rem),1fr));gap:.65rem;margin-top:.65rem}
-.decision-empty{padding:.75rem .9rem;color:var(--muted)}
-.case-history{font-size:.89rem}
-.case-history>summary{cursor:pointer;color:var(--blue);font-weight:630}
-.case-history-list{padding-left:1.2rem;margin:.4rem 0}
-.case-history-list li+li{margin-top:.48rem}
-.case-history-list strong{display:block}
-.review-card button{margin-top:.25rem;justify-self:start;font-size:.86rem;color:var(--blue);padding:.35rem .55rem}
-.current-case-open{color:var(--blue);justify-self:start;font-size:.88rem;padding:.35rem .55rem}
-.review-card p,.assessment-card p,.scope-check{overflow-wrap:anywhere}
-.review-card p{font-size:.91rem}
-.review-card .row-mini{font-size:.86rem}
-.review-card .case-finding{font-weight:620;line-height:1.55}
-.priority-rationale{background:var(--soft);border-left:3px solid #327997;border-radius:0 7px 7px 0;padding:.45rem .65rem}
-.priority-rationale strong,.analysis-points dt{display:block;color:#225269;font-size:.83rem;font-weight:670;margin-bottom:.16rem}
-.analysis-points{display:grid;gap:.58rem;margin:0 0 .3rem}
-.analysis-points div+div{border-top:1px solid var(--line);padding-top:.48rem}
-.analysis-points dd{margin:0;overflow-wrap:anywhere}
-.current-check{padding-top:.38rem;border-top:1px solid var(--line)}
-.current-check>summary{cursor:pointer;color:var(--blue);font-size:.89rem;font-weight:640}
-.current-check[open] .assessment-card{margin-top:.5rem}
-.evidence-list{display:grid;gap:.38rem;margin:0;padding-left:1.2rem}
-.review-field>strong{font-weight:655}
-.assessment-card{display:grid;gap:.42rem;border:1px solid var(--line);border-radius:8px;background:#f8fbfc;padding:.75rem}
-.assessment-card .scope-checks{display:grid;gap:.35rem}
-.scope-check{border-left:2px solid #a6c4ce;padding:.12rem .55rem}
-.scope-check p{margin-top:.22rem}
-.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;margin-bottom:1.1rem}
-.metric{padding:.8rem .9rem}
-.metric strong{display:block;font-size:1.55rem;font-weight:690;line-height:1.15;font-variant-numeric:tabular-nums;margin-top:.25rem}
-.metric span{font-size:.87rem;color:var(--muted)}
-.filters{padding:.85rem;display:grid;grid-template-columns:minmax(150px,1.65fr) repeat(3,minmax(102px,1fr));gap:.65rem;margin-bottom:1.1rem}
-.filters label{display:grid;gap:.22rem;min-width:0;font-size:.875rem;font-weight:620}
-.filters input,.filters select{width:100%;min-width:0;border:1px solid #b8c9d2;border-radius:7px;padding:.48rem .55rem;background:#fff;font-weight:400;font-size:.91rem}
-.day{margin-bottom:1.4rem}
-.day-heading{display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap;margin-bottom:.48rem}
-.day time{font-size:1.15rem;letter-spacing:.025em;font-weight:700;font-variant-numeric:tabular-nums}
-.day-heading .count{color:var(--muted);font-size:.88rem}
-.coverage{display:grid;gap:.3rem;margin:0 0 .6rem;padding:.6rem .75rem;border-left:3px solid #8baebe;background:#eaf2f6;color:#324e5e;font-size:.9rem;border-radius:5px}
-.entries{display:grid;gap:.5rem;padding-left:.75rem;border-left:2px solid #cbdce4}
-.entry{position:relative;padding:.8rem .95rem}
-.entry::before{content:"";position:absolute;top:1.09rem;left:-1.07rem;width:.56rem;height:.56rem;border:2px solid var(--wash);border-radius:100%;background:#648d9f}
-.entry summary{display:grid;gap:.36rem;cursor:pointer;list-style:none}
-.entry summary::-webkit-details-marker{display:none}
-.row-head{display:flex;justify-content:space-between;align-items:start;gap:.65rem}
-.row-head strong{font-size:1.01rem;line-height:1.4}
-.row-head .toggle{font-size:.82rem;white-space:nowrap;color:var(--blue);font-weight:600}
-.entry[open] .toggle::after{content:"收起"}
-.entry:not([open]) .toggle::after{content:"证据与判断"}
-.row-mini{color:var(--muted);font-size:.875rem;overflow-wrap:anywhere}
-.summary-text{font-size:.94rem}
-.tags{display:flex;gap:.35rem;flex-wrap:wrap}
-.badge{display:inline-block;border-radius:5px;background:#edf2f5;color:#314c5c;padding:.12rem .44rem;font-size:.82rem;font-weight:640}
-.badge.amber{background:var(--amber-soft);color:var(--amber)}
-.badge.green{background:var(--green-soft);color:var(--green)}
-.badge.red{background:var(--red-soft);color:var(--red)}
-.badge.blue{background:var(--soft);color:var(--blue)}
-.detail{margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--line);display:grid;gap:.65rem;font-size:.92rem}
-.comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}
-.comparison div{border:1px solid var(--line);background:#f8fbfc;padding:.6rem .7rem;border-radius:7px;white-space:pre-wrap;overflow-wrap:anywhere}
-.comparison strong{display:block;margin-bottom:.28rem}
-.detail p,.detail li{overflow-wrap:anywhere}
-.detail ul{margin:.18rem 0 0;padding-left:1.2rem}
-.detail-links{display:flex;flex-wrap:wrap;gap:.55rem}
-.empty{padding:1.25rem}
-.empty p{color:var(--muted);margin-top:.4rem}
-dialog{width:min(680px,calc(100% - 2rem));max-height:90vh;border:1px solid var(--line);border-radius:13px;padding:1.2rem;color:var(--ink)}
-dialog::backdrop{background:#0d293780}
-.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:1rem}
-dialog p,dialog li{margin-top:.55rem}
-dialog ol{padding-left:1.4rem}
-[hidden]{display:none!important}
-@media(max-width:890px){.filters,.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:650px){.top,main{padding-inline:.9rem}.top{flex-wrap:wrap;padding-block:.55rem}.top-actions{gap:.4rem}.top-actions button{font-size:.8rem;padding:.29rem .49rem}main{padding-top:.9rem}.workspace-block{margin-bottom:.95rem}.featured-groups,.other-review-list,.comparison,.site-row{grid-template-columns:1fr}.review-card{padding:.65rem .75rem}.row-head .toggle{font-size:.78rem}}
+:root {
+  color-scheme:light;
+  --ink:#1e2c32;
+  --muted:#596971;
+  --line:#e0e7e8;
+  --wash:#f6f8f8;
+  --card:#fff;
+  --blue:#17645e;
+  --soft:#eaf4f1;
+  --green:#166751;
+  --green-soft:#e8f6ef;
+  --amber:#795822;
+  --amber-soft:#f9f1df;
+  --red:#933739;
+  --red-soft:#faeceb;
+  --radius:10px;
+  --shell:1360px;
+}
+* { box-sizing:border-box }
+[hidden] { display:none!important }
+body {
+  margin:0;
+  background:var(--wash);
+  color:var(--ink);
+  font:15px/1.55 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+button,input,select { font:inherit;color:inherit }
+button,select,input[type=file],summary { cursor:pointer }
+button,input,select,a,summary { outline-offset:3px }
+:focus-visible { outline:2px solid var(--blue) }
+button {
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:.4rem .68rem;
+}
+button:hover { border-color:#a0b4b2 }
+a { color:var(--blue);overflow-wrap:anywhere;text-underline-offset:.18em }
+h1,h2,h3,h4,p,figure { margin:0 }
+header { background:var(--card);border-bottom:1px solid var(--line) }
+.top {
+  max-width:var(--shell);
+  min-height:64px;
+  margin:auto;
+  padding:0 2rem;
+  display:flex;
+  align-items:center;
+  gap:1.65rem;
+}
+h1 {
+  display:flex;
+  align-items:center;
+  gap:.62rem;
+  flex:none;
+  font-size:1.1rem;
+  font-weight:700;
+  letter-spacing:.015em;
+}
+.brand-icon {
+  display:inline-grid;
+  place-content:center;
+  width:30px;
+  height:30px;
+  border-radius:7px;
+  background:var(--soft);
+  color:var(--blue);
+}
+.brand-icon span,.brand-icon::before,.brand-icon::after {
+  content:"";
+  display:block;
+  height:2px;
+  width:14px;
+  border-radius:2px;
+  background:currentColor;
+}
+.brand-icon span { margin:3px 0;width:10px }
+.top-nav { display:flex;align-self:stretch;align-items:stretch;gap:.65rem }
+.top-nav button {
+  border:0;
+  border-bottom:2px solid transparent;
+  border-radius:0;
+  padding:0 .55rem;
+  background:transparent;
+  color:var(--muted);
+  white-space:nowrap;
+  font-weight:610;
+}
+.top-nav button:hover { color:var(--blue) }
+.top-nav button:is([aria-current=page],[aria-pressed=true]) { border-bottom-color:var(--blue);color:var(--blue) }
+.top-actions { margin-left:auto;position:relative;flex:none }
+.top-actions summary {
+  display:flex;
+  align-items:center;
+  gap:.48rem;
+  list-style:none;
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:.37rem .65rem;
+  color:var(--muted);
+  white-space:nowrap;
+  font-size:.87rem;
+}
+.top-actions summary::-webkit-details-marker { display:none }
+.top-actions summary::after {
+  content:"";
+  width:.35rem;
+  height:.35rem;
+  border-bottom:1.5px solid currentColor;
+  border-right:1.5px solid currentColor;
+  transform:rotate(45deg) translateY(-1px);
+}
+.top-actions[open] summary { color:var(--blue);border-color:#a0b4b2 }
+.tools-menu {
+  position:absolute;
+  right:0;
+  top:calc(100% + 6px);
+  z-index:3;
+  display:grid;
+  width:max-content;
+  min-width:8.5rem;
+  gap:.15rem;
+  padding:.35rem;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--card);
+  box-shadow:0 6px 18px #263b4014;
+}
+.tools-menu button { text-align:left;border-color:transparent;font-size:.88rem }
+.tools-menu button:hover { background:var(--wash) }
+
+main { max-width:var(--shell);margin:auto;padding:1.5rem 2rem 1.5rem }
+.workbench-heading,.archive-heading {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:.4rem 1rem;
+  margin:0 0 .95rem;
+}
+.workbench-heading h2,.archive-heading h2 {
+  font-size:clamp(1.25rem,2.5vw,1.56rem);
+  font-weight:700;
+  line-height:1.35;
+  letter-spacing:.015em;
+}
+.view-meta { color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums }
+.workbench-layout {
+  display:grid;
+  grid-template-columns:minmax(17rem,21rem) minmax(0,1fr);
+  min-height:30rem;
+  height:calc(100vh - 11.25rem);
+  height:calc(100dvh - 11.25rem);
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--card);
+}
+.queue-pane,.detail-pane { min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain }
+.queue-pane {
+  border-right:1px solid var(--line);
+  scrollbar-gutter:stable;
+  background:#fbfcfc;
+}
+.queue-toolbar {
+  position:sticky;
+  top:0;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.45rem;
+  min-height:53px;
+  padding:.69rem .8rem .66rem 1rem;
+  border-bottom:1px solid var(--line);
+  background:#fbfcfc;
+}
+.queue-toolbar h3 { font-size:.89rem;font-weight:690 }
+.queue-toolbar select,.filters input,.filters select {
+  min-width:0;
+  max-width:100%;
+  min-height:34px;
+  padding:.31rem .53rem;
+  border:1px solid #d7e1e2;
+  border-radius:6px;
+  background:var(--card);
+  font-size:.87rem;
+}
+.queue-toolbar select { max-width:8rem;min-height:31px;color:var(--muted) }
+.review-list { padding:.25rem 0 }
+.review-row {
+  display:grid;
+  position:relative;
+  gap:.28rem;
+  width:100%;
+  min-height:69px;
+  padding:.65rem 1rem;
+  text-align:left;
+  background:transparent;
+  border:0;
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+}
+.review-row:last-child { border-bottom-color:transparent }
+.review-row:hover { background:#f2f6f5 }
+.review-row:is([aria-current=true],[aria-selected=true]) {
+  background:var(--soft);
+  border-bottom-color:#dce9e6;
+}
+.review-row:is([aria-current=true],[aria-selected=true])::before {
+  position:absolute;
+  content:"";
+  inset:10px auto 10px 0;
+  width:3px;
+  background:var(--blue);
+  border-radius:0 2px 2px 0;
+}
+.review-row:focus-visible { z-index:1;outline-offset:-3px }
+.review-row-heading { display:flex;align-items:baseline;justify-content:space-between;gap:.35rem .6rem }
+.review-row-title { display:block;min-width:0;font-size:.96rem;font-weight:640;line-height:1.4;overflow-wrap:anywhere }
+.review-row:is([aria-current=true],[aria-selected=true]) .review-row-title { color:#164d49;font-weight:710 }
+.review-row-meta { display:flex;align-items:center;gap:.25rem .42rem;flex-wrap:wrap;min-width:0;color:var(--muted);font-size:.77rem }
+.review-row-type {
+  display:inline-block;
+  white-space:nowrap;
+  padding:.03rem .33rem;
+  border:1px solid #dae3e3;
+  border-radius:4px;
+  color:#516269;
+  font-size:.72rem;
+  line-height:1.45;
+}
+.review-row-type[data-area="知产风险"],.review-row-type.ip { background:var(--soft);border-color:#d0e3df;color:var(--blue) }
+.review-row-state { color:var(--blue);font-size:.72rem;white-space:nowrap }
+.review-empty { color:var(--muted);font-size:.86rem;padding:.9rem 1rem }
+.detail-pane { scrollbar-gutter:stable }
+.review-mobile-toggle { display:none }
+.case-detail,.workbench-detail { max-width:100%;min-width:0 }
+.case-detail-header {
+  display:grid;
+  gap:.6rem;
+  padding:1.35rem 1.9rem 1rem;
+  border-bottom:1px solid var(--line);
+}
+.case-kicker,.case-site { display:flex;align-items:center;gap:.35rem .65rem;flex-wrap:wrap;color:var(--muted);font-size:.81rem }
+.case-area { font-weight:660;color:var(--blue) }
+.case-kicker .case-site::before { content:"";width:3px;height:3px;border-radius:50%;background:#879794 }
+.case-title { font-size:clamp(1.35rem,2.4vw,1.8rem);line-height:1.23;letter-spacing:.01em;font-weight:700;overflow-wrap:anywhere }
+.case-decision { padding:1.2rem 1.9rem 1.05rem }
+.case-conclusion {
+  margin:.23rem 0 0;
+  padding:.76rem .92rem;
+  color:var(--ink);
+  font-size:1.12rem;
+  font-weight:680;
+  line-height:1.52;
+  border-left:3px solid var(--blue);
+  border-radius:0 6px 6px 0;
+  background:var(--soft);
+  overflow-wrap:anywhere;
+}
+.case-decision-label,.case-decision-points dt {
+  color:var(--blue);
+  font-size:.83rem;
+  font-weight:700;
+  letter-spacing:.025em;
+}
+.case-decision-points {
+  display:grid;
+  gap:.61rem;
+  margin:.8rem 0 0;
+  line-height:1.6;
+  overflow-wrap:anywhere;
+}
+.case-decision-points>div {
+  display:grid;
+  grid-template-columns:3.15rem minmax(0,1fr);
+  gap:.3rem .42rem;
+}
+.case-decision-points dd { margin:0;color:#31424a }
+.case-actions,.detail-links { display:flex;align-items:center;gap:.38rem .7rem;flex-wrap:wrap }
+.case-actions { margin-top:.8rem }
+.case-actions a,.case-actions button,.history-link,.current-case-open,.thread-open {
+  padding:.29rem .55rem;
+  border:1px solid #d7e3e1;
+  border-radius:5px;
+  background:var(--card);
+  color:var(--blue);
+  text-decoration:none;
+  font-size:.83rem;
+}
+.case-actions a:hover,.case-actions button:hover,.history-link:hover { background:var(--soft) }
+.case-section { margin:0 1.9rem;padding:.7rem 0 1rem;border-top:1px solid var(--line);overflow-wrap:anywhere }
+.case-section-heading { display:flex;align-items:baseline;gap:.26rem .6rem;flex-wrap:wrap;margin:0 0 .55rem;font-size:1rem }
+.case-section-heading h3 { font-size:1rem;font-weight:690 }
+.case-section-heading time,.case-section-heading span { color:var(--muted);font-size:.8rem;font-weight:450 }
+.case-section p { font-size:.91rem }
+.case-section p+p { margin-top:.36rem }
+.case-evidence,.case-records,.case-related,.case-scope-list,.case-analysis {
+  display:grid;
+  gap:.42rem;
+  min-width:0;
+  margin:0;
+}
+:is(ul,ol):is(.case-evidence,.case-records,.case-related,.case-scope-list) { padding-left:1.15rem }
+.case-data-note { color:var(--muted);font-size:.83rem }
+.case-section .case-data-note { font-size:.84rem }
+.case-event-row { display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:baseline;justify-items:start;gap:.25rem .65rem;min-width:0;padding:.26rem 0 }
+.case-event-row+.case-event-row { border-top:1px solid var(--line) }
+.case-event-row time { color:var(--muted);font-size:.79rem;font-variant-numeric:tabular-nums }
+.case-block-link { max-width:100%;color:var(--blue);font-size:.86rem;overflow-wrap:anywhere }
+.case-block-link:is(button,a) { border-radius:5px }
+.case-block-link:is(button) { padding:.24rem .46rem }
+.case-compare,.case-media-pair {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.55rem;
+  min-width:0;
+  margin:.35rem 0;
+}
+.case-compare>:is(div,figure),.case-media-pair>figure {
+  min-width:0;
+  margin:0;
+  padding:.47rem .55rem;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:#fafcfc;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.case-media-pair figcaption { margin:.28rem 0 0;color:var(--muted);font-size:.78rem }
+.case-delta { min-width:0;white-space:pre-wrap;overflow-wrap:anywhere }
+.case-delta :is(del,ins) { border-radius:2px;padding:.03rem .15rem }
+.case-delta del { background:var(--red-soft);color:var(--red) }
+.case-delta ins { background:var(--soft);color:var(--blue);text-decoration:underline;text-underline-offset:.15em }
+.case-document-table { max-width:100%;overflow:auto;font-size:.86rem }
+.case-document-table>div { display:grid;grid-template-columns:minmax(7rem,auto) minmax(0,1fr);gap:.28rem .62rem;padding:.34rem 0;border-bottom:1px solid var(--line) }
+.case-document-table table { width:100%;border-collapse:collapse }
+.case-document-table :is(th,td) { padding:.37rem .43rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top }
+.case-document-table th,.case-document-table dt { color:var(--muted);font-weight:650 }
+.case-document-table dd { margin:0 0 .38rem }
+.case-analysis>summary,.case-scope-list>summary { color:var(--blue);font-size:.86rem;font-weight:620;list-style-position:inside;margin-top:.38rem }
+.case-analysis[open]>summary,.case-scope-list[open]>summary { margin-bottom:.43rem }
+.case-section>.evidence-list,.case-section>.case-document-table { margin:.44rem 0 }
+.case-history,.case-history-list,.case-related,.evidence-list { margin:0;display:grid;gap:.44rem }
+.case-history-list,.evidence-list { padding-left:1.15rem }
+.case-history-list time { color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums }
+.case-history-list strong { font-weight:640 }
+.case-history>summary,.current-check>summary { color:var(--blue);font-weight:650 }
+.case-history>summary { margin:.22rem 0 }
+.case-history-list li+li { margin-top:.28rem }
+.scope-checks { display:grid;gap:.38rem }
+.scope-check { border-left:2px solid #c5d8d4;padding:.12rem .55rem }
+.scope-check p { margin-top:.18rem }
+.current-check { margin:.45rem 0 }
+.current-check[open] .assessment-card { margin-top:.4rem }
+.assessment-card { display:grid;gap:.45rem;padding:.69rem .78rem;border:1px solid var(--line);border-radius:7px;background:#fbfcfc }
+.analysis-points { display:grid;gap:.5rem;margin:0 }
+.analysis-points div+div { border-top:1px solid var(--line);padding-top:.44rem }
+.analysis-points dt { color:var(--blue);font-size:.84rem;font-weight:670 }
+.analysis-points dd { margin:0 }
+.review-field>strong { font-weight:650 }
+
+.archive-view { max-width:1150px;margin:auto }
+.archive-heading { align-items:end }
+.archive-heading .archive-scope { color:var(--muted);font-size:.82rem;margin-top:.12rem }
+.archive-heading .archive-scope:empty,.view-meta:empty,#metrics:empty,#status:empty,#report-state:empty { display:none }
+.archive-view #status { color:var(--muted);font-size:.84rem;margin-bottom:.5rem }
+.report-state { margin:0 0 .75rem;color:var(--muted);font-size:.86rem }
+.archive-line {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  min-height:1.6rem;
+  color:var(--muted);
+  font-size:.83rem;
+  gap:.22rem .85rem;
+  margin:0 0 .63rem;
+}
+.archive-line .metric,.archive-line>* { display:inline-flex;align-items:baseline;gap:.37rem;font-weight:400 }
+.archive-line .metric strong { color:var(--ink);font-variant-numeric:tabular-nums;font-weight:650 }
+.filters {
+  display:grid;
+  grid-template-columns:minmax(12rem,1.5fr) repeat(4,minmax(6.6rem,1fr));
+  gap:.58rem;
+  padding:.7rem .78rem;
+  margin:0 0 1rem;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--card);
+}
+.filters label { display:grid;gap:.23rem;min-width:0;font-size:.81rem;font-weight:650 }
+.filters input,.filters select { width:100%;font-weight:400 }
+.thread-filter { display:flex;align-items:center;justify-content:space-between;gap:.7rem;margin:0 0 .85rem;padding:.46rem .64rem;background:var(--soft);border-radius:6px;font-size:.86rem }
+.thread-filter button { color:var(--blue);font-size:.82rem }
+.day { margin-bottom:1.3rem }
+.day-heading { display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap;margin-bottom:.4rem }
+.day time { font-size:.99rem;letter-spacing:.015em;font-weight:720;font-variant-numeric:tabular-nums }
+.day-heading .count { color:var(--muted);font-size:.82rem;font-weight:430 }
+.coverage {
+  display:grid;
+  gap:.29rem;
+  margin:0 0 .55rem;
+  padding:.52rem .65rem;
+  border-left:2px solid #bdd3d0;
+  background:#eef4f3;
+  color:#415b5a;
+  font-size:.83rem;
+  border-radius:0 5px 5px 0;
+}
+.entries { display:grid;gap:.4rem;padding-left:.67rem;border-left:1px solid #d4e1df }
+.panel { background:var(--card);border:1px solid var(--line);border-radius:var(--radius) }
+.entry { position:relative;padding:.66rem .8rem }
+.entry::before {
+  content:"";
+  position:absolute;
+  top:1rem;
+  left:-.91rem;
+  width:.42rem;
+  height:.42rem;
+  border:1px solid var(--wash);
+  border-radius:50%;
+  background:#91ada8;
+}
+.entry summary { display:grid;gap:.29rem;cursor:pointer;list-style:none }
+.entry summary::-webkit-details-marker { display:none }
+.row-head { display:flex;justify-content:space-between;align-items:start;gap:.58rem }
+.row-head strong { font-size:.95rem;line-height:1.4 }
+.row-head .toggle { font-size:.78rem;white-space:nowrap;color:var(--blue);font-weight:600 }
+.entry[open] .toggle::after { content:"收起" }
+.entry:not([open]) .toggle::after { content:"查看记录" }
+.row-mini { color:var(--muted);font-size:.82rem;overflow-wrap:anywhere }
+.summary-text { font-size:.89rem }
+.tags { display:flex;gap:.28rem;flex-wrap:wrap }
+.badge { display:inline-block;border-radius:4px;background:#eef2f2;color:#42555c;padding:.07rem .38rem;font-size:.75rem;font-weight:635 }
+.badge.amber { background:var(--amber-soft);color:var(--amber) }
+.badge.green { background:var(--green-soft);color:var(--green) }
+.badge.red { background:var(--red-soft);color:var(--red) }
+.badge.blue { background:var(--soft);color:var(--blue) }
+.detail { margin-top:.66rem;padding-top:.64rem;border-top:1px solid var(--line);display:grid;gap:.56rem;font-size:.9rem }
+.comparison { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.58rem;min-width:0 }
+.comparison>div,.comparison>figure {
+  min-width:0;
+  border:1px solid var(--line);
+  background:#fafcfc;
+  padding:.54rem .63rem;
+  border-radius:6px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.comparison strong,.comparison figcaption { display:block;margin-bottom:.22rem;font-weight:650 }
+.comparison img,.case-section img {
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:16rem;
+  object-fit:contain;
+  object-position:center;
+  margin-top:.24rem;
+  border-radius:4px;
+}
+.comparison :is(del,ins) { border-radius:2px;padding:.03rem .15rem }
+.comparison del { background:var(--red-soft);color:var(--red) }
+.comparison ins { background:var(--soft);color:var(--blue);text-decoration:underline;text-underline-offset:.15em }
+.detail p,.detail li { overflow-wrap:anywhere }
+.detail ul { margin:.15rem 0 0;padding-left:1.12rem }
+.current-case-open,.thread-open { justify-self:start }
+.empty { padding:1rem }
+.empty p { color:var(--muted);margin-top:.35rem }
+dialog { width:min(680px,calc(100% - 2rem));max-height:90vh;border:1px solid var(--line);border-radius:12px;padding:1.15rem;color:var(--ink) }
+dialog::backdrop { background:#18282aa0 }
+.dialog-head { display:flex;align-items:center;justify-content:space-between;gap:1rem }
+dialog p,dialog li { margin-top:.51rem }
+dialog ol { padding-left:1.38rem }
+
+@media(max-width:970px) {
+  .top,main { padding-inline:1.35rem }
+  .workbench-layout { grid-template-columns:minmax(14.4rem,17.5rem) minmax(0,1fr) }
+  .case-detail-header,.case-decision { padding-inline:1.35rem }
+  .case-section { margin-inline:1.35rem }
+}
+@media(max-width:700px) {
+  .top { min-height:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;padding:.54rem .85rem 0;gap:.18rem .5rem }
+  .top h1 { font-size:1rem;line-height:1.25;gap:.47rem }
+  .brand-icon { width:26px;height:26px }
+  .top-nav { grid-row:2;grid-column:1/-1;gap:.75rem;min-height:39px }
+  .top-nav button { padding:.27rem .32rem .32rem;font-size:.87rem }
+  .top-actions { grid-row:1;grid-column:2 }
+  .top-actions summary { padding:.3rem .48rem;font-size:.78rem }
+  main { padding:1rem .85rem 1.45rem }
+  .workbench-heading,.archive-heading { margin-bottom:.65rem;align-items:start;flex-wrap:wrap }
+  .workbench-heading .view-meta,.archive-heading .view-meta { font-size:.77rem }
+  .workbench-layout { display:block;height:auto;min-height:0;overflow:visible;border-radius:8px }
+  .queue-pane,.detail-pane { border:0;scrollbar-gutter:auto;overscroll-behavior:auto;overflow:visible }
+  .workbench-layout:not([data-mode=queue]) .queue-pane,.workbench-layout[data-mode=queue] .detail-pane { display:none }
+  .queue-toolbar { min-height:43px;padding:.46rem .63rem }
+  .review-row { min-height:61px;padding:.54rem .68rem }
+  .review-mobile-toggle {
+    display:inline-flex;
+    align-items:center;
+    gap:.34rem;
+    max-width:100%;
+    min-height:34px;
+    background:var(--card);
+    color:var(--blue);
+    padding:.26rem .51rem;
+    font-size:.79rem;
+    font-weight:650;
+    white-space:nowrap;
+  }
+  .review-mobile-toggle:empty { display:none }
+  .case-detail-header { padding:.81rem .73rem .68rem;gap:.32rem }
+  .case-kicker,.case-site { font-size:.77rem;gap:.25rem .38rem }
+  .case-title { font-size:1.27rem }
+  .case-decision { padding:.72rem .73rem .68rem }
+  .case-conclusion { padding:.57rem .58rem;font-size:1.015rem }
+  .case-decision-points { margin-top:.6rem;gap:.46rem;font-size:.89rem }
+  .case-decision-points>div { grid-template-columns:2.6rem minmax(0,1fr);gap:.3rem }
+  .case-decision-points dt { font-size:.78rem }
+  .case-actions { margin-top:.63rem }
+  .case-section { margin-inline:.73rem;padding:.59rem 0 .77rem }
+  .case-section-heading { margin-bottom:.4rem }
+  .case-section-heading,.case-section-heading h3 { font-size:.95rem }
+  .case-section p { font-size:.86rem }
+  .case-compare,.case-media-pair { gap:.35rem }
+  .case-compare>:is(div,figure),.case-media-pair>figure { padding:.35rem .39rem;font-size:.81rem }
+  .filters { grid-template-columns:repeat(2,minmax(0,1fr));padding:.55rem;gap:.48rem }
+  .filters label:first-child { grid-column:1/-1 }
+  .entry { padding:.58rem .63rem }
+  .comparison { gap:.35rem }
+  .comparison>div,.comparison>figure { padding:.36rem .4rem;font-size:.81rem }
+}
+@media(max-width:355px) {
+  .workbench-heading .view-meta { flex-basis:100% }
+}
 </style>
 </head>
 <body>
 <header>
   <div class="top">
-    <h1>官网变更与风险轨迹</h1>
-    <div class="top-actions">
-      <button id="open-method" type="button">评估口径</button>
-      <button id="open-import" type="button">载入日报数据</button>
-      <input id="file" type="file" accept=".json,application/json" multiple hidden aria-label="选择日报数据 JSON">
-    </div>
+    <h1><span class="brand-icon" aria-hidden="true"><span></span></span>官网变更与风险轨迹</h1>
+    <nav class="top-nav" aria-label="看板视图">
+      <button id="nav-review" type="button" aria-current="page" aria-controls="review-queue">复核工作台</button>
+      <button id="nav-archive" type="button" aria-controls="archive-view">变更档案</button>
+    </nav>
+    <details class="top-actions">
+      <summary>工具</summary>
+      <div class="tools-menu">
+        <button id="open-method" type="button">评估口径</button>
+        <button id="open-import" type="button">载入日报数据</button>
+      </div>
+    </details>
+    <input id="file" type="file" accept=".json,application/json" multiple hidden aria-label="选择日报数据 JSON">
   </div>
 </header>
 <main>
-  <section id="review-queue" class="workspace-block" aria-labelledby="review-queue-title" hidden>
-    <div class="workspace-heading"><h2 id="review-queue-title">本期最值得处理</h2><span id="review-count"></span></div>
-    <div id="review-list" class="review-list"></div>
+  <section id="review-queue" aria-labelledby="review-queue-title">
+    <div class="workbench-heading">
+      <div>
+        <h2 id="review-queue-title">复核工作台</h2>
+        <p id="review-count" class="view-meta"></p>
+      </div>
+      <button id="review-mobile-toggle" class="review-mobile-toggle" type="button" aria-controls="review-queue-panel">查看事项列表</button>
+    </div>
+    <div id="review-layout" class="workbench-layout" data-mode="home">
+      <aside id="review-queue-panel" class="queue-pane" aria-labelledby="queue-title">
+        <div class="queue-toolbar">
+          <h3 id="queue-title">事项队列</h3>
+          <select id="review-filter" aria-label="事项类型">
+            <option value="">所有类型</option>
+            <option>知产风险</option>
+            <option>运营修复</option>
+            <option>资料复核</option>
+          </select>
+        </div>
+        <div id="review-list" class="review-list"></div>
+      </aside>
+      <div id="review-detail" class="detail-pane" aria-label="事项详情"></div>
+    </div>
   </section>
-  <details id="site-overview" class="panel site-panel workspace-block">
-    <summary>分站入口<span id="site-count"></span></summary>
-    <nav id="sites" aria-label="按站点查看日报"></nav>
-    <p class="sidebar-note" id="scope-note"></p>
-  </details>
-  <section aria-labelledby="scope-title">
-    <div class="panel report-state" id="report-state" role="status" aria-live="polite"></div>
-    <div class="overview">
-      <div><h2 id="scope-title" tabindex="-1">全部站点</h2><p id="scope-subtitle"></p></div>
+  <section id="archive-view" class="archive-view" aria-labelledby="archive-title" hidden>
+    <div class="archive-heading">
+      <div>
+        <h2 id="archive-title">变更档案</h2>
+        <p id="scope-title" class="archive-scope" tabindex="-1"></p>
+      </div>
+      <p id="scope-subtitle" class="view-meta"></p>
     </div>
     <p id="status" role="status" aria-live="polite"></p>
-    <div class="cards" id="metrics" aria-label="当前站点摘要"></div>
-    <div class="panel filters">
-      <label>搜索<input id="search" type="search" placeholder="标题、域名或证据"></label>
+    <div id="report-state" class="report-state" role="status" aria-live="polite"></div>
+    <div id="metrics" class="archive-line" aria-label="档案摘要"></div>
+    <div class="filters" aria-label="档案筛选">
+      <label>搜索<input id="search" type="search" placeholder="标题、网址或证据"></label>
+      <label id="site-overview">站点<select id="site"><option value="">全部站点</option></select></label>
       <label>日期<select id="date"><option value="">所有日期</option></select></label>
       <label>记录类型<select id="type"><option value="">所有类型</option><option>变更</option><option>复核观察</option><option>采集异常</option><option>无变更</option></select></label>
-      <label>历史记录筛选<select id="risk"><option value="">全部</option><option value="review">新增线索或风险升高</option><option value="lower">风险降低</option><option value="unknown">历史判断未定</option><option value="stable">风险不变</option></select></label>
+      <label>历史风险<select id="risk"><option value="">全部</option><option value="review">新增线索或风险升高</option><option value="lower">风险降低</option><option value="unknown">历史证据未齐</option><option value="stable">风险不变</option></select></label>
     </div>
     <div class="thread-filter" id="thread-filter" hidden><strong id="thread-title"></strong><button id="reset-thread" type="button">返回完整时间线</button></div>
     <div id="timeline"></div>
@@ -315,469 +740,718 @@ function safeLink(label, value) {
     return link;
   } catch { return null; }
 }
-function chooseSite(key, resetFilters=false) {
-  state.site=key;
-  state.thread='';
-  el('date').value='';
-  if(resetFilters) for(const id of ['search','type','risk']) el(id).value='';
-  render(true);
+
+const workbenchCaseNames = new Map([
+  ['fieldfusion-turkiye', 'FieldFusion 土耳其报道'],
+  ['rm21-attachment', 'RM21 画册链接'],
+  ['sekido', 'Sekido 经销商采访'],
+  ['2026-11-20-fjd-agriculture-famaq', 'FAMAQ 联合展会报道'],
+  ['s100', 'S100 Pro R 尺寸与配图'],
+  ['2026-11-20-fjd-agriculture-fieldfusion', 'FJD AYM 与 FieldFusion 报道'],
+  ['trion-installer', 'Trion Model 安装包'],
+  ['home-visual', '农业首页动画图片'],
+]);
+
+const workbenchNextAction = new Map([
+  ['fieldfusion-turkiye', '新市场上线前核对当地商标状态、双方实际使用和软件功能重合。'],
+  ['rm21-attachment', '恢复与现行产品、市场和规格相符的英文画册，同步修复共用入口。'],
+  ['sekido', '保留采访。新增语种或将封面、肖像和引语另作推广前，按具体用途复核。'],
+  ['2026-11-20-fjd-agriculture-famaq', '保留展会报道。扩大投放前，复核联合宣传、照片与可辨识人物的使用范围。'],
+  ['s100', '确认各市场适用版次及尺寸口径，再统一同一版次的网页与册页。'],
+  ['2026-11-20-fjd-agriculture-fieldfusion', '保留现有正文。新增实现细节前，将披露内容和时间与相关申请比对。'],
+  ['trion-installer', '保持当前下载。只有确认安装包或随包组件发生变化时，再评估分发许可影响。'],
+  ['home-visual', '保留现有动画。更换底图、新增独立素材或改变投放用途时复核。'],
+]);
+
+function workbenchCaseTitle(event) {
+  return workbenchCaseNames.get(reviewKey(event)) || event.threadLabel || event.title;
 }
-function nav() {
-  el('site-count').textContent=state.data.sites.filter(s=>s.host).length+' 个网站';
-  const grouped = Map.groupBy ? Map.groupBy(state.data.sites, s=>s.group||s.subject||'站点') :
-    state.data.sites.reduce((m,s)=>{ const g=s.group||s.subject||'站点'; m.set(g,[...(m.get(g)||[]),s]); return m; },new Map());
-  function choose(key, text, count, host) {
-    const control=doc('button','site-button');
-    control.type='button';
-    if(host) control.title=host;
-    control.setAttribute('aria-pressed',key===state.site?'true':'false');
-    control.append(doc('strong','',text),doc('span','',count));
-    control.addEventListener('click',()=>{
-      chooseSite(key);
-      el('sites').querySelector('[aria-pressed=true]')?.focus({preventScroll:true});
-    });
-    return control;
-  }
-  const all=doc('div','site-group');
-  all.append(choose('','全部站点',state.data.events.length));
-  const groups=[all];
-  for (const [name, sites] of grouped) {
-    const group=doc('div','site-group');
-    group.append(doc('h3','',name));
-    for (const site of sites){
-      const records=state.data.events.filter(e=>e.siteId===site.id).sort(newest);
-      const latest=records.find(substantive)||records[0];
-      const row=doc('div','site-row');
-      row.append(choose(site.id,site.label,records.length||'—',site.host),doc('p','row-mini',
-        [site.host,latest?latest.date+' · '+latest.title:site.note].filter(Boolean).join(' · ')));
-      group.append(row);
-    }
-    groups.push(group);
-  }
-  clean(el('sites'),...groups);
+
+function workbenchField(label, value) {
+  const point = doc('div');
+  point.append(doc('dt', '', label), doc('dd', '', value));
+  return point;
 }
-function reportState() {
-  const dates=eventDays(state.data);
-  if(!dates.length){
-    clean(el('report-state'),doc('p','','当前没有预载日报。点击「载入日报数据」，选择配套的日报数据 JSON。'),
-      doc('p','','文件仅在当前浏览器会话读取。'));
-    return;
-  }
-  const period=dates.length>1?dates.at(-1)+' 至 '+dates[0]:dates[0];
-  clean(el('report-state'),doc('p','','已收录日报数据 · '+period),
-    doc('p','','时间线沿用原日报日期。当前实查列在对应复核事项下。'));
+
+function workbenchButton(label, action, className = '') {
+  const button = doc('button', className, label);
+  button.type = 'button';
+  button.addEventListener('click', action);
+  return button;
 }
-function reviewField(title, value, subtle=false) {
-  const field=doc('p','review-field'+(subtle?' row-mini':''));
-  field.append(doc('strong','',title),document.createTextNode(' · '+value));
-  return field;
+
+function workbenchSection(heading, metadata) {
+  const section = doc('section', 'case-section');
+  const header = doc('div', 'case-section-heading');
+  header.append(doc('h3', '', heading));
+  if (metadata) header.append(doc('span', '', metadata));
+  section.append(header);
+  return section;
 }
-function reviewDetails(review) {
-  const block=doc('section','assessment-card');
-  block.append(doc('strong','',review.topic||'知产复核'));
-  if(review.riskType) block.append(reviewField('风险类型',review.riskType));
-  if(review.assessment) block.append(reviewField('初步评估',review.assessment));
-  if(review.judgment) block.append(doc('p','',review.judgment));
-  if(review.evidenceGap) block.append(reviewField('证据缺口',review.evidenceGap,true));
-  if(review.disposition) block.append(doc('p','row-mini','建议处置 · '+review.disposition));
-  if(review.owner) block.append(doc('p','row-mini','建议协同 · '+review.owner));
-  const checks=Array.isArray(review.scopeChecks)?review.scopeChecks.filter(Boolean):[];
-  if(checks.length){
-    const targets=doc('div','scope-checks');
-    targets.append(doc('strong','','联动核对'));
-    for(const check of checks){
-      const line=doc('div','scope-check');
-      if(check.status) line.append(badge(check.status,'blue'),document.createTextNode(' '));
-      if(check.scope) line.append(doc('strong','',check.scope));
-      if(check.action) line.append(doc('p','',check.action));
-      targets.append(line);
-    }
-    block.append(targets);
-  }
-  return block;
+
+function historicalExcerpt(value) {
+  const excerpt = value == null ? '' : String(value);
+  if (/^https?:\/\//i.test(excerpt)) return '';
+  if (/^(?:该条图片地址未见于|该地址从这次|对照到的旧版摘录中没有|这段旧版摘录未出现|所比对的新版首页新闻摘录移出|同一差异片段中移出)/.test(excerpt)) return '';
+  return excerpt;
 }
-function currentCheckDetails(check) {
-  const block=doc('section','assessment-card');
-  if(check.beforeAfter) block.append(reviewField('日报前后',check.beforeAfter));
-  if(check.finding) block.append(reviewField('实查结论',check.finding));
-  if(check.evidence) block.append(reviewField('证据强度',check.evidence,true));
-  if(check.analysis){
-    block.append(doc('strong','',check.analysis.type));
-    const points=doc('dl','analysis-points');
-    for(const [label,value] of [
-      ['可核对的事实',check.analysis.facts],
-      ['适用判断条件',check.analysis.test],
-      ['处置判断依据',check.analysis.reason],
-      ['会改变判断的证据',check.analysis.threshold],
-    ]){
-      const point=doc('div');
-      point.append(doc('dt','',label),doc('dd','',value));
-      points.append(point);
-    }
-    block.append(points);
-  }
-  block.append(doc('strong','','当前实查 · '+check.date));
-  const observations=Array.isArray(check.observations)?check.observations.filter(Boolean):[];
-  if(observations.length){
-    const list=doc('ul','evidence-list');
-    for(const item of observations){
-      const entry=doc('li');
-      const label=item.label||'查看公开来源';
-      entry.append(safeLink(label,item.url)||doc('strong','',label));
-      if(item.observation) entry.append(document.createTextNode(' · '+item.observation));
-      list.append(entry);
-    }
-    block.append(list);
-  }
-  const scopes=Array.isArray(check.scopes)?check.scopes.filter(Boolean):[];
-  if(scopes.length){
-    const list=doc('div','scope-checks');
-    list.append(doc('strong','','涉及站点与联动'));
-    for(const item of scopes){
-      const line=doc('div','scope-check');
-      if(item.status) line.append(badge(item.status,'blue'),document.createTextNode(' '));
-      if(item.site) line.append(safeLink(item.site,item.url)||doc('strong','',item.site));
-      if(item.observation) line.append(doc('p','',item.observation));
-      list.append(line);
-    }
-    block.append(list);
-  }
-  return block;
-}
-function currentCheckSummary(check) {
-  const tags=doc('div','tags');
-  if(['高','中','低'].includes(check.priority)) tags.append(badge(check.priority+'优先级',priorityTone(check.priority)));
-  const topic=check.analysis?.type||check.class;
-  if(topic) tags.append(badge(topic));
-  const items=[doc('p','case-finding',check.finding),tags];
-  if(check.analysis){
-    const rationale=doc('p','priority-rationale');
-    rationale.append(doc('strong','','优先级依据'),document.createTextNode(check.analysis.reason));
-    items.push(rationale);
-  }
-  if(check.evidence) items.push(reviewField('证据强度',check.evidence,true));
-  return items;
-}
-function openReview(event) {
-  state.site=event.siteId;
-  state.thread=event.thread||'';
-  for(const id of ['search','date','type','risk']) el(id).value='';
-  render(true);
-  if(!state.thread){
-    el('date').value=event.date;
-    render();
-  }
-  const card=[...el('timeline').querySelectorAll('details')].find(item=>item.dataset.eventId===event.id);
-  if(card){card.open=true;card.querySelector('summary').focus();}
-}
-function reviewHistory(event, labels) {
-  const key=reviewKey(event);
-  const records=state.data.events.filter(row=>reviewKey(row)===key).sort(newest).reverse();
-  const details=doc('details','case-history');
-  const list=doc('ul','case-history-list');
-  for(const row of records){
-    const item=doc('li');
-    const time=doc('time','',row.date);
-    time.dateTime=row.date;
-    const title=doc('strong');
-    title.append(time,document.createTextNode(' · '+row.title));
-    item.append(title,doc('p','row-mini',[labels.get(row.siteId),row.page].filter(Boolean).join(' · ')));
-    if(row.summary) item.append(doc('p','',row.summary));
-    const links=(row.links||[]).map(link=>safeLink(link.label||'查看来源',link.url)).filter(Boolean);
-    if(links.length){const sources=doc('div','detail-links');sources.append(...links);item.append(sources);}
-    list.append(item);
-  }
-  const button=doc('button','','在时间线查看日报原文前后');
-  button.type='button';
-  button.addEventListener('click',()=>openReview(event));
-  details.append(doc('summary','','各日证据 · '+records.length+' 条'),list,button);
-  return details;
-}
-function decisionCard(event, decision, labels){
-  const check=caseCheck(event);
-  const card=doc('article','panel review-card decision-card decision-card-'+decisionAreas.get(decision.area));
-  card.dataset.caseId=reviewKey(event);
-  const lines=doc('dl','decision-copy');
-  for(const [label,value] of [['关键依据',decision.basis],['下一步',decision.next]]){
-    const line=doc('div');
-    line.append(doc('dt','',label),doc('dd','',value));
-    lines.append(line);
-  }
-  const evidence=doc('details','current-check');
-  evidence.append(doc('summary','','查看证据、判断与跨站结果'),currentCheckDetails(check),reviewHistory(event,labels));
-  card.append(doc('p','decision-card-label',[event.threadLabel||event.title, labels.get(event.siteId)].filter(Boolean).join(' · ')),
-    doc('h4','decision-card-title',decision.outcome),lines,evidence);
-  return card;
-}
-function decisionGroups(keys,available,cases,labels){
-  return [...decisionAreas].flatMap(([area,color])=>{
-    const selected=keys.filter(key=>cases[key].area===area);
-    if(!selected.length) return [];
-    const group=doc('section','decision-group decision-group-'+color);
-    group.append(doc('h3','',area),...selected.map(key=>decisionCard(available.get(key),cases[key],labels)));
-    return [group];
+
+function textDiffNodes(before, after) {
+  const parts = text => text.match(/\s+|[^\s]+/g) || [];
+  const old = parts(before);
+  const next = parts(after);
+  let start = 0;
+  let suffix = 0;
+  while (start < Math.min(old.length, next.length) && old[start] === next[start]) start++;
+  while (suffix < Math.min(old.length, next.length) - start && old.at(-1 - suffix) === next.at(-1 - suffix)) suffix++;
+  return [[old, 'del'], [next, 'ins']].map(([tokens, tag]) => {
+    const cell = doc('p', 'case-delta');
+    const prefix = tokens.slice(0, start).join('');
+    const delta = tokens.slice(start, tokens.length - suffix).join('');
+    const end = suffix ? tokens.slice(-suffix).join('') : '';
+    if (prefix) cell.append(document.createTextNode(prefix));
+    if (delta) cell.append(doc(tag, '', delta));
+    if (end) cell.append(document.createTextNode(end));
+    return cell;
   });
 }
-function showDecisions(queue,labels,date){
-  const {featured,cases}=state.data.publicDecisions;
-  const available=new Map(queue.filter(event=>Object.hasOwn(cases,reviewKey(event))).map(event=>[reviewKey(event),event]));
-  const primary=featured.filter(key=>available.has(key));
-  const content=[];
-  if(primary.length){
-    const sections=doc('div','featured-groups');
-    sections.append(...decisionGroups(primary,available,cases,labels));
-    content.push(sections);
-  }
-  if(!primary.some(key=>cases[key].area==='知产风险')){
-    const period=date?'所选日期':'本期';
-    const message=primary.length?'暂无建议立即调整的知产事项。':'暂无建议立即调整的知产事项，也暂无需要优先处理的运营修复。';
-    content.push(doc('p','panel decision-empty',period+message));
-  }
-  const secondary=[...available.keys()].filter(key=>!primary.includes(key));
-  if(secondary.length){
-    const others=doc('details','panel other-reviews');
-    const label=doc('summary','','其他复核事项');
-    label.append(doc('span','',secondary.length+' 项'));
-    const cards=doc('div','other-review-list');
-    cards.append(...decisionGroups(secondary,available,cases,labels));
-    others.append(label,cards);
-    content.push(others);
-  }
-  return content;
+
+function verifiedHistoricalImage(url, check) {
+  if (!url || !check?.observations?.some(item => item.url === url)) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' && !parsed.username && !parsed.password &&
+      ['agriculture.fjdynamics.com', 'landscaping.fjdynamics.com', 'sveabot.fjdynamics.com'].includes(parsed.hostname) &&
+      /\.(?:webp|png|jpe?g)$/i.test(parsed.pathname);
+  } catch { return false; }
 }
-function reviewQueue(scope) {
-  const groups=new Map();
-  const date=el('date').value;
-  const eligible=scope.events.filter(e=>(caseCheck(e)||(e.ipReview&&typeof e.ipReview==='object'&&e.ipReview.queue!==false))&&(!date||e.date===date)).sort(newest);
-  for(const event of eligible){
-    const key=reviewKey(event);
-    if(!groups.has(key)) groups.set(key,event);
+
+function workbenchImagePair(records, check) {
+  for (const old of records) {
+    if (!verifiedHistoricalImage(old.before, check)) continue;
+    const next = records.find(record => record.date === old.date && verifiedHistoricalImage(record.after, check) && record.after !== old.before);
+    // Only the original S100 report ties these two files to a single explicit replacement.
+    if (reviewKey(old) !== 's100' || !next) continue;
+    const pair = doc('div', 'case-media-pair');
+    for (const [label, url] of [['旧图', old.before], ['新图', next.after]]) {
+      const card = doc('figure');
+      const img = doc('img');
+      img.src = url;
+      img.alt = 'S100 传感器示意' + label;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.referrerPolicy = 'no-referrer';
+      const caption = doc('figcaption');
+      caption.append(safeLink(label + '原件', url), doc('span', '', ' · 日报 ' + old.date));
+      card.append(img, caption);
+      pair.append(card);
+    }
+    return pair;
   }
-  const reviewPriority=e=>priorityRank(caseCheck(e)?.priority||e.priority);
-  const queue=[...groups.values()].sort((a,b)=>reviewPriority(a)-reviewPriority(b)||newest(a,b));
-  const site=state.data.sites.find(s=>s.id===state.site);
-  const days=eventDays(scope);
-  const dateLabel=date||(days.length>1?days.at(-1)+' 至 '+days[0]:days[0]);
-  el('review-queue').hidden=(!queue.length&&!state.data.publicDecisions)||Boolean(state.thread);
-  el('review-count').textContent=[site?.label,dateLabel,queue.length+' 项已复核'].filter(Boolean).join(' · ');
-  if(el('review-queue').hidden) return;
-  const labels=new Map(state.data.sites.map(s=>[s.id,s.label]));
-  if(state.data.publicDecisions){
-    clean(el('review-list'),...showDecisions(queue,labels,date));
+  return null;
+}
+
+function renderHistoricalEvidence(event) {
+  const archived = event.before || event.after || event.action === '附件变更';
+  if (!archived) return null;
+  const wrapper = doc('div', 'case-evidence');
+  if (event.action === '附件变更') {
+    const list = doc('dl', 'case-document-table');
+    for (const [side, content] of [['变更前', event.before], ['变更后', event.after]]) {
+      const link = safeLink(side + '下载目标', content);
+      const description = link ? '原日报留有目标地址，缺当次文件、版本或校验值。' : content;
+      list.append(workbenchField(side + '文件', description || '原日报未留可对应的文件地址、文件或校验值。'));
+      if (link) wrapper.append(link);
+    }
+    wrapper.append(list);
+    return wrapper;
+  }
+  const before = historicalExcerpt(event.before);
+  const after = historicalExcerpt(event.after);
+  if (before && after && before !== after) {
+    const pair = doc('div', 'case-compare');
+    const compared = textDiffNodes(before, after);
+    for (const [index, label] of ['变更前摘录', '变更后摘录'].entries()) {
+      const side = doc('div');
+      side.append(doc('strong', '', label), compared[index]);
+      pair.append(side);
+    }
+    wrapper.append(pair);
+  } else if (before && before === after) {
+    wrapper.append(doc('p', 'case-data-note', '原日报前后保留同一摘录。'), doc('p', 'case-delta', before));
+  } else if (before || after) {
+    const display = doc('p', 'case-delta');
+    display.append(doc(before ? 'del' : 'ins', '', before || after));
+    const opposite = before ? event.after : event.before;
+    wrapper.append(doc('strong', '', before ? '变更前摘录' : '变更后摘录'), display,
+      doc('p', 'case-data-note', opposite || (before ? '缺少变更后摘录。' : '缺少变更前摘录。')));
+  } else {
+    for (const [label, value] of [['变更前', event.before], ['变更后', event.after]]) {
+      if (!value) continue;
+      const side = doc('p', 'case-data-note');
+      side.append(doc('strong', '', label + ' · '));
+      side.append(safeLink('原日报所列引用', value) || document.createTextNode(value));
+      wrapper.append(side);
+    }
+  }
+  return wrapper;
+}
+
+function currentAttachmentVersions(key) {
+  const rows = key === 'trion-installer' ? [
+    ['支持页公示版本', 'V1.000.D.0210.001'],
+    ['当前共用 ZIP', '安装程序资源版本 1.000.D.0210，另含三个 BIN 卷'],
+    ['香港站独立包', '安装程序文件名含 1.000.D.0204'],
+  ] : key === 'rm21-attachment' ? [
+    ['当前产品页', '190 kg（含电池），1330 × 853 × 980 mm'],
+    ['可下载 Combo 画册', '8 页，第 4 页标 170 kg，1330 × 853 × 980 mm'],
+    ['可下载用户说明书', '75 页，PDF 第 18 页标双电池 170 kg，1330 × 857 × 1012 mm'],
+  ] : [];
+  if (!rows.length) return null;
+  const comparison = doc('dl', 'case-document-table');
+  comparison.append(...rows.map(([label, value]) => workbenchField(label, value)));
+  return comparison;
+}
+
+function renderWorkbenchDetail(event, decision, {openEvent, openThread, caseEvents, siteLabel}) {
+  const key = reviewKey(event);
+  const check = caseCheck(event);
+  const date = check?.date;
+  const detail = doc('article', 'case-detail');
+  detail.id = 'case-' + key;
+  const header = doc('header', 'case-detail-header');
+  const kicker = doc('div', 'case-kicker');
+  kicker.append(doc('span', 'case-area', decision?.area || '资料复核'), doc('span', 'case-site', siteLabel));
+  header.append(kicker, doc('h2', 'case-title', workbenchCaseTitle(event)));
+  const summary = doc('section', 'case-decision');
+  summary.append(doc('h3', 'case-decision-label', '结论'), doc('p', 'case-conclusion', decision?.outcome || check?.finding || event.summary || event.title));
+  const points = doc('dl', 'case-decision-points');
+  if (decision?.basis) points.append(workbenchField('依据', decision.basis));
+  const next = (date === '2026-11-22' && workbenchNextAction.get(key)) || decision?.next;
+  if (next) points.append(workbenchField('下一步', next));
+  summary.append(points);
+  detail.append(header, summary);
+
+  const reportDates = [...new Set(caseEvents.map(record => record.date))];
+  const reportPeriod = reportDates.length > 1 ? reportDates[0] + ' 至 ' + reportDates.at(-1) : reportDates[0];
+  const historical = workbenchSection('历史变更', reportPeriod ? '日报 ' + reportPeriod : '');
+  if (check?.beforeAfter) historical.append(doc('p', '', check.beforeAfter));
+  const imagePair = workbenchImagePair(caseEvents, check);
+  if (imagePair) historical.append(imagePair);
+  const primary = caseEvents.find(record => historicalExcerpt(record.before) && historicalExcerpt(record.after) && record.before !== record.after)
+    || caseEvents.find(record => historicalExcerpt(record.before) || historicalExcerpt(record.after))
+    || caseEvents.find(record => record.action === '附件变更');
+  if (primary) historical.append(renderHistoricalEvidence(primary));
+  if (key === 'trion-installer') historical.append(doc('p', 'case-data-note', '11 月 17–19 日的原日报均指向同一 ZIP。各日文件和校验值无留存，不能确定独立更新次数。'));
+  if (key === 'home-visual') historical.append(doc('p', 'case-data-note', '留存的是图片引用地址，缺各日网页截图，无法还原当时的展示位置。'));
+
+  const current = workbenchSection('当前实查', date ? '复查 ' + date : '');
+  if (check) {
+    current.append(doc('p', '', check.finding));
+    const versions = date === '2026-11-22' && currentAttachmentVersions(key);
+    if (versions) current.append(versions);
+    if (check.evidence) current.append(doc('p', 'case-data-note', check.evidence));
+    if (check.observations?.length) {
+      const sources = doc('ul', 'evidence-list');
+      for (const item of check.observations) {
+        const row = doc('li');
+        const label = item.label || '公开来源';
+        row.append(safeLink(label, item.url) || doc('strong', '', label));
+        if (item.observation) row.append(doc('span', '', ' · ' + item.observation));
+        sources.append(row);
+      }
+      current.append(sources);
+    }
+    if (check.analysis) {
+      const analysis = doc('details', 'case-analysis');
+      analysis.append(doc('summary', '', '展开判断依据 · ' + check.analysis.type));
+      const grounds = doc('dl', 'analysis-points');
+      if (decision?.area === '知产风险' && check.priority) grounds.append(workbenchField('知产复核优先级', check.priority));
+      for (const [name, value] of [['可核对的事实', check.analysis.facts], ['判断条件', check.analysis.test],
+        ['处置依据', check.analysis.reason], ['改变判断的条件', check.analysis.threshold]]) {
+        if (value) grounds.append(workbenchField(name, value));
+      }
+      analysis.append(grounds);
+      current.append(analysis);
+    }
+    if (check.scopes?.length) {
+      const linkedSites = doc('details', 'case-scope-list');
+      linkedSites.append(doc('summary', '', '展开跨站实查 · ' + check.scopes.length + ' 项'));
+      const scopes = doc('ul', 'evidence-list');
+      for (const item of check.scopes) {
+        const row = doc('li');
+        row.append(safeLink(item.site, item.url) || doc('strong', '', item.site),
+          doc('span', 'case-data-note', ' · ' + [item.status, item.observation].filter(Boolean).join(' · ')));
+        scopes.append(row);
+      }
+      linkedSites.append(scopes);
+      current.append(linkedSites);
+    }
+  } else current.append(doc('p', 'case-data-note', '此事项暂无公开实查条目。'));
+
+  const related = workbenchSection('相关事件', caseEvents.length + ' 条原日报记录');
+  const records = doc('ul', 'case-records');
+  for (const record of caseEvents) {
+    const row = doc('li', 'case-event-row');
+    const stamp = doc('time', '', record.date);
+    stamp.dateTime = record.date;
+    const button = workbenchButton(record.title, () => openEvent(record.id), 'case-block-link');
+    row.append(stamp, button);
+    records.append(row);
+  }
+  related.append(records);
+  if (caseEvents.length > 1) related.append(workbenchButton('在变更档案查看这 ' + caseEvents.length + ' 条记录', () => openThread(key)));
+
+  const actions = doc('div', 'case-actions');
+  for (const [label, section] of [['查看证据', check && current], ['查看相关事件', caseEvents.length > 1 && related]]) {
+    if (!section) continue;
+    actions.append(workbenchButton(label, () => {
+      section.tabIndex = -1;
+      section.focus({preventScroll:true});
+      section.scrollIntoView({block:'start'});
+    }));
+  }
+  const first = check?.observations?.[0];
+  const link = safeLink(first?.label || '打开关联页面', first?.url || event.page);
+  if (link) actions.append(link);
+  if (actions.childElementCount) summary.append(actions);
+  detail.append(historical, current, related);
+  return detail;
+}
+
+const routeParams = {
+  view:'view', caseKey:'case', category:'category', mobile:'mobile',
+  site:'site', date:'date', query:'q', type:'type', risk:'risk', thread:'thread', eventId:'event'
+};
+const defaultRoute = {
+  view:'review', caseKey:'', category:'', mobile:'home',
+  site:'', date:'', query:'', type:'', risk:'', thread:'', eventId:''
+};
+const archiveFields = new Map([['site','site'],['date','date'],['search','query'],['type','type'],['risk','risk']]);
+const legacyArchive = new Set(['archive-view','site-overview','scope-title','timeline','sites','scope-note','search','date','type','risk']);
+const narrowWorkspace = window.matchMedia('(max-width: 700px)');
+const positionsKey = 'fjd-site-history:view-positions';
+const titlesBySite = () => new Map(state.data.sites.map(site=>[site.id,site.label]));
+let route;
+let queueFingerprint;
+let detailFingerprint=null;
+let scrollTimer;
+let queueMobileScroll = 0;
+
+function formatPeriod(dates) {
+  return dates.length>1?dates.at(-1)+' 至 '+dates[0]:dates[0]||'';
+}
+
+function workbenchEntries() {
+  const entries = new Map();
+  for(const event of [...state.data.events].sort(newest)) {
+    const key=reviewKey(event);
+    if(!entries.has(key)&&(caseCheck(event)||(event.ipReview&&event.ipReview.queue!==false))) entries.set(key,event);
+  }
+  return entries;
+}
+
+function readRoute() {
+  const url = new URL(location.href);
+  const values = {...defaultRoute};
+  for(const [field,param] of Object.entries(routeParams)) {
+    if(url.searchParams.has(param)) values[field]=url.searchParams.get(param);
+  }
+  let anchor='';
+  try { anchor=decodeURIComponent(url.hash.slice(1)); } catch { /* Malformed anchors do not change the view. */ }
+  if(anchor) {
+    const cases=workbenchEntries();
+    const caseKey=cases.has(anchor)?anchor:anchor.startsWith('case-')?anchor.slice(5):'';
+    const eventId=anchor.startsWith('event-')?anchor.slice(6):anchor;
+    const event=state.data.events.find(item=>item.id===eventId);
+    if(cases.has(caseKey)&&!anchor.startsWith('event-')) {
+      Object.assign(values,{view:'review',caseKey,mobile:'detail'});
+    } else if(event) {
+      Object.assign(values,{view:'archive',site:'',date:'',query:'',type:'',risk:'',thread:event.thread||'',eventId:event.id});
+    } else if(legacyArchive.has(anchor)) {
+      values.view='archive';
+    } else if(['review-queue','review-list','review-detail'].includes(anchor)) {
+      values.view='review';
+    }
+  }
+  return values;
+}
+
+function normalizeRoute(values) {
+  const next={...values};
+  if(next.view!=='archive') next.view='review';
+  if(!['home','queue','detail'].includes(next.mobile)) next.mobile='home';
+  if(!decisionAreas.has(next.category)) next.category='';
+  if(!state.data.sites.some(site=>site.id===next.site)) next.site='';
+  if(!eventDays(state.data).includes(next.date)) next.date='';
+  if(!['变更','复核观察','基线快照','采集异常','无变更'].includes(next.type)) next.type='';
+  if(!['review','lower','unknown','stable'].includes(next.risk)) next.risk='';
+  if(!state.data.events.some(event=>event.thread===next.thread||reviewKey(event)===next.thread)) next.thread='';
+  if(!state.data.events.some(event=>event.id===next.eventId)) next.eventId='';
+  if(!workbenchEntries().has(next.caseKey)) next.caseKey='';
+  return next;
+}
+
+function routeURL(next) {
+  const url=new URL(location.href);
+  url.hash='';
+  for(const [field,param] of Object.entries(routeParams)) {
+    if(next[field]===defaultRoute[field]) url.searchParams.delete(param);
+    else url.searchParams.set(param,next[field]);
+  }
+  return url;
+}
+
+function scrollPositions() {
+  return {
+    page:window.scrollY,
+    queue:el('review-queue-panel').scrollTop,
+    detail:el('review-detail').scrollTop,
+    queueMobile:queueMobileScroll
+  };
+}
+
+function storedPositions() {
+  try { return JSON.parse(sessionStorage.getItem(positionsKey)||'{}')||{}; }
+  catch { return {}; }
+}
+
+function saveViewPosition() {
+  if(!route) return;
+  if(route.view==='review'&&route.mobile==='queue'&&narrowWorkspace.matches) queueMobileScroll=window.scrollY;
+  const position=scrollPositions();
+  history.replaceState({...history.state,fjdPosition:position},'');
+  try {
+    const key=location.pathname+location.search+location.hash;
+    const entries=Object.entries({...storedPositions(),[key]:position}).slice(-32);
+    sessionStorage.setItem(positionsKey,JSON.stringify(Object.fromEntries(entries)));
+  } catch { /* Browser navigation keeps positions even if session storage is unavailable. */ }
+}
+
+function applyViewPosition(position, target) {
+  requestAnimationFrame(()=>{
+    if(position) {
+      queueMobileScroll=position.queueMobile||0;
+      el('review-queue-panel').scrollTop=position.queue||0;
+      el('review-detail').scrollTop=position.detail||0;
+      window.scrollTo(0,position.page||0);
+    }
+    if(target) {
+      const node=document.getElementById(target);
+      node?.scrollIntoView({block:'start'});
+      node?.querySelector('summary')?.focus({preventScroll:true});
+    }
+  });
+}
+
+function navigate(patch,{replace=false,resetPage=false,target=''}={}) {
+  clearTimeout(scrollTimer);
+  saveViewPosition();
+  const position=scrollPositions();
+  const before=route;
+  const next=normalizeRoute({...before,...patch});
+  const url=routeURL(next);
+  const viewChanged=before.view!==next.view;
+  const modeChanged=before.mobile!==next.mobile&&narrowWorkspace.matches;
+  const selectionChanged=before.caseKey!==next.caseKey;
+  const reset=resetPage||viewChanged||modeChanged||(selectionChanged&&narrowWorkspace.matches);
+  if(reset) position.page=next.view==='review'&&next.mobile==='queue'&&narrowWorkspace.matches?queueMobileScroll:0;
+  if(selectionChanged) position.detail=0;
+  if(target) position.page=0;
+  const previousEntry=storedPositions()[url.pathname+url.search];
+  const restore=target?position:viewChanged&&previousEntry?previousEntry:position;
+  if(url.href===location.href) history.replaceState({...history.state,fjdPosition:restore},'',url);
+  else if(replace) history.replaceState({fjdPosition:restore},'',url);
+  else history.pushState({fjdPosition:restore},'',url);
+  route=next;
+  renderWorkbenchApp();
+  applyViewPosition(restore,target);
+}
+
+function selectWorkbenchCase(caseKey) {
+  const entry=workbenchEntries().get(caseKey);
+  if(!entry) return;
+  const area=caseDecision(entry).area;
+  navigate({view:'review',caseKey,mobile:'detail',category:route.category===area?area:''});
+}
+
+function openEvent(eventId) {
+  const event=state.data.events.find(row=>row.id===eventId);
+  if(!event) return;
+  navigate({view:'archive',site:'',date:'',query:'',type:'',risk:'',thread:reviewKey(event),eventId},
+    {target:'event-'+eventId});
+}
+
+function openThread(thread) {
+  navigate({view:'archive',site:'',date:'',query:'',type:'',risk:'',thread,eventId:''},{resetPage:true});
+}
+
+function caseDecision(event) {
+  return state.data.publicDecisions?.cases?.[reviewKey(event)]||{
+    area:'资料复核',outcome:caseCheck(event)?.finding||event.ipReview?.assessment||event.summary||event.title,
+    basis:caseCheck(event)?.evidence||event.ipReview?.judgment||'',next:''
+  };
+}
+
+function queueButton(event, featured, labels) {
+  const key=reviewKey(event);
+  const area=caseDecision(event).area;
+  const button=doc('button','review-row');
+  const heading=doc('span','review-row-heading');
+  heading.append(doc('span','review-row-title',workbenchCaseTitle(event)));
+  if(featured) heading.append(doc('span','review-row-state','本期关注'));
+  const meta=doc('span','review-row-meta');
+  const type=doc('span','review-row-type',area);
+  type.dataset.area=area;
+  meta.append(doc('span','',labels.get(event.siteId)),type);
+  button.append(heading,meta);
+  button.type='button';
+  button.dataset.caseId=key;
+  button.dataset.area=area;
+  button.addEventListener('click',()=>selectWorkbenchCase(key));
+  return button;
+}
+
+function renderReviewWorkspace() {
+  const entries=workbenchEntries();
+  const featured=(state.data.publicDecisions?.featured||[]).filter(key=>entries.has(key));
+  const keys=[...featured,...[...entries.keys()].filter(key=>!featured.includes(key))];
+  const visible=keys.filter(key=>!route.category||caseDecision(entries.get(key)).area===route.category);
+  const selected=visible.includes(route.caseKey)?route.caseKey:visible[0];
+  const labels=titlesBySite();
+  const period=formatPeriod(eventDays(state.data));
+  el('review-count').textContent=[period,`${keys.length} 项复核`].filter(Boolean).join(' · ');
+  el('review-filter').value=route.category;
+  el('review-layout').dataset.mode=route.mobile;
+  const mobileToggle=el('review-mobile-toggle');
+  mobileToggle.textContent={home:'查看事项列表',queue:'返回当前事项',detail:'返回事项列表'}[route.mobile];
+  mobileToggle.setAttribute('aria-controls',route.mobile==='queue'?'review-detail':'review-queue-panel');
+
+  const nextFingerprint=JSON.stringify(visible);
+  if(nextFingerprint!==queueFingerprint) {
+    queueFingerprint=nextFingerprint;
+    const rows=visible.map(key=>queueButton(entries.get(key),featured.includes(key),labels));
+    if(!rows.length) rows.push(doc('p','review-empty',keys.length?'此类型暂无复核事项。':'载入日报数据后可查看复核事项。'));
+    clean(el('review-list'),...rows);
+  }
+  for(const button of el('review-list').querySelectorAll('button[data-case-id]')) {
+    if(button.dataset.caseId===selected) button.setAttribute('aria-current','true');
+    else button.removeAttribute('aria-current');
+  }
+  if(detailFingerprint===selected) return;
+  detailFingerprint=selected;
+  const event=entries.get(selected);
+  if(!event) {
+    clean(el('review-detail'),doc('p','review-empty',keys.length?'选择其他类型查看复核结论。':'当前没有预载日报。'));
     return;
   }
-  clean(el('review-list'),...queue.map(event=>{
-    const check=caseCheck(event);
-    const card=doc('article','panel review-card');
-    const title=event.threadLabel||event.title;
-    card.append(doc('h3','',title));
-    const button=doc('button','','查看日报轨迹');
-    button.type='button';
-    button.setAttribute('aria-label','查看'+title+'的日报轨迹');
-    button.addEventListener('click',()=>openReview(event));
-    if(check){
-      card.append(...currentCheckSummary(check));
-      card.append(doc('p','row-mini','日报 '+event.date+' · '+(labels.get(event.siteId)||'')+' · 实查 '+check.date));
-      const evidence=doc('details','current-check');
-      const detailsLabel=check.analysis?'查看知产判断过程与实查证据':'查看前后变化、实查证据与联动';
-      evidence.append(doc('summary','',detailsLabel),currentCheckDetails(check));
-      card.append(evidence,button);
-      return card;
-    }
-    const review=event.ipReview;
-    const checks=Array.isArray(review.scopeChecks)?review.scopeChecks.filter(Boolean):[];
-    const targets=[...new Set(checks.map(c=>c.scope).filter(Boolean))];
-    card.append(doc('p','row-mini',event.date+' · '+(labels.get(event.siteId)||'')+' · '+(review.topic||'知产线索')));
-    if(review.riskType) card.append(reviewField('风险类型',review.riskType));
-    if(review.assessment) card.append(reviewField('初步评估',review.assessment));
-    if(review.evidenceGap) card.append(reviewField('证据缺口',review.evidenceGap,true));
-    if(event.priority&&event.priority!=='不适用') card.append(badge(event.priority==='证据不足'?event.priority:event.priority+'优先级',priorityTone(event.priority)));
-    if(review.disposition) card.append(doc('p','',review.disposition));
-    if(targets.length) card.append(doc('p','row-mini','联动核对 · '+targets.join('、')));
-    card.append(button);
-    return card;
-  }));
+  const caseEvents=state.data.events.filter(row=>reviewKey(row)===selected).sort(newest).reverse();
+  const content=renderWorkbenchDetail(event,caseDecision(event),{
+    openEvent,openThread,selectCase:selectWorkbenchCase,caseEvents,siteLabel:labels.get(event.siteId)
+  });
+  clean(el('review-detail'),content);
 }
-function numbered(scope) {
-  const dates=eventDays(scope);
-  const review=scope.events.filter(reviewSignal).length;
-  const unknown=scope.events.filter(e=>e.risk==='无法判断'||e.priority==='证据不足').length;
-  const failed=scope.events.filter(e=>e.type==='采集异常').length;
-  clean(el('metrics'),...[['已收录日期',dates.length],['新增线索或风险升高',review],['历史判断未定',unknown],['采集异常',failed]].map(([title,value])=>{
-    const node=doc('div','panel metric');
-    node.append(doc('span','',title),doc('strong','',value));
-    return node;
-  }));
-  return dates;
+
+function archiveNeedsHistory(event) {
+  return event.risk==='无法判断'||event.priority==='证据不足';
 }
-function eventCard(event, siteLabels) {
-  const check=caseCheck(event);
+
+function updateOptions(select, choices, selected) {
+  const index=JSON.stringify(choices);
+  if(select.dataset.options!==index) {
+    clean(select,...choices.map(([label,value])=>new Option(label,value)));
+    select.dataset.options=index;
+  }
+  select.value=selected;
+}
+
+function archiveCard(event, siteLabels, hasCase) {
   const card=doc('details','panel entry');
+  card.id='event-'+event.id;
   card.dataset.eventId=event.id;
+  card.open=route.eventId===event.id;
+  card.addEventListener('toggle',()=>{
+    if(!card.isConnected||route.view!=='archive') return;
+    const eventId=card.open?event.id:route.eventId===event.id?'':route.eventId;
+    if(eventId===route.eventId) return;
+    route={...route,eventId};
+    history.replaceState(history.state,'',routeURL(route));
+    saveViewPosition();
+  });
   const summary=doc('summary');
   const top=doc('div','row-head');
   top.append(doc('strong','',event.title),doc('span','toggle'));
   const tags=doc('div','tags');
   tags.append(badge(event.action||event.type));
-  if(event.signalChange) tags.append(badge(event.signalChange,'blue'));
-  if(check) tags.append(badge('有当前实查','blue'));
-  else{
-    if(event.risk&&event.risk!=='不适用') tags.append(badge('历史风险变化 · '+event.risk,riskTone(event.risk)));
-    if(event.priority&&event.priority!=='不适用') tags.append(badge(event.priority==='证据不足'?event.priority:event.priority+'优先级',priorityTone(event.priority)));
-  }
+  if(event.signalChange) tags.append(badge(event.signalChange));
+  if(archiveNeedsHistory(event)) tags.append(badge('历史证据未齐'));
+  else if(event.risk&&event.risk!=='不适用') tags.append(badge('历史风险变化 · '+event.risk));
   summary.append(top,doc('div','row-mini',[siteLabels.get(event.siteId),event.page].filter(Boolean).join(' · ')),tags);
   if(event.summary) summary.append(doc('p','summary-text',event.summary));
   card.append(summary);
   const detail=doc('div','detail');
-  if (event.before || event.after) {
-    const pair=doc('div','comparison');
-    for (const [label,value] of [['变更前',event.before],['变更后',event.after]]) {
-      const cell=doc('div');
-      cell.append(doc('strong','',label),document.createTextNode(value||'缺少对应证据'));
-      pair.append(cell);
-    }
-    detail.append(pair);
-  }
-  const meta=[event.confidence?'证据 '+event.confidence:'',event.reviewStatus?'复核 '+event.reviewStatus:'',event.source?'来源 '+event.source:''].filter(Boolean);
+  const historical=renderHistoricalEvidence(event,caseCheck(event));
+  if(historical) detail.append(historical);
+  const meta=[event.confidence?'证据 '+event.confidence:'',event.source?'来源 '+event.source:''].filter(Boolean);
   if(meta.length) detail.append(doc('p','row-mini',meta.join(' · ')));
-  if(check&&Object.hasOwn(state.data.publicDecisions?.cases||{},reviewKey(event))){
-    const view=doc('button','current-case-open','查看处置结论和当前实查');
+  const links=(event.links||[]).map(link=>link&&safeLink(link.label||'打开来源',link.url)).filter(Boolean);
+  if(links.length) {
+    const row=doc('div','detail-links');
+    row.append(...links);
+    detail.append(row);
+  }
+  const actions=doc('div','archive-actions');
+  if(hasCase) {
+    const view=doc('button','current-case-open','打开复核事项');
     view.type='button';
-    view.addEventListener('click',()=>{
-      state.thread='';
-      const target=reviewKey(event);
-      el('date').value='';
-      render();
-      const list=el('review-list');
-      const card=[...list.querySelectorAll('article')].find(item=>item.dataset.caseId===target);
-      if(!card) return;
-      const others=list.querySelector('.other-reviews');
-      if(others?.contains(card)) others.open=true;
-      const evidence=card.querySelector('details');
-      evidence.open=true;
-      evidence.querySelector('summary').focus();
-    });
-    detail.append(view);
-  }else if(check) detail.append(...currentCheckSummary(check),currentCheckDetails(check));
-  else if(event.ipReview&&typeof event.ipReview==='object') detail.append(reviewDetails(event.ipReview));
-  if(Array.isArray(event.checks)&&event.checks.length){
-    const checklist=doc('div');
-    const list=doc('ul');
-    for (const value of event.checks) list.append(doc('li','',value));
-    checklist.append(doc('strong','','复核事项'),list);
-    detail.append(checklist);
+    view.addEventListener('click',()=>selectWorkbenchCase(reviewKey(event)));
+    actions.append(view);
   }
-  if(event.thread){
-    const related = state.data.events.filter(item=>item.thread===event.thread);
-    if(related.length>1 && state.thread!==event.thread){
-      const control=doc('button','thread-open','查看关联轨迹（'+related.length+' 条）');
-      control.type='button';
-      control.addEventListener('click',()=>{
-        state.thread=event.thread;
-        for(const id of ['search','date','type','risk']) el(id).value='';
-        render();
-        el('reset-thread').focus({preventScroll:true});
-      });
-      detail.append(control);
-    }
+  const related=event.thread?state.data.events.filter(item=>item.thread===event.thread).length:0;
+  if(related>1&&route.thread!==event.thread) {
+    const control=doc('button','thread-open',`查看同事项记录（${related} 条）`);
+    control.type='button';
+    control.addEventListener('click',()=>openThread(event.thread));
+    actions.append(control);
   }
-  const options=Array.isArray(event.links)?event.links:[];
-  const links=options.map(item=>item&&safeLink(item.label||'查看来源',item.url)).filter(Boolean);
-  if(links.length){const row=doc('div','detail-links');row.append(...links);detail.append(row);}
+  if(actions.childElementCount) detail.append(actions);
   card.append(detail);
   return card;
 }
-function render(resetDate=false) {
-  if(resetDate){reportState();nav();}
+
+function renderArchive() {
+  const site=state.data.sites.find(item=>item.id===route.site);
+  const labels=titlesBySite();
   const scope=filteredScope();
-  const site=state.data.sites.find(s=>s.id===state.site);
+  const dates=eventDays(scope);
+  const dateChoices=route.date&&!dates.includes(route.date)?[...dates,route.date].sort().reverse():dates;
+  const allDates=eventDays(state.data);
   el('scope-title').textContent=site?.label||'全部站点';
-  el('scope-note').textContent=site?.note||'覆盖数据沿用原日报的统计范围。';
-  const dates=numbered(scope);
-  const range=dates.length>1?dates.at(-1)+' 至 '+dates[0]:dates[0];
-  el('scope-subtitle').textContent=[site?.host,range?('已载入 '+range):'暂无可核验记录'].filter(Boolean).join(' · ');
-  if(resetDate){
-    const selected=el('date').value;
-    clean(el('date'),new Option('所有日期',''),...dates.map(day=>new Option(day,day)));
-    if(dates.includes(selected))el('date').value=selected;
-  }
-  reviewQueue(scope);
-  const query=el('search').value.trim().toLocaleLowerCase();
-  const type=el('type').value;
-  const date=el('date').value;
-  const risk=el('risk').value;
-  const selectedThread=scope.events.find(item=>item.thread===state.thread);
+  el('scope-subtitle').textContent=[site?.host,formatPeriod(allDates)].filter(Boolean).join(' · ');
+  updateOptions(el('site'),[['全部站点',''],...state.data.sites.map(entry=>[entry.label,entry.id])],route.site);
+  updateOptions(el('date'),[['所有日期',''],...dateChoices.map(day=>[day,day])],route.date);
+  for(const [id,field] of archiveFields) if(id!=='site'&&id!=='date'&&el(id).value!==route[field]) el(id).value=route[field];
+  const selectedThread=state.data.events.find(item=>reviewKey(item)===route.thread);
   el('thread-filter').hidden=!selectedThread;
-  el('thread-title').textContent=selectedThread?'关联轨迹 · '+(selectedThread.threadLabel||selectedThread.title):'';
-  const results=scope.events.filter(e=>{
-    const check=caseCheck(e);
-    const matchesRisk = !risk || (risk==='review'&&reviewSignal(e)) ||
-      (risk==='lower'&&e.risk==='降低') || (risk==='unknown'&&(e.priority==='证据不足'||e.risk==='无法判断')) ||
-      (risk==='stable'&&e.risk==='不变');
-    return matchesRisk && (!state.thread||e.thread===state.thread) && (!date||e.date===date) && (!type||e.type===type) &&
-      (!query||[e.title,e.summary,e.page,e.before,e.after,e.source,e.reviewStatus,e.signalChange,
-        check?.finding,check?.beforeAfter,...analysisFields.map(field=>check?.analysis?.[field]),
-        e.ipReview?.riskType,e.ipReview?.assessment,e.ipReview?.evidenceGap,...(Array.isArray(e.pages)?e.pages:[])
-      ].filter(Boolean).join(' ').toLocaleLowerCase().includes(query));
+  el('thread-title').textContent=selectedThread?'同事项记录 · '+workbenchCaseTitle(selectedThread):'';
+  const query=route.query.trim().toLocaleLowerCase();
+  const results=scope.events.filter(event=>{
+    const matchesRisk=!route.risk||(route.risk==='review'&&reviewSignal(event))||
+      (route.risk==='lower'&&event.risk==='降低')||(route.risk==='unknown'&&archiveNeedsHistory(event))||
+      (route.risk==='stable'&&event.risk==='不变');
+    return matchesRisk&&(!route.thread||reviewKey(event)===route.thread)&&
+      (!route.date||event.date===route.date)&&(!route.type||event.type===route.type)&&
+      (!query||[event.title,event.summary,event.page,event.before,event.after,event.source,event.threadLabel,event.signalChange,
+        labels.get(event.siteId),...(Array.isArray(event.pages)?event.pages:[])]
+        .filter(Boolean).join(' ').toLocaleLowerCase().includes(query));
   });
-  const windows=(!query&&!risk&&!type&&!state.thread) ? scope.windows.filter(w=>!date||w.date===date) : [];
+  const windows=(!query&&!route.risk&&!route.type&&!route.thread)?scope.windows.filter(item=>!route.date||item.date===route.date):[];
   const visibleDates=eventDays({events:results,windows});
-  const labels=new Map(state.data.sites.map(s=>[s.id,s.label]));
-  if(!visibleDates.length){
+  el('metrics').textContent=[`${results.length} 条记录`,`${windows.length} 个覆盖窗口`,
+    `${results.filter(item=>item.type==='采集异常').length} 条采集异常`,
+    `${results.filter(archiveNeedsHistory).length} 条历史证据未齐`].join(' · ');
+  if(!visibleDates.length) {
     const box=doc('div','panel empty');
-    const label=dates.length?'未找到符合筛选条件的记录':'暂无日报记录';
-    const hint=dates.length?'调整日期、风险或搜索条件后可查看其他记录。':
-      site?.note||'载入日报数据后，可按站点和日期查看变化。';
-    box.append(doc('strong','',label),doc('p','',hint));
-    if(site?.host){
-      const entry=safeLink('官网入口','https://'+site.host+'/');
-      if(entry){const p=doc('p');p.append(entry);box.append(p);}
-    }
+    box.append(doc('strong','',dates.length?'未找到符合筛选条件的记录':'暂无日报记录'),
+      doc('p','',dates.length?'调整站点、日期、类型或搜索条件后可查看其他记录。':site?.note||'载入日报数据后，可按站点和日期查看变化。'));
+    const entry=site?.host&&safeLink('打开官网','https://'+site.host+'/');
+    if(entry) box.append(entry);
     clean(el('timeline'),box);
     return;
   }
+  const cases=workbenchEntries();
   clean(el('timeline'),...visibleDates.map(day=>{
     const group=doc('section','day');
     const heading=doc('h3','day-heading');
     const time=doc('time','',day);
     time.dateTime=day;
-    const items=results.filter(e=>e.date===day).sort((a,b)=>priorityRank(a.priority)-priorityRank(b.priority));
-    heading.append(time,doc('span','count',items.length+' 条记录'));
+    const rows=results.filter(event=>event.date===day);
+    heading.append(time,doc('span','count',`${rows.length} 条记录`));
     group.append(heading);
-    const dayWindows=windows.filter(w=>w.date===day);
-    if(dayWindows.length){
+    const dayWindows=windows.filter(item=>item.date===day);
+    if(dayWindows.length) {
       const box=doc('div','coverage');
-      dayWindows.forEach(w=>{
-        const line=doc('p','',[labels.get(w.siteId),w.coverage,w.summary].filter(Boolean).join(' · '));
-        const source=w.link&&safeLink(w.link.label,w.link.url);
+      for(const item of dayWindows) {
+        const line=doc('p','',[labels.get(item.siteId),item.coverage,item.summary].filter(Boolean).join(' · '));
+        const source=item.link&&safeLink(item.link.label,item.link.url);
         if(source) line.append(document.createTextNode(' '),source);
         box.append(line);
-      });
+      }
       group.append(box);
     }
-    if(items.length){const list=doc('div','entries');list.append(...items.map(e=>eventCard(e,labels)));group.append(list);}
+    if(rows.length) {
+      const list=doc('div','entries');
+      list.append(...rows.map(event=>archiveCard(event,labels,cases.has(reviewKey(event)))));
+      group.append(list);
+    }
     return group;
   }));
 }
+
+function renderWorkbenchApp() {
+  const isArchive=route.view==='archive';
+  state.site=route.site;
+  el('archive-view').hidden=!isArchive;
+  el('review-queue').hidden=isArchive;
+  el('nav-archive').setAttribute('aria-current',isArchive?'page':'false');
+  el('nav-review').setAttribute('aria-current',isArchive?'false':'page');
+  if(isArchive) renderArchive();
+  else renderReviewWorkspace();
+}
+
+function useLocation() {
+  clearTimeout(scrollTimer);
+  route=normalizeRoute(readRoute());
+  renderWorkbenchApp();
+  const key=location.pathname+location.search+location.hash;
+  const position=history.state?.fjdPosition||storedPositions()[key];
+  let anchor='';
+  try { anchor=decodeURIComponent(location.hash.slice(1)); } catch { /* Ignore malformed anchors. */ }
+  const target=!position&&route.view==='archive'?(route.eventId?'event-'+route.eventId:legacyArchive.has(anchor)?anchor:''):'';
+  applyViewPosition(position||{page:0,queue:0,detail:0,queueMobile:queueMobileScroll},target);
+}
+
+function scheduleSavePosition() {
+  clearTimeout(scrollTimer);
+  scrollTimer=setTimeout(saveViewPosition,80);
+}
+
+history.scrollRestoration='manual';
+window.addEventListener('scroll',scheduleSavePosition,{passive:true});
+for(const pane of ['review-queue-panel','review-detail']) el(pane).addEventListener('scroll',scheduleSavePosition,{passive:true});
+window.addEventListener('pagehide',saveViewPosition);
+window.addEventListener('popstate',useLocation);
+window.addEventListener('hashchange',useLocation);
+el('nav-review').addEventListener('click',()=>{if(route.view!=='review') navigate({view:'review'});});
+el('nav-archive').addEventListener('click',()=>{if(route.view!=='archive') navigate({view:'archive'});});
+el('review-mobile-toggle').addEventListener('click',()=>navigate({mobile:route.mobile==='queue'?'detail':'queue'}));
+el('review-filter').addEventListener('change',event=>navigate({category:event.target.value}));
+el('reset-thread').addEventListener('click',()=>navigate({thread:'',eventId:''}));
+for(const [id,field] of archiveFields) {
+  const live=id==='search';
+  el(id).addEventListener(live?'input':'change',event=>{
+    navigate({[field]:event.target.value,eventId:''},{replace:live});
+  });
+}
+
 el('file').addEventListener('change',async event=>{
   let count=0;
   const errors=[];
-  for(const file of event.target.files){
-    try {merge(normalize(JSON.parse((await file.text()).replace(/^\uFEFF/,''))));count++;}
-    catch(error){errors.push(file.name+' · '+error.message);}
+  for(const file of event.target.files) {
+    try { merge(normalize(JSON.parse((await file.text()).replace(/^\uFEFF/,''))));count++; }
+    catch(error) { errors.push(file.name+' · '+error.message); }
   }
-  el('status').textContent=[count?('已载入 '+count+' 份日报数据文件'):'',...errors].filter(Boolean).join('；');
+  el('status').textContent=[count?`已载入 ${count} 份日报数据文件`:'',...errors].filter(Boolean).join('；');
   event.target.value='';
-  render(true);
+  if(count) { queueFingerprint=undefined; detailFingerprint=null; }
+  navigate({view:'archive'},{resetPage:true});
 });
 el('open-import').addEventListener('click',()=>el('file').click());
 el('open-method').addEventListener('click',()=>el('method').showModal());
 el('close-method').addEventListener('click',()=>el('method').close());
-el('reset-thread').addEventListener('click',()=>{state.thread='';render();el('search').focus({preventScroll:true});});
-for(const field of ['date','type','risk'])el(field).addEventListener('change',()=>render());
-el('search').addEventListener('input',()=>render());
 merge(normalize(JSON.parse(el('seed').textContent)));
-render(true);
+useLocation();
+
 </script>
 </body>
 </html>
