@@ -648,6 +648,39 @@ dialog ol { padding-left:1.38rem }
   line-height: 1.24;
 }
 
+.ip-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin: 0 0 14px;
+}
+
+.ip-filter-field {
+  display: grid;
+  flex: 0 1 315px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.ip-filter-field > span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.ip-filter-field > select {
+  min-width: 0;
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: var(--card);
+}
+
 .ip-daily-heading p, .ip-day-meta, .ip-site-label, .ip-page-path, .ip-source-note {
   color: var(--muted);
   font-size: 12px;
@@ -752,10 +785,12 @@ dialog ol { padding-left:1.38rem }
   background: var(--wash);
 }
 
-.ip-event-fact h4 {
-  margin: 2px 0 4px;
-  font-size: 14px;
-  line-height: 1.48;
+.ip-event-section-title {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 650;
 }
 
 .ip-event p, .ip-event dd, .ip-source-note, .ip-coverage li, .ip-day-empty {
@@ -775,6 +810,7 @@ dialog ol { padding-left:1.38rem }
 
 .ip-page-path {
   display: block;
+  margin-top: 4px;
   overflow-wrap: anywhere;
 }
 
@@ -807,9 +843,29 @@ dialog ol { padding-left:1.38rem }
   color: var(--ink);
 }
 
+.ip-event-fact .ip-change-summary {
+  font-weight: 650;
+}
+
+.ip-record-detail {
+  margin-top: 6px;
+}
+
+.ip-record-detail > summary {
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.ip-record-depth {
+  margin-top: 5px;
+  padding-top: 3px;
+  border-top: 1px solid var(--line);
+}
+
 .ip-risk-fields {
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
+  grid-template-columns: minmax(53px, max-content) minmax(0, 1fr);
   gap: 3px 8px;
   margin: 5px 0 0;
 }
@@ -822,10 +878,14 @@ dialog ol { padding-left:1.38rem }
 }
 
 .ip-sources {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 10px;
+  display: grid;
+  gap: 3px;
   margin-top: 6px;
+}
+
+.ip-event .ip-source-note {
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .ip-record-links {
@@ -859,6 +919,18 @@ dialog ol { padding-left:1.38rem }
   color: var(--muted);
 }
 
+.ip-site-empty {
+  padding: 6px 9px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ip-day-coverage > .ip-events {
+  margin-top: 7px;
+}
+
 .ip-case-reference {
   overflow: hidden;
 }
@@ -871,6 +943,14 @@ dialog ol { padding-left:1.38rem }
   .ip-daily-heading {
     gap: 2px 8px;
     margin-bottom: 11px;
+  }
+
+  .ip-filters {
+    gap: 7px;
+  }
+
+  .ip-filter-field {
+    flex-basis: 100%;
   }
 
   .ip-day > summary {
@@ -904,13 +984,6 @@ dialog ol { padding-left:1.38rem }
 <header>
   <div class="top">
     <h1><span class="brand-icon" aria-hidden="true"><span></span></span>官网变更与风险轨迹</h1>
-    <details class="top-actions">
-      <summary>工具</summary>
-      <div class="tools-menu">
-        <button id="open-method" type="button">评估口径</button>
-        <button id="open-import" type="button">载入日报数据</button>
-      </div>
-    </details>
     <input id="file" type="file" accept=".json,application/json" multiple hidden aria-label="选择日报数据 JSON">
   </div>
 </header>
@@ -973,6 +1046,13 @@ dialog ol { padding-left:1.38rem }
   <details id="site-coverage" class="site-coverage" aria-labelledby="site-coverage-title">
     <summary><span id="site-coverage-title">站点范围</span><span id="site-coverage-count" class="coverage-count"></span></summary>
     <div id="site-coverage-body" class="coverage-body"></div>
+  </details>
+  <details class="archive-view" id="ip-reference-tools">
+    <summary>工具</summary>
+    <div class="archive-body">
+      <button id="open-method" type="button">评估口径</button>
+      <button id="open-import" type="button">载入日报数据</button>
+    </div>
   </details>
 </main>
 <dialog id="method" aria-labelledby="method-title">
@@ -2005,7 +2085,9 @@ const ipTrends = new Map([
   ['覆盖记录', 'quiet'],
 ]);
 
-let ipDailyLastData;
+let ipDailyView;
+let ipDailyDates = new Set();
+let ipDailyDomains = new Set();
 
 function ipPublicHost(value) {
   try {
@@ -2027,15 +2109,14 @@ function ipPublicText(value) {
 
 function ipSourceContext(event, entry, provenance) {
   const a = provenance.a?.[event.id] || entry.sourceA;
-  const b = provenance.b?.[event.id] || entry.sourceB || provenance.b?.[event.date];
+  const b = provenance.b?.[event.id] || entry.sourceB;
   const aLocator = ipPublicText(typeof a === 'string' ? a : a?.locator) || ipPublicText(event.source);
   const bLocator = ipPublicText(typeof b === 'string' ? b : b?.locator);
-  const aState = a?.verified === true ? '已关联原日报' : '未关联原日报';
-  const bState = b?.verified === true ? '已关联分析日报' : '未关联分析日报';
-  return [
-    ['A 原始变更', aState, aLocator].filter(Boolean).join(' · '),
-    ['B 风险分析', bState, bLocator].filter(Boolean).join(' · '),
-  ];
+  const aLine = a?.verified === true ? aLocator : ['未关联原日报', aLocator].filter(Boolean).join(' · ');
+  const bLine = b?.verified === true ? bLocator : '未关联分析日报';
+  const sources = ['原始监控日报：' + aLine];
+  if (b?.verified === true || !['采集异常', '无变更'].includes(event.type)) sources.push('同日风险评估日报：' + bLine);
+  return sources;
 }
 
 function ipSourceLink(label, url) {
@@ -2044,14 +2125,16 @@ function ipSourceLink(label, url) {
 
 function ipFields(entry) {
   const fields = doc('dl', 'ip-risk-fields');
+  const steps = Array.isArray(entry.analysisSteps) ? entry.analysisSteps : [];
   for (const [label, value] of [
-    ['关键理由', entry.reason],
-    ['建议动作', entry.action],
+    ['判断理由', entry.reason],
+    ...steps.map(step => [ipPublicText(step?.label), step?.text]),
     ['缺少材料', entry.missing],
+    ['建议动作', entry.action],
     ['补充核查', entry.checkedDate || entry.checkedOn],
   ]) {
     const display = Array.isArray(value) ? value.map(ipPublicText).filter(Boolean).join('。') : ipPublicText(value);
-    if (display) fields.append(doc('dt', '', label), doc('dd', '', display));
+    if (label && display) fields.append(doc('dt', '', label), doc('dd', '', display));
   }
   return fields;
 }
@@ -2068,63 +2151,66 @@ function ipEventRow(event, analysis, followUp, provenance) {
     reason: '现有数据未载入这项变更的独立风险分析。',
     action: '补充与这项变更有关的权利或证据后再判断。',
   });
-  const trend = event.type === '无变更' ? '覆盖记录' : entry.state || entry.trend;
+  const state = entry.state || entry.trend;
+  const trend = event.type === '无变更' ? '覆盖记录' : event.type === '采集异常' && state === '资料不足' ? '覆盖受限' : state;
   const styling = ipTrends.get(trend) || 'pending';
   const row = doc('li', 'ip-event' + (isCoverage ? ' ip-event-secondary' : ''));
   row.id = 'ip-record-' + event.id;
   const fact = doc('div', 'ip-event-fact');
-  const heading = doc('h4', '', ipPublicText(event.title));
-  fact.append(heading);
+  fact.append(doc('h4', 'ip-event-section-title', '变更内容'));
   const page = ipSourceLink(event.page, event.page);
   if (page) {
     page.classList.add('ip-page-path');
-    fact.append(page);
   }
   const change = ipPublicText(entry.change) || ipPublicText(event.summary);
-  if (change && change !== heading.textContent) fact.append(doc('p', '', change));
-  const source = doc('div', 'ip-sources');
-  for (const value of ipSourceContext(event, entry, provenance)) source.append(doc('span', 'ip-source-note', value));
-  fact.append(source);
+  fact.append(doc('p', 'ip-change-summary', change || ipPublicText(event.title)));
+  if (page) {
+    const parsed = new URL(event.page);
+    page.textContent = parsed.pathname === '/' ? parsed.hostname + '/' : parsed.pathname;
+    page.setAttribute('aria-label', '打开变更页面 ' + event.page);
+    fact.append(page);
+  }
   const risk = doc('section', 'ip-event-risk');
-  risk.setAttribute('aria-label', '知产风险判断');
+  risk.setAttribute('aria-label', '知产风险评估');
+  risk.append(doc('h4', 'ip-event-section-title', '知产风险评估'));
   const labels = doc('div', 'ip-risk-labels');
   labels.append(doc('span', 'ip-trend ip-trend-' + styling, trend || '待补分析'));
   if (entry.followUp === true || entry.continuation === true || followUp) labels.append(doc('span', 'ip-follow-up', '续报'));
-  risk.append(labels, doc('p', 'ip-risk-summary', ipPublicText(entry.conclusion)), ipFields(entry));
-  if (entry.cutline) risk.append(doc('p', 'ip-source-note', ipPublicText(entry.cutline)));
+  risk.append(labels, doc('p', 'ip-risk-summary', ipPublicText(entry.conclusion)));
+  const detail = doc('details', 'ip-record-detail');
+  const detailContent = doc('div', 'ip-record-depth');
+  detail.append(doc('summary', '', '展开完整分析与证据'), detailContent);
+  detailContent.append(ipFields(entry));
+  if (entry.cutline) detailContent.append(doc('p', 'ip-source-note', ipPublicText(entry.cutline)));
 
   const recordLinks = doc('div', 'ip-record-links');
-  if (event.before || event.after || event.links?.length) {
-    const original = doc('a', '', '原始记录及留存链接');
-    original.href = '#event-' + encodeURIComponent(event.id);
-    recordLinks.append(original);
-  }
+  const original = doc('a', '', '原始记录及留存链接');
+  original.href = '#event-' + encodeURIComponent(event.id);
+  recordLinks.append(original);
   for (const item of Array.isArray(entry.evidence) ? entry.evidence : []) {
     const link = ipSourceLink(ipPublicText(item.label) || '补充公开证据', item.url);
     if (link) recordLinks.append(link);
   }
-  if (recordLinks.childElementCount) risk.append(recordLinks);
+  const source = doc('div', 'ip-sources');
+  for (const value of ipSourceContext(event, entry, provenance)) source.append(doc('p', 'ip-source-note', value));
+  detailContent.append(recordLinks, source);
+  risk.append(detail);
   row.append(fact, risk);
   return row;
 }
 
-function ipDayCoverage(dayRows, dayWindows, sites) {
+function ipDayCoverage(dayWindows, sites, selectedHost) {
   const listing = doc('ul', 'ip-coverage');
-  for (const item of dayWindows) {
+  for (const item of dayWindows.filter(window => !selectedHost || sites.get(window.siteId)?.host === selectedHost)) {
     const label = sites.get(item.siteId)?.label || '覆盖窗口';
     listing.append(doc('li', '', [label, item.coverage, item.summary, item.source].map(ipPublicText).filter(Boolean).join(' · ')));
   }
-  const monitored = dayRows.some(row => row.page && /fjdynamics\.com\//.test(row.page));
-  if (monitored && dayWindows.some(item => item.siteId === 'fjd-international')) {
+  if ((!selectedHost || selectedHost.endsWith('.fjdynamics.com')) && dayWindows.some(item => item.siteId === 'fjd-international')) {
     listing.append(doc('li', '', '国际站覆盖为跨域汇总，分站无单独覆盖率。'));
   }
-  const visible = new Set(dayRows.map(row => row.siteId));
-  const missing = [...sites.values()].filter(site => site.host && !visible.has(site.id) && !dayWindows.some(window => window.siteId === site.id));
-  if (missing.length) listing.append(doc('li', '', '当日未见按域名分列的明细 · ' + missing.map(site => site.host).join('、')));
-  if (!dayWindows.length) listing.append(doc('li', '', '未载入覆盖窗口，无法推断未列页面的变更或风险。'));
+  if (!listing.childElementCount) listing.append(doc('li', '', '未载入此范围的覆盖窗口。'));
   const scope = doc('details', 'ip-day-coverage');
-  const note = dayWindows.length ? '覆盖口径与缺口' : '未载入覆盖窗口';
-  scope.append(doc('summary', '', note), listing);
+  scope.append(doc('summary', '', '覆盖口径与缺口'), listing);
   return scope;
 }
 
@@ -2139,69 +2225,165 @@ function ipDates(data, period) {
   return [...dates].sort().reverse();
 }
 
-function renderIpDailyView(data, analyses = {}, provenance = {}) {
+function ipHostname(value) {
+  if (typeof value !== 'string' || !/^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/i.test(value)) return '';
+  return ipPublicHost('https://' + value);
+}
+
+function ipEventSite(row, sites, domains) {
+  const host = ipPublicHost(row.page);
+  if (domains.has(host)) return host;
+  if (row.siteId === 'fjd-international') return '';
+  const listed = ipHostname(sites.get(row.siteId)?.host);
+  return domains.has(listed) ? listed : '';
+}
+
+function ipFilterControl(id, label, options) {
+  const field = doc('label', 'ip-filter-field');
+  const name = doc('span', '', label);
+  const select = doc('select');
+  select.id = id;
+  select.setAttribute('aria-controls', 'ip-daily-list');
+  for (const [value, text] of options) {
+    const option = doc('option', '', text);
+    option.value = value;
+    select.append(option);
+  }
+  field.append(name, select);
+  return field;
+}
+
+function ipSetFilterDate(date) {
+  const select = el('ip-date-filter');
+  if (select && ipDailyDates.has(date)) select.value = date;
+}
+
+function ipRenderSelection() {
   const list = el('ip-daily-list');
-  if (!list || ipDailyLastData === data) return;
-  ipDailyLastData = data;
-  const sites = new Map(data.sites.map(site => [site.id, site]));
-  const siteHosts = new Map(data.sites.filter(site => site.host).map(site => [site.host, site]));
+  if (!list || !ipDailyView) return;
+  const {data, sites, domains, dates, analyses, provenance} = ipDailyView;
+  const selectedDate = el('ip-date-filter').value;
+  const host = el('ip-site-filter').value;
   const oldDates = new Set([...list.querySelectorAll('.ip-day[open]')].map(node => node.dataset.date));
   const earliestByThread = new Map();
   for (const row of data.events) {
     if (row.thread && (!earliestByThread.has(row.thread) || row.date < earliestByThread.get(row.thread))) earliestByThread.set(row.thread, row.date);
   }
-  const dates = ipDates(data, provenance.period);
-  const latestReport = eventDays(data)[0];
   if (!dates.length) {
     list.replaceChildren(doc('p', 'ip-day-empty', '暂无已载入的原始监控日报。'));
     return;
   }
-  list.replaceChildren(...dates.map(date => {
-    const dayRows = data.events.filter(event => event.date === date);
+  const selectedDates = selectedDate ? dates.filter(date => date === selectedDate) : dates;
+  list.replaceChildren(...selectedDates.map((date, index) => {
+    const dateRows = data.events.filter(event => event.date === date);
+    const dayRows = host ? dateRows.filter(row => ipEventSite(row, sites, domains) === host) : dateRows;
     const dayWindows = data.windows.filter(window => window.date === date);
-    const coverageOnly = dayRows.length && dayRows.every(event => event.type === '采集异常' || event.type === '无变更');
-    const recordCount = dayRows.filter(event => event.type !== '采集异常' && event.type !== '无变更').length;
-    const incomplete = dayWindows.some(window => window.failed > 0 || window.fetched < window.discovered)
+    const applicableWindows = host ? dayWindows.filter(window => sites.get(window.siteId)?.host === host) : dayWindows;
+    const recordCount = dayRows.filter(event => event.type !== '采集异常' && event.type !== '无变更' && ipEventSite(event, sites, domains)).length;
+    const incomplete = applicableWindows.some(window => window.failed > 0 || window.fetched < window.discovered)
       || dayRows.some(event => event.type === '采集异常');
     const day = doc('details', 'ip-day');
     day.classList.add('ip-daily-day');
     day.id = 'ip-day-' + date;
     day.dataset.date = date;
-    day.open = date === latestReport || oldDates.has(date);
+    day.open = Boolean(selectedDate || index === 0 || oldDates.has(date));
     const heading = doc('summary');
     const time = doc('time', '', date);
     time.dateTime = date;
     const daySummary = recordCount ? recordCount + ' 项变更或续报' : (
-      dayRows.length || dayWindows.length ? '仅有覆盖或异常记录' : '暂无原始监控日报');
+      dayRows.length || applicableWindows.length ? '仅有覆盖或异常记录' : '当日无可用明细');
     heading.append(time, doc('span', 'ip-day-meta', daySummary));
     if (incomplete) heading.append(doc('span', 'ip-trend ip-trend-pending', '覆盖有缺口'));
     const body = doc('div', 'ip-day-body');
     const groups = new Map();
     for (const row of dayRows) {
-      const sourceSite = sites.get(row.siteId);
-      const actualSite = siteHosts.get(ipPublicHost(row.page)) || (sourceSite?.host ? sourceSite : null);
-      const host = actualSite?.host || '原日报未指明具体官网';
-      if (!groups.has(host)) groups.set(host, { site: actualSite, rows: [] });
-      groups.get(host).rows.push(row);
+      const domain = ipEventSite(row, sites, domains);
+      if (!groups.has(domain)) groups.set(domain, []);
+      groups.get(domain).push(row);
     }
-    if (!dayRows.length) body.append(doc('p', 'ip-day-empty', dayWindows.length
-      ? '本日只有覆盖记录，缺少可按网站归组的逐条变更。'
-      : '未载入本日原日报，无法判断官网变更及相关知产风险。'));
-    if (coverageOnly) body.append(doc('p', 'ip-day-empty', '原日报未提供可用于逐条知产评估的具体变更。'));
-    for (const [host, {site, rows}] of groups) {
+    const domainList = host ? [host] : [
+      ...[...domains.keys()].filter(domain => groups.has(domain)),
+      ...[...domains.keys()].filter(domain => !groups.has(domain)),
+    ];
+    for (const domain of domainList) {
+      const site = domains.get(domain);
+      const rows = groups.get(domain) || [];
       const block = doc('section', 'ip-site');
       const label = doc('div', 'ip-site-heading');
-      label.append(doc('h3', '', host));
+      label.append(doc('h3', '', domain));
       if (site?.label) label.append(doc('span', 'ip-site-label', site.label));
-      const events = doc('ol', 'ip-events');
-      for (const event of rows) events.append(ipEventRow(event, analyses[event.id], earliestByThread.get(event.thread) < date, provenance));
-      block.append(label, events);
+      block.append(label);
+      if (!rows.some(event => event.type === '变更' || event.type === '复核观察' || event.type === '基线快照')) {
+        const secondaryNote = rows.some(event => event.type === '采集异常') ? '已保留采集异常记录。' : '';
+        block.append(doc('p', 'ip-site-empty', ['当日无可用明细。', secondaryNote].filter(Boolean).join('')));
+      }
+      if (rows.length) {
+        const events = doc('ol', 'ip-events');
+        for (const event of rows) events.append(ipEventRow(event, analyses[event.id], earliestByThread.get(event.thread) < date, provenance));
+        block.append(events);
+      }
       body.append(block);
     }
-    if (dayRows.length || dayWindows.length) body.append(ipDayCoverage(dayRows, dayWindows, sites));
+    if (groups.get('')?.length) {
+      const unassigned = doc('details', 'ip-day-coverage');
+      const events = doc('ol', 'ip-events');
+      for (const event of groups.get('')) events.append(ipEventRow(event, analyses[event.id], earliestByThread.get(event.thread) < date, provenance));
+      unassigned.append(doc('summary', '', '跨域汇总与未指明官网的记录'), events);
+      body.append(unassigned);
+    }
+    body.append(ipDayCoverage(dayWindows, sites, host));
     day.append(heading, body);
     return day;
   }));
+}
+
+function renderIpDailyView(data, analyses = {}, provenance = {}) {
+  const list = el('ip-daily-list');
+  if (!list || ipDailyView?.data === data) return;
+  const sites = new Map(data.sites.map(site => [site.id, site]));
+  const domains = new Map(data.sites.map(site => [ipHostname(site.host), site]).filter(([domain]) => domain));
+  const dates = ipDates(data, provenance.period);
+  const latest = eventDays(data)[0] || dates[0] || '';
+  const previousLatest = ipDailyView?.latest;
+  const previousDate = el('ip-date-filter')?.value;
+  const previousSite = el('ip-site-filter')?.value;
+  const params = new URL(location.href).searchParams;
+  const requestedDate = params.get('ip-date');
+  const requestedSite = params.get('ip-site');
+  ipDailyView = {data, sites, domains, dates, latest, analyses, provenance};
+  ipDailyDates = new Set(dates);
+  ipDailyDomains = new Set(domains.keys());
+
+  const filters = doc('div', 'ip-filters');
+  filters.id = 'ip-daily-filters';
+  filters.append(ipFilterControl('ip-date-filter', '日期', [['', '全部日期'], ...dates.map(date => [
+    date, date === latest ? date + '（最新）' : date,
+  ])]), ipFilterControl('ip-site-filter', '网站', [['', '全部网站'], ...[...domains.keys()].map(domain => [domain, domain])]));
+  const previous = el('ip-daily-filters');
+  if (previous) previous.replaceWith(filters);
+  else list.before(filters);
+
+  const date = el('ip-date-filter');
+  const site = el('ip-site-filter');
+  if (requestedDate === 'all') date.value = '';
+  else if (ipDailyDates.has(requestedDate)) date.value = requestedDate;
+  else if (previousDate === '' || (previousDate !== previousLatest && ipDailyDates.has(previousDate))) date.value = previousDate;
+  else date.value = latest;
+  site.value = ipDailyDomains.has(requestedSite) ? requestedSite : ipDailyDomains.has(previousSite) ? previousSite : '';
+  const change = () => {
+    const url = new URL(location.href);
+    if (date.value === ipDailyView.latest) url.searchParams.delete('ip-date');
+    else url.searchParams.set('ip-date', date.value || 'all');
+    if (site.value) url.searchParams.set('ip-site', site.value);
+    else url.searchParams.delete('ip-site');
+    if (/^#ip-(day|record)-/.test(url.hash)) url.hash = '';
+    if (url.searchParams.has('report')) url.searchParams.delete('report');
+    history.replaceState(history.state, '', url.href);
+    ipRenderSelection();
+  };
+  date.addEventListener('change', change);
+  site.addEventListener('change', change);
+  ipRenderSelection();
 }
 
 function revealIpDailyAnchor() {
@@ -2210,17 +2392,32 @@ function revealIpDailyAnchor() {
   const report = new URL(location.href).searchParams.get('report');
   if (!anchor && dateOK(report)) anchor = 'ip-day-' + report;
   if (!/^(?:ip-day-|ip-record-)/.test(anchor)) return;
+  if (ipDailyView) {
+    const row = anchor.startsWith('ip-record-') ? ipDailyView.data.events.find(item => 'ip-record-' + item.id === anchor) : null;
+    const anchorDate = row ? row.date : anchor.slice('ip-day-'.length);
+    if (!el(anchor) && ipDailyDates.has(anchorDate)) {
+      ipSetFilterDate(anchorDate);
+      if (row && ipEventSite(row, ipDailyView.sites, ipDailyView.domains) !== el('ip-site-filter').value) el('ip-site-filter').value = '';
+      ipRenderSelection();
+    }
+  }
   const target = el(anchor);
   if (!target) return;
   const day = target.closest('.ip-day');
   if (day) day.open = true;
+  const unassigned = target.closest('.ip-day-coverage');
+  if (unassigned) unassigned.open = true;
+  if (anchor.startsWith('ip-record-')) {
+    const details = target.querySelector('.ip-record-detail');
+    if (details) details.open = true;
+  }
   requestAnimationFrame(() => target.scrollIntoView({block:'start'}));
 }
 
 window.addEventListener('hashchange', revealIpDailyAnchor);
 
-const publishedIpAssessments = {"2026-11-14-0e3d85736cda5c4b":{"state":"未发现新增知产风险","conclusion":"单帧从引用清单移出，未观察到新增独立素材或既有风险消除。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","change":"农业首页在原日报的引用差异中移除 laptop-089.webp。"},"2026-11-14-35f3215839a3460c":{"state":"未发现新增知产风险","conclusion":"新增引用指向同一动画的另一帧，未见新增独立素材。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","change":"农业首页在原日报的引用差异中新增 laptop-022.webp。"},"2026-11-14-50de78d0444fd1ef":{"state":"未发现新增知产风险","conclusion":"单帧从引用清单移出，未观察到新增独立素材或既有风险消除。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","change":"农业首页在原日报的引用差异中移除 laptop-020.webp。"},"2026-11-14-a06d11ede428a30a":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。"},"2026-11-14-4187c599be63e020":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-14-49b58058bc8a7cfc":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录中国官网 /suibian抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。"},"2026-11-14-067d22b43f819588":{"state":"未发现新增知产风险","conclusion":"配图变化未见新增可辨识第三方素材，现有证据也不足以把本次改图认作首次技术披露。","reason":"11 月 22 日核对的前后原图均标六类传感器。较早的 FCC 档案已公开可比的外观和底盘轮廓。","action":"保持现有知产判断。出现此前未披露的具体结构或新增第三方图形时复评。","cutline":"图片与技术披露","missing":"如要判断某一新露出的渲染细节，缺该细节同历史公开内容及相关申请时点的对照。该对照会影响首次公开判断。","checkedDate":"2026-11-22","evidence":[{"label":"较早公开的 FCC 外观照片","url":"https://fccid.io/2A9RD-SVBR01CL/External-Photos/External-photos-8558643"}],"change":"园林站 S100 Pro R 产品页新增 Pro R 文件名配图。"},"2026-11-14-400dd45204505b74":{"state":"未发现新增知产风险","conclusion":"单项外形尺寸更新未见新增具体技术实现或第三方素材。","reason":"原日报的结构规格差异只有外形尺寸值，净重保持 61 kg。配图变化在同日单独判断。","action":"规格记录留在原始变更。若正文增加具体结构、配置或实现步骤，再评估公开时点。","cutline":"规格信息与技术披露","change":"园林站 S100 Pro R 产品页把尺寸从 645 × 495 × 585 mm 改为 661 × 588.5 × 584 mm，净重仍为 61 kg。"},"2026-11-14-61e4c1a6369def52":{"state":"未发现新增知产风险","conclusion":"配图变化未见新增可辨识第三方素材，现有证据也不足以把本次改图认作首次技术披露。","reason":"11 月 22 日核对的前后原图均标六类传感器。较早的 FCC 档案已公开可比的外观和底盘轮廓。","action":"保持现有知产判断。出现此前未披露的具体结构或新增第三方图形时复评。","cutline":"图片与技术披露","missing":"如要判断某一新露出的渲染细节，缺该细节同历史公开内容及相关申请时点的对照。该对照会影响首次公开判断。","checkedDate":"2026-11-22","evidence":[{"label":"较早公开的 FCC 外观照片","url":"https://fccid.io/2A9RD-SVBR01CL/External-Photos/External-photos-8558643"}],"change":"园林站 S100 Pro R 产品页移出旧的 Pro M 文件名配图。"},"2026-11-14-967b4dfc76eefc66":{"state":"未发现新增知产风险","conclusion":"已知画册断链只影响下载，未发现直接知产影响。历史文件内容的影响仍无法判断。","reason":"原日报仅标记附件内容变化。11 月 22 日确认部分画册下载返回 404，当前下载状态无法解释当时文件差异。","action":"将断链留在原始变更。取得可比对的附件后，按新增图文、标识和技术内容判断。","cutline":"附件内容及失效链接","missing":"缺当日前后附件或可定位版本的快照、链接和校验值。拿到文件才能判断当时是否新增受保护素材或技术披露。","checkedDate":"2026-11-22","change":"园林站 RM21 产品页登记一条附件内容变化。原日报未附文件地址或前后版本。"},"2026-11-15-76700e33ac28a3b5":{"state":"未发现新增知产风险","conclusion":"单帧从引用清单移出，未观察到新增独立素材或既有风险消除。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","followUp":true,"change":"农业首页在原日报的引用差异中移除 laptop-022.webp。"},"2026-11-15-7aace744eabd0701":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-15-7bd2e384b66a7c93":{"state":"未发现新增知产风险","conclusion":"共用 Contact 图标引用移出，未见新增图形使用或知产风险升高。","reason":"三处页面移出的是同一个 SVG 地址，日报展示的是引用差异。","action":"把该条留作引用变更。后续取得新增外部图形时再比对来源与用法。","cutline":"图标著作权","missing":"缺当日 SVG 字节或页面截图。补齐后可确认是同一图形移出还是素材替换。","change":"农业站 AT2 Ultra、EG10 和土地平整方案页移出同一个 Contact SVG 地址。"},"2026-11-15-1e91bfd1a6817018":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录中国官网 /suibian抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-15-30945d2dcce7da05":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-15-e47548f302599671":{"state":"未发现新增知产风险","conclusion":"已知画册断链只影响下载，未发现直接知产影响。历史文件内容的影响仍无法判断。","reason":"原日报仅标记附件内容变化。11 月 22 日确认部分画册下载返回 404，当前下载状态无法解释当时文件差异。","action":"将断链留在原始变更。取得可比对的附件后，按新增图文、标识和技术内容判断。","cutline":"附件内容及失效链接","missing":"缺当日前后附件或可定位版本的快照、链接和校验值。拿到文件才能判断当时是否新增受保护素材或技术披露。","checkedDate":"2026-11-22","followUp":true,"change":"园林站 RM21 产品页登记一条附件内容变化。原日报未附文件地址或前后版本。"},"2026-11-16-1c3c07cddd856977":{"state":"未发现新增知产风险","conclusion":"新增引用指向同一动画的另一帧，未见新增独立素材。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","followUp":true,"change":"农业首页在原日报的引用差异中新增 laptop-021.webp。"},"2026-11-16-327e4a475e6fb392":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-16-e1bc1babe3c1fefc":{"state":"未发现新增知产风险","conclusion":"同一 Contact 地址重新出现，现有资料未见新增图形。","reason":"三处页面引用的还是 15 日移出的地址。仅凭地址无法判断 SVG 文件本身有没有替换。","action":"并入原图标事项跟踪。若拿到前后原件，核对是否引入第三方图形。","cutline":"图标著作权","missing":"缺 15 日与 16 日原 SVG 或带内容的截图。补齐后可判断恢复的是原素材还是新作品。","followUp":true,"change":"农业站 AT2 Ultra、EG10 和土地平整方案页重新检出此前移出的同一 Contact SVG 地址。"},"2026-11-16-0ddfe1543a7d6f2d":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录中国官网 /suibian抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-16-bb8f8e1d17be0494":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-16-4a4972255251cd18":{"state":"未发现新增知产风险","conclusion":"已知画册断链只影响下载，未发现直接知产影响。历史文件内容的影响仍无法判断。","reason":"原日报仅标记附件内容变化。11 月 22 日确认部分画册下载返回 404，当前下载状态无法解释当时文件差异。","action":"将断链留在原始变更。取得可比对的附件后，按新增图文、标识和技术内容判断。","cutline":"附件内容及失效链接","missing":"缺当日前后附件或可定位版本的快照、链接和校验值。拿到文件才能判断当时是否新增受保护素材或技术披露。","checkedDate":"2026-11-22","followUp":true,"change":"园林站 RM21 产品页登记一条附件内容变化。原日报未附文件地址或前后版本。"},"2026-11-17-2f8251e762df75a6":{"state":"仍存在","conclusion":"移出首页标题仅改变该入口曝光。同名软件标识的风险线索仍存在。","reason":"11 月 22 日核对 FJD 与 Veris 的 FieldFusion 软件页面，可见土壤制图、处方生成等用途交集。美国旧登记取消与目标市场的实际商业使用应分别判断。","action":"保留现有事实报道。进入新市场或扩展产品命名之前，核对当地权利状态、实际使用和相关商品服务。","cutline":"商标同名与商品服务交集","checkedDate":"2026-11-22","evidence":[{"label":"FieldFusion 土耳其篇正文","url":"https://agriculture.fjdynamics.com/blog/technology-22/agriculture-fieldfusion-prescription-maps-elevating-precision-spraying-efficiency-in-turkiye-1189"},{"label":"FJD FieldFusion 产品页","url":"https://agriculture.fjdynamics.com/products/fieldfusion"},{"label":"Veris FieldFusion 产品页","url":"https://www.veristech.com/software"},{"label":"美国 USPTO 登记记录","url":"https://tsdr.uspto.gov/#caseNumber=86392495&caseSearchType=US_APPLICATION&caseType=DEFAULT&searchType=statusSearch"}],"change":"农业首页 News and insights 摘录移出 FieldFusion 土耳其喷洒处方图报道标题。"},"2026-11-17-a8ed340eec13f598":{"state":"未发现新增知产风险","conclusion":"新增标题在报道语境中指认实际经销商，未见其成为丰疆商品的来源标识。","reason":"11 月 22 日核到采访正文及对方销售公告，明确 Sekido 是受访经销商。共同出现在标题不足以表明背书宣传。","action":"保留对经销商和采访事实的准确表述。用途改为背书或促销主标识时，针对该用法另评。","cutline":"经销商名称使用","checkedDate":"2026-11-22","evidence":[{"label":"Sekido 日文采访正文","url":"https://agriculture.fjdynamics.com/jp/blog/26/agriculture-japan-beyond-automation-how-sekido-and-fjdynamics-give-farmers-more-time-1228"},{"label":"经销商公开销售公告","url":"https://sekidocorp.com/20210817_23288/"}],"change":"农业首页 News and insights 摘录新增 Sekido 经销商访谈标题。"},"2026-11-17-bb1570761b88d6ba":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-17-b5e029ccf386ced8":{"state":"新增或升高","conclusion":"同一 ZIP 四处引用首次形成软件分发许可核对线索。组件变更与新增义务均未证实。","reason":"原日报列 P1、S1、S2、P2 引用同一 ZIP。11 月 22 日读取可取得的安装程序版本 1.000.D.0210，无法用这一成品还原 17 日前后包。","action":"先锁定受影响成品版本，再对实际随包组件核对许可证文本、版权告知和对应分发义务。","cutline":"软件分发许可线索","missing":"缺 17 日前后 ZIP 或散列与对应组件清单。文件可确定版本是否变化，组件清单可确定是否引入新许可义务。","checkedDate":"2026-11-22","evidence":[{"label":"Trion 官方发行记录","url":"https://www.fjdtrion.com/support-center/fjd-trion-model-pc"}],"change":"P1、S1、S2、P2 四个中文产品页共用的 Trion Model ZIP 地址报告附件内容变化。"},"2026-11-18-b0692a317f3f0366":{"state":"仍存在","conclusion":"同名软件标识线索仍在。移出该封面引用只影响列表展示。","reason":"这是 17 日土耳其报道对应封面。11 月 22 日所见同一报道仍可访问，所见封面无清晰第三方设备标识。该日所见页面无法还原 18 日详情及素材使用。","action":"延续同名标识评估。若把所见照片改作独立推广，按新用途复核可见素材。","cutline":"商标同名与封面使用","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"FieldFusion 土耳其篇正文","url":"https://agriculture.fjdynamics.com/blog/technology-22/agriculture-fieldfusion-prescription-maps-elevating-precision-spraying-efficiency-in-turkiye-1189"},{"label":"FJD FieldFusion 产品页","url":"https://agriculture.fjdynamics.com/products/fieldfusion"},{"label":"Veris FieldFusion 产品页","url":"https://www.veristech.com/software"}],"change":"农业首页移出与 17 日土耳其处方图报道对应的封面图片地址。"},"2026-11-18-c36edbcc0311d9a7":{"state":"新增或升高","conclusion":"同一采访续报，新增封面使用带来摄影作品、肖像和具名引语的独立风险线索。","reason":"11 月 22 日按日报地址核对的封面包含可辨识受访者、署名和具名引语，正文可见经销商访谈语境。","action":"采访语境内保留准确事实。把封面、人像或引语改作独立广告、剪辑或新增语种前，按新用途复核。","cutline":"新增封面使用线索","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"日报封面原图","url":"https://agriculture.fjdynamics.com/web/image/39038-ce269b06/%E5%8D%9A%E6%96%87%20%27Japan%20%7C%20Beyond%20Automation%3A%20How%20Sekido%20and%20FJDynamics%20Give%20Farmers%20More%20Time%27%20cover%20image.jpeg"},{"label":"Sekido 日文采访正文","url":"https://agriculture.fjdynamics.com/jp/blog/26/agriculture-japan-beyond-automation-how-sekido-and-fjdynamics-give-farmers-more-time-1228"}],"change":"农业首页新增与 17 日 Sekido 访谈标题对应的封面图片引用。"},"2026-11-18-fd36fa65946d72e1":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-18-51148b7a1b97f1dd":{"state":"仍存在","conclusion":"沿用 17 日的软件分发许可线索。此次续报未证实独立发版或新增许可义务。","reason":"仍是同一 ZIP 地址、同一组四个引用页。11 月 22 日取得的版本信息没有与本日成品建立对应。","action":"按版本和散列归并同一成品。只有确认随包组件或分发方式变化后，才更新许可结论。","cutline":"软件分发许可线索","missing":"缺 18 日前后 ZIP 或散列与对应组件清单。补齐可判断本日标记是独立换包还是同一事件重复记录。","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"Trion 官方发行记录","url":"https://www.fjdtrion.com/support-center/fjd-trion-model-pc"}],"change":"原日报再次报告四个中文产品页共用的同一 Trion Model ZIP 地址内容变化。"},"2026-11-19-80efc114807ccadc":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-19-9cc3d4404073adea":{"state":"仍存在","conclusion":"沿用 17 日的软件分发许可线索。此次续报未证实独立发版或新增许可义务。","reason":"仍是同一 ZIP 地址、同一组四个引用页。11 月 22 日取得的版本信息没有与本日成品建立对应。","action":"按版本和散列归并同一成品。只有确认随包组件或分发方式变化后，才更新许可结论。","cutline":"软件分发许可线索","missing":"缺 19 日前后 ZIP 或散列与对应组件清单。补齐可判断本日标记是独立换包还是同一事件重复记录。","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"Trion 官方发行记录","url":"https://www.fjdtrion.com/support-center/fjd-trion-model-pc"}],"change":"原日报再次报告四个中文产品页共用的同一 Trion Model ZIP 地址内容变化。"},"2026-11-19-a9675fc15538789b":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-20-237412aa679eb733":{"state":"仍存在","conclusion":"既有封面与引语使用线索延续，本日未报告新增实质内容。","reason":"20 日前后摘录都有相同采访标题，当日原始材料没有封面截图。11 月 22 日取得的封面原图用于判断素材类型。","action":"按 18 日的素材事项跟踪，只在用途、版本或传播范围发生实际变化时复评。","cutline":"采访封面与具名引语","missing":"缺 20 日可对应版次的封面或截图。补齐后可判断当日封面是否仍出现及有无素材变化。","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"Sekido 日文采访正文","url":"https://agriculture.fjdynamics.com/jp/blog/26/agriculture-japan-beyond-automation-how-sekido-and-fjdynamics-give-farmers-more-time-1228"}],"change":"11 月 20 日正文差异的上下文在新旧两侧均保留 Sekido 标题。"},"2026-11-20-fjd-agriculture-atx":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-20-fjd-agriculture-case-hub":{"state":"未发现新增知产风险","conclusion":"可见计数和筛选词未发现新增知产风险。新增案例素材尚无完整差异证据。","reason":"日报只显示案例、场景、作物计数和筛选词的变动，剩余差异未完整保留。","action":"先用当日案例清单定位具体新增案例，只有出现外部图片、视频、第三方标识或具体技术细节时专项评估。","cutline":"案例素材与技术披露","missing":"缺未截断的当日差异和新增案例媒体。补齐后可判断计数背后是否有新增第三方内容或技术披露。","change":"Field Case Hub 的案例数由 384 变为 442，场景 73→77、作物 69→75，并增加部分地区和场景筛选词。"},"2026-11-20-fjd-agriculture-famaq":{"state":"新增或升高","conclusion":"新增首页入口带来联合参展报道中的标识、展照和肖像使用线索。现有报道可按事实保留。","reason":"11 月 22 日所核正文描述联合展位、推广及服务转介，公开封面可见双方展牌和到场人员。墨西哥官方记录显示 FAMAQ 商标第 35 类登记。","action":"维持真实参展和服务描述。用于常设背书、二次推广或其他市场时，按新用途分别复核标识、摄影作品和可辨识人物。","cutline":"商标、展照及肖像","checkedDate":"2026-11-22","evidence":[{"label":"FAMAQ 西语报道正文","url":"https://agriculture.fjdynamics.com/es/blog/exposicion-23/expo-agroalimentaria-guanajuato-2026-recap-1237"},{"label":"墨西哥 IMPI 注册记录","url":"https://marcia.impi.gob.mx/marcas/search/details/RM202202774484"}],"change":"农业首页 News and insights 摘录增加 FAMAQ 墨西哥展会报道标题及入口。"},"2026-11-20-fjd-agriculture-fieldfusion":{"state":"仍存在","conclusion":"移出首页的 AYM 报道入口未消除既有公开。此次新增技术披露未获证实。","reason":"11 月 22 日文章详情仍可读到光学测产、含水率、产量制图和云同步。其它公开稿亦涉及相关功能，20 日的标题差异无法确定首次披露。","action":"保留已有报道。扩写新增实现步骤前，对照相关申请与可验证的最早公开资料。","cutline":"既有技术公开","missing":"缺能定位首次公开日期的历史版本及同一技术组合对应的公开申请文本。两者会影响专利新颖性判断。","checkedDate":"2026-11-22","evidence":[{"label":"AYM 报道正文","url":"https://agriculture.fjdynamics.com/blog/technology-22/agriculture-maximizing-harvest-potential-the-power-of-fjd-aym-and-fieldfusion-for-smart-planting-planning-1190"},{"label":"另篇公开报道 209","url":"https://agriculture.fjdynamics.com/tr/blog/teknoloji-22/agriculture-maximizing-harvest-potential-the-power-of-fjd-aym-and-fieldfusion-for-smart-planting-planning-209"}],"change":"农业首页移出含 FJD AYM 和 FieldFusion 的测产报道标题。此条对应 AYM 篇，17 日是土耳其处方图篇。"},"2026-11-20-fjd-cn-no-change":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-20-fjd-international-n10-pdf":{"state":"未发现新增知产风险","conclusion":"原日报所见断链仅影响下载，未发现直接知产影响。","reason":"404 说明对应地址在当日无法取文件。缺少文件内容，因此不能判断该文件包含什么或是否在其他入口继续公开。","action":"将该条保留为链接异常。如有版本对照指向素材或具体技术内容变化，再分析该内容。","cutline":"下载状态","missing":"缺当日文件版本或可定位的存档。找到后才能判断素材、技术内容或公开范围变化。"},"2026-11-20-fjd-international-spraying-pdf":{"state":"未发现新增知产风险","conclusion":"原日报所见断链仅影响下载，未发现直接知产影响。","reason":"404 说明对应地址在当日无法取文件。缺少文件内容，因此不能判断该文件包含什么或是否在其他入口继续公开。","action":"将该条保留为链接异常。如有版本对照指向素材或具体技术内容变化，再分析该内容。","cutline":"下载状态","missing":"缺当日文件版本或可定位的存档。找到后才能判断素材、技术内容或公开范围变化。"},"2026-11-20-fjd-landscaping-sports-field":{"state":"未发现新增知产风险","conclusion":"已取得的按钮文字前后一致，未见新增文字知产风险。媒体与链接目标的变化仍未知。","reason":"原日报的可见差异是等文案替换，不含当日按钮跳转目标和关联媒体。","action":"有原始快照再比较按钮目标、图片及视频。如确认新增外部素材，再评估具体用法。","cutline":"限可见文字","missing":"缺前后页面的按钮链接及媒体引用。补齐后可判断文字以外是否引入第三方素材。","change":"园林站运动场解决方案页有七处按钮差异块，所列按钮文字逐项相同。"}};
-const publishedIpProvenance = {"a":{"2026-11-20-fjd-agriculture-famaq":{"verified":false,"locator":"已核对上传原件 · 第 26 段／表格 1"},"2026-11-20-fjd-agriculture-fieldfusion":{"verified":false,"locator":"已核对上传原件 · 第 26 段／表格 1"},"2026-11-20-fjd-agriculture-case-hub":{"verified":false,"locator":"已核对上传原件 · 第 28 段／表格 2"},"2026-11-20-fjd-landscaping-sports-field":{"verified":false,"locator":"已核对上传原件 · 第 30 段／表格 3"},"2026-11-20-fjd-agriculture-atx":{"verified":false,"locator":"已核对上传原件 · 第 24 段"},"2026-11-20-fjd-international-n10-pdf":{"verified":false,"locator":"已核对上传原件 · 第 32 段"},"2026-11-20-fjd-international-spraying-pdf":{"verified":false,"locator":"已核对上传原件 · 第 34 段"},"2026-11-20-fjd-cn-no-change":{"verified":false,"locator":"已核对上传原件 · 中国官网变化明细"},"2026-11-20-237412aa679eb733":{"verified":false,"locator":"已核对上传原件 · 第 26 段／表格 1"},"2026-11-19-a9675fc15538789b":{"verified":false,"locator":"已核对上传原件 · 国际官网变化明细"},"2026-11-19-80efc114807ccadc":{"verified":false,"locator":"已核对上传原件 · 第 28 段"},"2026-11-19-9cc3d4404073adea":{"verified":false,"locator":"已核对上传原件 · 第 12 段／第 13 段"},"2026-11-18-fd36fa65946d72e1":{"verified":false,"locator":"已核对上传原件 · 第 33 段"},"2026-11-18-51148b7a1b97f1dd":{"verified":false,"locator":"已核对上传原件 · 第 12 段／第 13 段"},"2026-11-18-c36edbcc0311d9a7":{"verified":false,"locator":"已核对上传原件 · 第 35 段／图片变化第 24 段"},"2026-11-18-b0692a317f3f0366":{"verified":false,"locator":"已核对上传原件 · 第 37 段／图片变化第 25 段"},"2026-11-17-bb1570761b88d6ba":{"verified":false,"locator":"已核对上传原件 · 第 29 段"},"2026-11-17-b5e029ccf386ced8":{"verified":false,"locator":"已核对上传原件 · 第 12 段／第 13 段"},"2026-11-17-a8ed340eec13f598":{"verified":false,"locator":"已核对上传原件 · 第 31 段／表格 1"},"2026-11-17-2f8251e762df75a6":{"verified":false,"locator":"已核对上传原件 · 第 31 段／表格 1"},"2026-11-16-bb8f8e1d17be0494":{"verified":false,"locator":"已核对上传原件 · 中国官网变化明细"},"2026-11-16-0ddfe1543a7d6f2d":{"verified":false,"locator":"已核对上传原件 · 第 11 段"},"2026-11-16-327e4a475e6fb392":{"verified":false,"locator":"已核对上传原件 · 第 37 段"},"2026-11-16-1c3c07cddd856977":{"verified":false,"locator":"已核对上传原件 · 第 39 段／图片变化第 26 段"},"2026-11-16-4a4972255251cd18":{"verified":false,"locator":"已核对上传原件 · 第 47 段"},"2026-11-16-e1bc1babe3c1fefc":{"verified":false,"locator":"已核对上传原件 · 第 41 段／图片变化第 27 段起"},"2026-11-15-30945d2dcce7da05":{"verified":false,"locator":"已核对上传原件 · 中国官网变化明细"},"2026-11-15-1e91bfd1a6817018":{"verified":false,"locator":"已核对上传原件 · 第 11 段"},"2026-11-15-7aace744eabd0701":{"verified":false,"locator":"已核对上传原件 · 第 37 段"},"2026-11-15-76700e33ac28a3b5":{"verified":false,"locator":"已核对上传原件 · 第 39 段／图片变化第 26 段"},"2026-11-15-e47548f302599671":{"verified":false,"locator":"已核对上传原件 · 第 47 段"},"2026-11-15-7bd2e384b66a7c93":{"verified":false,"locator":"已核对上传原件 · 第 41 段／图片变化第 27 段起"},"2026-11-14-4187c599be63e020":{"verified":false,"locator":"已核对上传原件 · 中国官网变化明细"},"2026-11-14-49b58058bc8a7cfc":{"verified":false,"locator":"已核对上传原件 · 第 11 段"},"2026-11-14-a06d11ede428a30a":{"verified":false,"locator":"已核对上传原件 · 第 40 段"},"2026-11-14-35f3215839a3460c":{"verified":false,"locator":"已核对上传原件 · 第 42 段／图片变化第 28 段"},"2026-11-14-50de78d0444fd1ef":{"verified":false,"locator":"已核对上传原件 · 第 44 段／图片变化第 29 段"},"2026-11-14-0e3d85736cda5c4b":{"verified":false,"locator":"已核对上传原件 · 第 46 段／图片变化第 30 段"},"2026-11-14-967b4dfc76eefc66":{"verified":false,"locator":"已核对上传原件 · 第 48 段"},"2026-11-14-400dd45204505b74":{"verified":false,"locator":"已核对上传原件 · 第 50 段／表格 1"},"2026-11-14-067d22b43f819588":{"verified":false,"locator":"已核对上传原件 · 第 52 段／图片变化第 31 段"},"2026-11-14-61e4c1a6369def52":{"verified":false,"locator":"已核对上传原件 · 第 54 段／图片变化第 32 段"}},"b":{"2026-11-14":{"verified":true,"locator":"同日飞书 B 日报 · 内部关联"},"2026-11-15":{"verified":true,"locator":"同日飞书 B 日报 · 内部关联"},"2026-11-16":{"verified":true,"locator":"同日飞书 B 日报 · 内部关联"},"2026-11-17":{"verified":true,"locator":"同日飞书 B 日报 · 内部关联"},"2026-11-18":{"verified":true,"locator":"同日飞书 B 日报 · 内部关联"},"2026-11-19":{"verified":true,"locator":"同日飞书 B 日报 · 内部关联"},"2026-11-20":{"verified":true,"locator":"同日飞书 B 日报 · 内部关联"}},"period":{"start":"2026-11-14","end":"2026-11-20"}};
+const publishedIpAssessments = {"2026-11-14-0e3d85736cda5c4b":{"state":"未发现新增知产风险","conclusion":"单帧从引用清单移出，未观察到新增独立素材或既有风险消除。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","change":"农业首页在原日报的引用差异中移除 laptop-089.webp。","analysisSteps":[{"label":"识别改动对象","text":"日报列的是图片引用移出，用所列 laptop-089.webp 与其余三张同期原图比对。"},{"label":"比对画面内容","text":"四图共用 FieldFusion 仪表板、笔记本和底图，主要变化是开盖角度。图中没有新出现的可辨第三方标识、水印或人物。"},{"label":"限定知产结论","text":"画面比对支持同一动画的帧切换。底图原出处在可见画面中无法识别，若另换底图或将此图另投广告，才需要按具体用途评估。"}],"evidence":[{"label":"原日报对应图片","url":"https://agriculture.fjdynamics.com/web/image/32872-2f5897d73389a626bdbe8f2188f73af80dd38987/laptop-089.webp"}]},"2026-11-14-35f3215839a3460c":{"state":"未发现新增知产风险","conclusion":"新增引用指向同一动画的另一帧，未见新增独立素材。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","change":"农业首页在原日报的引用差异中新增 laptop-022.webp。","analysisSteps":[{"label":"识别改动对象","text":"日报列的是图片引用新增，用所列 laptop-022.webp 与其余三张同期原图比对。"},{"label":"比对画面内容","text":"四图共用 FieldFusion 仪表板、笔记本和底图，主要变化是开盖角度。图中没有新出现的可辨第三方标识、水印或人物。"},{"label":"限定知产结论","text":"画面比对支持同一动画的帧切换。底图原出处在可见画面中无法识别，若另换底图或将此图另投广告，才需要按具体用途评估。"}],"evidence":[{"label":"原日报对应图片","url":"https://agriculture.fjdynamics.com/web/image/32805-2a72440794409d14dc24d5f44531fcded16028d2/laptop-022.webp"}]},"2026-11-14-50de78d0444fd1ef":{"state":"未发现新增知产风险","conclusion":"单帧从引用清单移出，未观察到新增独立素材或既有风险消除。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","change":"农业首页在原日报的引用差异中移除 laptop-020.webp。","analysisSteps":[{"label":"识别改动对象","text":"日报列的是图片引用移出，用所列 laptop-020.webp 与其余三张同期原图比对。"},{"label":"比对画面内容","text":"四图共用 FieldFusion 仪表板、笔记本和底图，主要变化是开盖角度。图中没有新出现的可辨第三方标识、水印或人物。"},{"label":"限定知产结论","text":"画面比对支持同一动画的帧切换。底图原出处在可见画面中无法识别，若另换底图或将此图另投广告，才需要按具体用途评估。"}],"evidence":[{"label":"原日报对应图片","url":"https://agriculture.fjdynamics.com/web/image/32803-c7c49f937442a443bb71ad9768a84c2f76b4389d/laptop-020.webp"}]},"2026-11-14-a06d11ede428a30a":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。"},"2026-11-14-4187c599be63e020":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-14-49b58058bc8a7cfc":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录中国官网 /suibian抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。"},"2026-11-14-067d22b43f819588":{"state":"未发现新增知产风险","conclusion":"配图变化未见新增可辨识第三方素材，现有证据也不足以把本次改图认作首次技术披露。","reason":"11 月 22 日核对的前后原图均标六类传感器。较早的 FCC 档案已公开可比的外观和底盘轮廓。","action":"保持现有知产判断。出现此前未披露的具体结构或新增第三方图形时复评。","cutline":"图片与技术披露","missing":"如要判断某一新露出的渲染细节，缺该细节同历史公开内容及相关申请时点的对照。该对照会影响首次公开判断。","checkedDate":"2026-11-22","evidence":[{"label":"较早公开的 FCC 外观照片","url":"https://fccid.io/2A9RD-SVBR01CL/External-Photos/External-photos-8558643"}],"change":"园林站 S100 Pro R 产品页新增 Pro R 文件名配图。","analysisSteps":[{"label":"看两张原图","text":"11 月 22 日沿日报地址打开旧 Pro M 与新 Pro R 图。两图均标注六类传感器，变化集中在机壳渲染、局部可见轮廓和标线。"},{"label":"找更早公开","text":"2025 年 8 月 FCC 档案已公开 S100 Pro R 的底盘和外观照片，可与本次图中的轮廓比对。新旧图上也未辨识出第三方品牌或水印。"},{"label":"划定新颖性判断","text":"较早档案覆盖的轮廓不能再作为本次首次公开。若本次图有档案未显示的具体结构，需要把该细节与历史图、相关申请日及披露范围逐项比对。"}]},"2026-11-14-400dd45204505b74":{"state":"未发现新增知产风险","conclusion":"单项外形尺寸更新未见新增具体技术实现或第三方素材。","reason":"原日报的结构规格差异只有外形尺寸值，净重保持 61 kg。配图变化在同日单独判断。","action":"规格记录留在原始变更。若正文增加具体结构、配置或实现步骤，再评估公开时点。","cutline":"规格信息与技术披露","change":"园林站 S100 Pro R 产品页把尺寸从 645 × 495 × 585 mm 改为 661 × 588.5 × 584 mm，净重仍为 61 kg。","analysisSteps":[{"label":"逐项读差异","text":"日报表格中结构尺寸改为 661 × 588.5 × 584 mm，净重仍为 61 kg。"},{"label":"对照披露门槛","text":"尺寸数值可说明外形量级，摘录未显示新增传感器布局、模块结构或工作步骤。对技术或外观的其他披露需结合独立配图记录。"}]},"2026-11-14-61e4c1a6369def52":{"state":"未发现新增知产风险","conclusion":"配图变化未见新增可辨识第三方素材，现有证据也不足以把本次改图认作首次技术披露。","reason":"11 月 22 日核对的前后原图均标六类传感器。较早的 FCC 档案已公开可比的外观和底盘轮廓。","action":"保持现有知产判断。出现此前未披露的具体结构或新增第三方图形时复评。","cutline":"图片与技术披露","missing":"如要判断某一新露出的渲染细节，缺该细节同历史公开内容及相关申请时点的对照。该对照会影响首次公开判断。","checkedDate":"2026-11-22","evidence":[{"label":"较早公开的 FCC 外观照片","url":"https://fccid.io/2A9RD-SVBR01CL/External-Photos/External-photos-8558643"}],"change":"园林站 S100 Pro R 产品页移出旧的 Pro M 文件名配图。","analysisSteps":[{"label":"看两张原图","text":"11 月 22 日沿日报地址打开旧 Pro M 与新 Pro R 图。两图均标注六类传感器，变化集中在机壳渲染、局部可见轮廓和标线。"},{"label":"找更早公开","text":"2025 年 8 月 FCC 档案已公开 S100 Pro R 的底盘和外观照片，可与本次图中的轮廓比对。新旧图上也未辨识出第三方品牌或水印。"},{"label":"划定新颖性判断","text":"较早档案覆盖的轮廓不能再作为本次首次公开。若本次图有档案未显示的具体结构，需要把该细节与历史图、相关申请日及披露范围逐项比对。"}]},"2026-11-14-967b4dfc76eefc66":{"state":"未发现新增知产风险","conclusion":"已知画册断链只影响下载，未发现直接知产影响。历史文件内容的影响仍无法判断。","reason":"原日报仅标记附件内容变化。11 月 22 日确认部分画册下载返回 404，当前下载状态无法解释当时文件差异。","action":"可把断链留在原始记录。取得当日两份可比附件后，只检查新增图文、标识或可实施的技术内容。","cutline":"附件内容及失效链接","missing":"缺当日前后附件或可定位版本的快照、链接和校验值。拿到文件才能判断当时是否新增受保护素材或技术披露。","checkedDate":"2026-11-22","change":"园林站 RM21 产品页登记一条附件内容变化。原日报未附文件地址或前后版本。","analysisSteps":[{"label":"锁定历史附件","text":"14 日日报只写“附件内容变化”，缺具体文件地址、版本和内容。由此不能识别发生变化的是哪一页或哪件素材。"},{"label":"区分失效与内容使用","text":"11 月 22 日部分画册目标返回 404，可下载的同名 English Combo 画册与产品页重量标注不同。该现象证明下载与版本问题，不能识别当日附件内容。"},{"label":"明确会改变的判断","text":"如果找回当日前后实际画册，逐页比对新增图文和结构图。出现第三方素材可进入使用范围判断，出现此前未公开的具体实施内容可进入首次披露判断。"}]},"2026-11-15-76700e33ac28a3b5":{"state":"未发现新增知产风险","conclusion":"单帧从引用清单移出，未观察到新增独立素材或既有风险消除。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","followUp":true,"change":"农业首页在原日报的引用差异中移除 laptop-022.webp。","analysisSteps":[{"label":"识别改动对象","text":"日报列的是图片引用移出，用所列 laptop-022.webp 与其余三张同期原图比对。"},{"label":"比对画面内容","text":"四图共用 FieldFusion 仪表板、笔记本和底图，主要变化是开盖角度。图中没有新出现的可辨第三方标识、水印或人物。"},{"label":"限定知产结论","text":"画面比对支持同一动画的帧切换。底图原出处在可见画面中无法识别，若另换底图或将此图另投广告，才需要按具体用途评估。"}],"evidence":[{"label":"原日报对应图片","url":"https://agriculture.fjdynamics.com/web/image/32805-2a72440794409d14dc24d5f44531fcded16028d2/laptop-022.webp"}]},"2026-11-15-7aace744eabd0701":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-15-7bd2e384b66a7c93":{"state":"未发现新增知产风险","conclusion":"共用 Contact 图标引用移出，未见新增图形使用或知产风险升高。","reason":"三处页面移出的是同一个 SVG 地址，日报展示的是引用差异。","action":"把该条留作引用变更。后续取得新增外部图形时再比对来源与用法。","cutline":"图标著作权","missing":"缺当日 SVG 字节或页面截图。补齐后可确认是同一图形移出还是素材替换。","change":"农业站 AT2 Ultra、EG10 和土地平整方案页移出同一个 Contact SVG 地址。","analysisSteps":[{"label":"比对页面映射","text":"AT2 Ultra、EG10 和土地平整方案页所移出的值均指向同一 Contact SVG。"},{"label":"划定判断对象","text":"日报没有记录新增或替换的图形，三处移出按同一资源引用处理。对文件原权属没有新增判断。"}]},"2026-11-15-1e91bfd1a6817018":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录中国官网 /suibian抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-15-30945d2dcce7da05":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-15-e47548f302599671":{"state":"未发现新增知产风险","conclusion":"已知画册断链只影响下载，未发现直接知产影响。历史文件内容的影响仍无法判断。","reason":"原日报仅标记附件内容变化。11 月 22 日确认部分画册下载返回 404，当前下载状态无法解释当时文件差异。","action":"可把断链留在原始记录。取得当日两份可比附件后，只检查新增图文、标识或可实施的技术内容。","cutline":"附件内容及失效链接","missing":"缺当日前后附件或可定位版本的快照、链接和校验值。拿到文件才能判断当时是否新增受保护素材或技术披露。","checkedDate":"2026-11-22","followUp":true,"change":"园林站 RM21 产品页登记一条附件内容变化。原日报未附文件地址或前后版本。","analysisSteps":[{"label":"锁定历史附件","text":"15 日日报只写“附件内容变化”，缺具体文件地址、版本和内容。由此不能识别发生变化的是哪一页或哪件素材。"},{"label":"区分失效与内容使用","text":"11 月 22 日部分画册目标返回 404，可下载的同名 English Combo 画册与产品页重量标注不同。该现象证明下载与版本问题，不能识别当日附件内容。"},{"label":"明确会改变的判断","text":"如果找回当日前后实际画册，逐页比对新增图文和结构图。出现第三方素材可进入使用范围判断，出现此前未公开的具体实施内容可进入首次披露判断。"}]},"2026-11-16-1c3c07cddd856977":{"state":"未发现新增知产风险","conclusion":"新增引用指向同一动画的另一帧，未见新增独立素材。","reason":"11 月 22 日按日报地址核对的四张原图同属一组笔记本开盖动画，当前序列仍含这四帧。","action":"沿用现有素材判断。只有更换底图、引入外部素材或改变使用场景时复核。","cutline":"图片著作权","checkedDate":"2026-11-22","followUp":true,"change":"农业首页在原日报的引用差异中新增 laptop-021.webp。","analysisSteps":[{"label":"识别改动对象","text":"日报列的是图片引用新增，用所列 laptop-021.webp 与其余三张同期原图比对。"},{"label":"比对画面内容","text":"四图共用 FieldFusion 仪表板、笔记本和底图，主要变化是开盖角度。图中没有新出现的可辨第三方标识、水印或人物。"},{"label":"限定知产结论","text":"画面比对支持同一动画的帧切换。底图原出处在可见画面中无法识别，若另换底图或将此图另投广告，才需要按具体用途评估。"}],"evidence":[{"label":"原日报对应图片","url":"https://agriculture.fjdynamics.com/web/image/32804-c0c30b7c1dd23e207a54af842e2e195b822d20ff/laptop-021.webp"}]},"2026-11-16-327e4a475e6fb392":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-16-e1bc1babe3c1fefc":{"state":"未发现新增知产风险","conclusion":"同一 Contact 地址重新出现，现有资料未见新增图形。","reason":"三处页面引用的还是 15 日移出的地址。仅凭地址无法判断 SVG 文件本身有没有替换。","action":"并入原图标事项跟踪。若拿到前后原件，核对是否引入第三方图形。","cutline":"图标著作权","missing":"缺 15 日与 16 日原 SVG 或带内容的截图。补齐后可判断恢复的是原素材还是新作品。","followUp":true,"change":"农业站 AT2 Ultra、EG10 和土地平整方案页重新检出此前移出的同一 Contact SVG 地址。","analysisSteps":[{"label":"比对前后引用","text":"16 日三页重新检出与 15 日移出记录相同的 Contact SVG 地址。"},{"label":"检验是否新用素材","text":"如果文件内容一致，本项属于恢复引用。地址相同仍可能对应覆盖上传，文件内容须用两个日期的留存图或校验值判断。"}]},"2026-11-16-0ddfe1543a7d6f2d":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录中国官网 /suibian抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-16-bb8f8e1d17be0494":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-16-4a4972255251cd18":{"state":"未发现新增知产风险","conclusion":"已知画册断链只影响下载，未发现直接知产影响。历史文件内容的影响仍无法判断。","reason":"原日报仅标记附件内容变化。11 月 22 日确认部分画册下载返回 404，当前下载状态无法解释当时文件差异。","action":"可把断链留在原始记录。取得当日两份可比附件后，只检查新增图文、标识或可实施的技术内容。","cutline":"附件内容及失效链接","missing":"缺当日前后附件或可定位版本的快照、链接和校验值。拿到文件才能判断当时是否新增受保护素材或技术披露。","checkedDate":"2026-11-22","followUp":true,"change":"园林站 RM21 产品页登记一条附件内容变化。原日报未附文件地址或前后版本。","analysisSteps":[{"label":"锁定历史附件","text":"16 日日报只写“附件内容变化”，缺具体文件地址、版本和内容。由此不能识别发生变化的是哪一页或哪件素材。"},{"label":"区分失效与内容使用","text":"11 月 22 日部分画册目标返回 404，可下载的同名 English Combo 画册与产品页重量标注不同。该现象证明下载与版本问题，不能识别当日附件内容。"},{"label":"明确会改变的判断","text":"如果找回当日前后实际画册，逐页比对新增图文和结构图。出现第三方素材可进入使用范围判断，出现此前未公开的具体实施内容可进入首次披露判断。"}],"evidence":[{"label":"RM21 官方支持页","url":"https://landscaping.fjdynamics.com/support-rm21"},{"label":"产品页画册原下载目标（复查时失效）","url":"https://fjdynamics-prod-1304943718.cos.eu-frankfurt.myqcloud.com/landscaping/support/RM21/Brochure/FJD%20RM21%20Combo_Brochure_EN.pdf"},{"label":"支持页画册原下载目标（复查时失效）","url":"https://fjdynamics-prod-1304943718.cos.eu-frankfurt.myqcloud.com/landscaping/support/RM21/Brochure/EN_20251215_FJD_RM21%20combo-brochure.pdf"},{"label":"可访问的同名英文 Combo 画册","url":"https://fjdynamics-prod-1304943718.cos.eu-frankfurt.myqcloud.com/landscaping/support/GolfMind/FJD%20RM21%20Combo_Brochure_EN.pdf"}]},"2026-11-17-2f8251e762df75a6":{"state":"仍存在","conclusion":"移出首页标题仅改变该入口曝光。同名软件标识的风险线索仍存在。","reason":"11 月 23 日复查，FJD 以 FieldFusion 提供地块及土壤数据处方图与变量作业功能，Veris 以同名软件处理土壤图并生成施肥、播种等分区。两者的农业软件用途有实质交集。","action":"保留现有事实报道。进入新市场或扩展产品命名之前，核对当地权利状态、实际使用和相关商品服务。","cutline":"商标同名与商品服务交集","checkedDate":"2026-11-23","evidence":[{"label":"FieldFusion 土耳其篇正文","url":"https://agriculture.fjdynamics.com/blog/technology-22/agriculture-fieldfusion-prescription-maps-elevating-precision-spraying-efficiency-in-turkiye-1189"},{"label":"FJD FieldFusion 产品页","url":"https://agriculture.fjdynamics.com/products/fieldfusion"},{"label":"Veris FieldFusion 产品页","url":"https://www.veristech.com/software"},{"label":"美国 USPTO 登记记录","url":"https://tsdr.uspto.gov/#caseNumber=86392495&caseSearchType=US_APPLICATION&caseType=DEFAULT&searchType=statusSearch"},{"label":"英国 IPO 指定公告 1900173","url":"https://www.ipo.gov.uk/tm/t-tmj/tm-journals/2026-008/WO0000001900173.html"},{"label":"Veris 荷兰土壤制图案例","url":"https://www.veristech.com/soil-matters-blog/1000-dutch-fields-in-three-years"}],"change":"农业首页 News and insights 摘录移出 FieldFusion 土耳其喷洒处方图报道标题。","analysisSteps":[{"label":"识别商标用法","text":"土耳其报道用 New Holland 指试验拖拉机。FieldFusion 则出现在 FJD 软件产品页名称中，属于产品标识使用。"},{"label":"实质重合对照","text":"11 月 23 日实查中，FJD 和 Veris 都以该名称提供制图及作业处方相关软件。11 月 22 日查得 Veris 旧美国联邦登记已取消，英国记录 1900173 是 FJD 的英国指定公告，不能拿来认定土耳其权利状态。"},{"label":"判断曝光变化","text":"旧登记取消无法单独解决其他目标市场的权利与实际使用。已核见两家产品仍用同名，撤下一个报道标题不会改变产品页的标识。"}],"missing":"缺拟进入市场的当地有效登记、权利商品范围及同名实际商业使用资料。这些证据决定该市场是否需调整产品命名。"},"2026-11-17-a8ed340eec13f598":{"state":"未发现新增知产风险","conclusion":"新增标题在报道语境中指认实际经销商，未见其成为丰疆商品的来源标识。","reason":"11 月 22 日核到采访正文及对方销售公告，明确 Sekido 是受访经销商。共同出现在标题不足以表明背书宣传。","action":"保留对经销商和采访事实的准确表述。用途改为背书或促销主标识时，针对该用法另评。","cutline":"经销商名称使用","checkedDate":"2026-11-22","evidence":[{"label":"Sekido 日文采访正文","url":"https://agriculture.fjdynamics.com/jp/blog/26/agriculture-japan-beyond-automation-how-sekido-and-fjdynamics-give-farmers-more-time-1228"},{"label":"经销商公开销售公告","url":"https://sekidocorp.com/20210817_23288/"},{"label":"日本公开农业经销商法人记录","url":"https://info.gbiz.go.jp/hojin/ichiran?hojinBango=3012401022932"}],"change":"农业首页 News and insights 摘录新增 Sekido 经销商访谈标题。","analysisSteps":[{"label":"核身份与句式","text":"日文采访正文介绍农机经销业务，对方销售公告支持该身份。标题把 Sekido 指向受访经销商，未见用它命名丰疆产品。"},{"label":"核对权利主体","text":"日本公开企业登记显示经销商与另一个同名登记主体为不同法人。同名商标的登记主体和服务范围应分别比对。"},{"label":"限定当天结论","text":"17 日只有报道标题变化。照片、署名和引语用途属于 18 日新封面事项。"}]},"2026-11-17-bb1570761b88d6ba":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-17-b5e029ccf386ced8":{"state":"新增或升高","conclusion":"同一 ZIP 四处引用首次形成软件分发许可核对线索。组件变更与新增义务均未证实。","reason":"原日报列 P1、S1、S2、P2 引用同一 ZIP。11 月 22 日读取可取得的安装程序版本 1.000.D.0210，无法用这一成品还原 17 日前后包。","action":"取得当日安装包或能识别成品的散列。若版本不同，再逐组件对照新增组件、许可证、随包声明及适用的分发要求。","cutline":"软件分发许可线索","missing":"缺 17 日前后 ZIP 或散列与对应组件清单。文件可确定版本是否变化，组件清单可确定是否引入新许可义务。","checkedDate":"2026-11-22","evidence":[{"label":"Trion 官方发行记录","url":"https://www.fjdtrion.com/support-center/fjd-trion-model-pc"}],"change":"P1、S1、S2、P2 四个中文产品页共用的 Trion Model ZIP 地址报告附件内容变化。","analysisSteps":[{"label":"归并分发对象","text":"17 日日报的 P1、S1、S2、P2 四页均指向同一 ZIP。未有各日成品版本或散列可区分同址覆盖与重复记录。"},{"label":"核对可得版本","text":"11 月 22 日从取得的安装程序资源读到 1.000.D.0210，官方支持页另列发行标签 V1.000.D.0210.001 和 Qt 源码入口。可识别取到的对象和支持信息。"},{"label":"验证许可触发条件","text":"源码入口无法证明具体 Qt 组件随包分发。把实际成品散列与随包组件、告知材料及分发方式对应，才能逐项判断有无新的义务。"}]},"2026-11-18-b0692a317f3f0366":{"state":"仍存在","conclusion":"同名软件标识线索仍在。移出该封面引用只影响列表展示。","reason":"这是 17 日土耳其报道对应封面。11 月 22 日所见同一报道仍可访问，所见封面无清晰第三方设备标识。该日所见页面无法还原 18 日详情及素材使用。","action":"延续同名标识评估。若把所见照片改作独立推广，按新用途复核可见素材。","cutline":"商标同名与封面使用","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"FieldFusion 土耳其篇正文","url":"https://agriculture.fjdynamics.com/blog/technology-22/agriculture-fieldfusion-prescription-maps-elevating-precision-spraying-efficiency-in-turkiye-1189"},{"label":"FJD FieldFusion 产品页","url":"https://agriculture.fjdynamics.com/products/fieldfusion"},{"label":"Veris FieldFusion 产品页","url":"https://www.veristech.com/software"},{"label":"18 日所列封面原图","url":"https://agriculture.fjdynamics.com/web/image/36050-fcc27e23/Blog%20Post%20%27FieldFusion%20Prescription%20Maps%3A%20Elevating%20Precision%20Spraying%20Efficiency%20in%20T%C3%BCrkiye%27%20cover%20image.webp"}],"change":"农业首页移出与 17 日土耳其处方图报道对应的封面图片地址。","analysisSteps":[{"label":"对应上一日报道","text":"18 日移出的 36050 封面与 17 日同一土耳其篇对应。11 月 22 日见这篇正文与相同封面仍可访问，无法反推恢复日。"},{"label":"分别看封面与产品名","text":"图中见 FJDynamics 和作业车，未见清晰外部设备标识。两家软件在产品页继续用 FieldFusion，软件用途重合，产品命名线索仍在。"}]},"2026-11-18-c36edbcc0311d9a7":{"state":"新增或升高","conclusion":"同一采访续报，新增封面使用带来摄影作品、肖像和具名引语的独立风险线索。","reason":"11 月 22 日按日报地址核对的封面包含可辨识受访者、署名和具名引语，正文可见经销商访谈语境。","action":"采访语境内保留准确事实。把封面、人像或引语改作独立广告、剪辑或新增语种前，按新用途复核。","cutline":"新增封面使用线索","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"日报封面原图","url":"https://agriculture.fjdynamics.com/web/image/39038-ce269b06/%E5%8D%9A%E6%96%87%20%27Japan%20%7C%20Beyond%20Automation%3A%20How%20Sekido%20and%20FJDynamics%20Give%20Farmers%20More%20Time%27%20cover%20image.jpeg"},{"label":"Sekido 日文采访正文","url":"https://agriculture.fjdynamics.com/jp/blog/26/agriculture-japan-beyond-automation-how-sekido-and-fjdynamics-give-farmers-more-time-1228"}],"change":"农业首页新增与 17 日 Sekido 访谈标题对应的封面图片引用。","analysisSteps":[{"label":"验看封面实际内容","text":"11 月 22 日沿日报原址查看 39038 图，正面显示可辨识受访者、具名英文引语及 FJDynamics 和 SEKIDO 字样。"},{"label":"按使用对象分别判断","text":"封面同时使用照片、人物形象和具名引语。采访可支持身份介绍，若图像或引语独立用于广告，传播方式和受众随之改变。"},{"label":"确认实际复用范围","text":"英语和日语报道实用同一封面。日后新增语种、剪辑或独立投放时，分别核照片使用、出镜及具名引语允许的用途。"}]},"2026-11-18-fd36fa65946d72e1":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-18-51148b7a1b97f1dd":{"state":"仍存在","conclusion":"沿用 17 日的软件分发许可线索。此次续报未证实独立发版或新增许可义务。","reason":"仍是同一 ZIP 地址、同一组四个引用页。11 月 22 日取得的版本信息没有与本日成品建立对应。","action":"取得当日安装包或能识别成品的散列。若版本不同，再逐组件对照新增组件、许可证、随包声明及适用的分发要求。","cutline":"软件分发许可线索","missing":"缺 18 日前后 ZIP 或散列与对应组件清单。补齐可判断本日标记是独立换包还是同一事件重复记录。","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"Trion 官方发行记录","url":"https://www.fjdtrion.com/support-center/fjd-trion-model-pc"}],"change":"原日报再次报告四个中文产品页共用的同一 Trion Model ZIP 地址内容变化。","analysisSteps":[{"label":"归并分发对象","text":"18 日日报的 P1、S1、S2、P2 四页均指向同一 ZIP。未有各日成品版本或散列可区分同址覆盖与重复记录。"},{"label":"核对可得版本","text":"11 月 22 日从取得的安装程序资源读到 1.000.D.0210，官方支持页另列发行标签 V1.000.D.0210.001 和 Qt 源码入口。可识别取到的对象和支持信息。"},{"label":"验证许可触发条件","text":"源码入口无法证明具体 Qt 组件随包分发。把实际成品散列与随包组件、告知材料及分发方式对应，才能逐项判断有无新的义务。"}]},"2026-11-19-80efc114807ccadc":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-19-9cc3d4404073adea":{"state":"仍存在","conclusion":"沿用 17 日的软件分发许可线索。此次续报未证实独立发版或新增许可义务。","reason":"仍是同一 ZIP 地址、同一组四个引用页。11 月 22 日取得的版本信息没有与本日成品建立对应。","action":"取得当日安装包或能识别成品的散列。若版本不同，再逐组件对照新增组件、许可证、随包声明及适用的分发要求。","cutline":"软件分发许可线索","missing":"缺 19 日前后 ZIP 或散列与对应组件清单。补齐可判断本日标记是独立换包还是同一事件重复记录。","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"Trion 官方发行记录","url":"https://www.fjdtrion.com/support-center/fjd-trion-model-pc"}],"change":"原日报再次报告四个中文产品页共用的同一 Trion Model ZIP 地址内容变化。","analysisSteps":[{"label":"归并分发对象","text":"19 日日报的 P1、S1、S2、P2 四页均指向同一 ZIP。未有各日成品版本或散列可区分同址覆盖与重复记录。"},{"label":"核对可得版本","text":"11 月 22 日从取得的安装程序资源读到 1.000.D.0210，官方支持页另列发行标签 V1.000.D.0210.001 和 Qt 源码入口。可识别取到的对象和支持信息。"},{"label":"验证许可触发条件","text":"源码入口无法证明具体 Qt 组件随包分发。把实际成品散列与随包组件、告知材料及分发方式对应，才能逐项判断有无新的义务。"}]},"2026-11-19-a9675fc15538789b":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-20-237412aa679eb733":{"state":"仍存在","conclusion":"既有封面与引语使用线索延续，本日未报告新增实质内容。","reason":"20 日前后摘录都有相同采访标题，当日原始材料没有封面截图。11 月 22 日取得的封面原图用于判断素材类型。","action":"按 18 日的素材事项跟踪，只在用途、版本或传播范围发生实际变化时复评。","cutline":"采访封面与具名引语","missing":"缺 20 日可对应版次的封面或截图。补齐后可判断当日封面是否仍出现及有无素材变化。","checkedDate":"2026-11-22","followUp":true,"evidence":[{"label":"Sekido 日文采访正文","url":"https://agriculture.fjdynamics.com/jp/blog/26/agriculture-japan-beyond-automation-how-sekido-and-fjdynamics-give-farmers-more-time-1228"}],"change":"11 月 20 日正文差异的上下文在新旧两侧均保留 Sekido 标题。","analysisSteps":[{"label":"读同日差异","text":"20 日正文对照的前后各有同一 Sekido 标题。当天材料未列封面或图片新增。"},{"label":"沿用已识别用途","text":"可确认 18 日原图有可辨识人物和具名引语。现有证据只支持续报既有线索，需用 20 日对应截图才能判断当日封面本身是否变化。"}]},"2026-11-20-fjd-agriculture-atx":{"state":"资料不足","conclusion":"该页不纳入当日风险结论。","reason":"日报只记录ATX 转向系统页抓取失败，没有得到可供对照的网页内容。","action":"取得当日留存版本或后续有效差异后，再评估具体内容。","cutline":"覆盖不足","missing":"缺该日页面快照或当日可比对差异。补齐后可判断这个页面是否出现与第三方权利或技术披露有关的变更。","followUp":true},"2026-11-20-fjd-agriculture-case-hub":{"state":"未发现新增知产风险","conclusion":"20 日可定位的计数与筛选词变化未发现新增知产风险。当前个别案例封面有并列品牌或人物使用线索，尚不能归入当日。","reason":"原日报差异截断。当前所见案例可用于识别具体品牌或人像用法，其上线日期仍需要历史记录。","action":"先从历史差异定位实际新增案例。若其中确有该类并列标识或人物素材，再按正文语境、封面用途和传播范围判断。","cutline":"案例素材与技术披露","missing":"缺 20 日完整差异及新增案例、媒体清单。补齐后可确认当前所见的案例是否属于当天新增。","change":"Field Case Hub 的案例数由 384 变为 442，场景 73→77、作物 69→75，并增加部分地区和场景筛选词。","analysisSteps":[{"label":"先定当天差异","text":"原日报能确认计数和筛选项更新，截断的部分未提供哪些案例或媒体在 20 日新增。"},{"label":"抽查当前案例用法","text":"11 月 22 日所见墨西哥整畦案例正文提及实际作业的 John Deere，封面有人物。捷克案例正文说明在 CLAAS Arion 530 上搭载 AT2 Max，封面出现“FJD AT2 Max × Claas Arion 530”。"},{"label":"区分风险和日期","text":"实景设备指代可据正文核对，封面并列标识则需核验是否传递合作关系。当前案例的加入日未知，不能计入 20 日新增风险。"}],"checkedDate":"2026-11-22","evidence":[{"label":"当前 Field Case Hub","url":"https://agriculture.fjdynamics.com/field-case-hub"},{"label":"捷克案例封面原图","url":"https://1500006283.vod2.myqcloud.com/4384b243vodtranscq1500006283/d19ea4c25001834828615328166/coverBySnapshot_10_0.jpg"}]},"2026-11-20-fjd-agriculture-famaq":{"state":"新增或升高","conclusion":"新增首页入口带来联合参展报道中的标识、展照和肖像使用线索。现有报道可按事实保留。","reason":"11 月 22 日所核正文描述联合展位、推广及服务转介，公开封面可见双方展牌和到场人员。墨西哥官方记录显示 FAMAQ 商标第 35 类登记。","action":"维持真实参展和服务描述。用于常设背书、二次推广或其他市场时，按新用途分别复核标识、摄影作品和可辨识人物。","cutline":"商标、展照及肖像","checkedDate":"2026-11-22","evidence":[{"label":"FAMAQ 西语报道正文","url":"https://agriculture.fjdynamics.com/es/blog/exposicion-23/expo-agroalimentaria-guanajuato-2026-recap-1237"},{"label":"墨西哥 IMPI 注册记录","url":"https://marcia.impi.gob.mx/marcas/search/details/RM202202774484"},{"label":"FAMAQ 公开设备页","url":"https://famaq.com.mx/famaq.php?product=219&view=product_detail"},{"label":"原报道封面","url":"https://agriculture.fjdynamics.com/web/image/39697-1129df2d/Blog%20Post%20%27From%20Stand%20E-700%20to%20the%20Field%3A%20FJDynamics%20and%20FAMAQ%20at%20Expo%20AgroAlimentaria%20Guanajuato%202026%27%20cover%20image.webp"}],"change":"农业首页 News and insights 摘录增加 FAMAQ 墨西哥展会报道标题及入口。","analysisSteps":[{"label":"核标识出现的位置","text":"11 月 22 日西语正文确认双方在墨西哥 E-700 联合展位，正文引导联系设备、安装和培训。封面同时显示双方展牌与现场人员。"},{"label":"比对权利和业务","text":"墨西哥 IMPI 公开注册 2461940 的第 35 类含农机等销售，与本文的渠道服务语境相关。正文和公开销售公告可支撑实际合作的表述。"},{"label":"判断用途变化","text":"首页新增入口扩大展会报道的可见范围。若将联名标识、展照或可辨识人物另用于长期推广，需按各素材及用途独立判断。"}],"missing":"原日报未附当日报道封面或全文快照。找到同日留存可确认标识和人像是否已随 20 日新增首页入口展示。"},"2026-11-20-fjd-agriculture-fieldfusion":{"state":"仍存在","conclusion":"移出首页的 AYM 报道入口未消除既有公开。此次新增技术披露未获证实。","reason":"11 月 22 日文章详情仍可读到光学测产、含水率、产量制图和云同步。其它公开稿亦涉及相关功能，20 日的标题差异无法确定首次披露。","action":"保留已有报道。扩写新增实现步骤前，对照相关申请与可验证的最早公开资料。","cutline":"既有技术公开","missing":"缺能定位首次公开日期的历史版本及同一技术组合对应的公开申请文本。两者会影响专利新颖性判断。","checkedDate":"2026-11-22","evidence":[{"label":"AYM 报道正文","url":"https://agriculture.fjdynamics.com/blog/technology-22/agriculture-maximizing-harvest-potential-the-power-of-fjd-aym-and-fieldfusion-for-smart-planting-planning-1190"},{"label":"另篇公开报道 209","url":"https://agriculture.fjdynamics.com/tr/blog/teknoloji-22/agriculture-maximizing-harvest-potential-the-power-of-fjd-aym-and-fieldfusion-for-smart-planting-planning-209"},{"label":"公开申请 WO2020206944A1","url":"https://patents.google.com/patent/WO2020206944A1/en"},{"label":"较早测产专题 973","url":"https://agriculture.fjdynamics.com/de/blog/technologie-22/agriculture-the-simple-science-how-fjd-aym-yield-monitoring-solution-unlocks-your-farm-s-hidden-profit-973"}],"change":"农业首页移出含 FJD AYM 和 FieldFusion 的测产报道标题。此条对应 AYM 篇，17 日是土耳其处方图篇。","analysisSteps":[{"label":"识别具体技术链","text":"AYM 篇 1190 公开光学流量与水分测量、GNSS 定位、产量分层制图和云端同步。17 日土耳其报道讲的是喷洒处方图。"},{"label":"对照更早资料和申请","text":"较早专题 973 已写光学、水分和定位。公开申请 WO2020206944A1 讲按含水量调收割速度，所见内容未覆盖同一制图与云同步链路。"},{"label":"锁定所缺时点","text":"需按具体技术组合定位最早可验证公开日和相关申请时点。20 日日报只有标题入口的移出，不能确定技术首次公开。"}]},"2026-11-20-fjd-cn-no-change":{"state":"未发现新增知产风险","conclusion":"成功覆盖的范围内未报告可供分析的变更。","reason":"此结论依据原日报当日已抓页面，覆盖之外的风险没有数据支持。","action":"保持例行跟踪。取得新增变更记录后再启动知产分析。","cutline":"限原日报成功覆盖"},"2026-11-20-fjd-international-n10-pdf":{"state":"未发现新增知产风险","conclusion":"原日报所见断链仅影响下载，未发现直接知产影响。","reason":"404 说明对应地址在当日无法取文件。缺少文件内容，因此不能判断该文件包含什么或是否在其他入口继续公开。","action":"将该条保留为链接异常。如有版本对照指向素材或具体技术内容变化，再分析该内容。","cutline":"下载状态","missing":"缺当日文件版本或可定位的存档。找到后才能判断素材、技术内容或公开范围变化。","analysisSteps":[{"label":"读到的证据","text":"原日报只给出 PDF 地址返回 404。没有 PDF 内容、版本和该文件可能使用的其他入口。"},{"label":"确定影响范围","text":"该结果只支持这条地址不可下载。如要判断技术公开范围曾否减少，应定位同一版本是否已发布、有无替代入口和历史留存。"}]},"2026-11-20-fjd-international-spraying-pdf":{"state":"未发现新增知产风险","conclusion":"原日报所见断链仅影响下载，未发现直接知产影响。","reason":"404 说明对应地址在当日无法取文件。缺少文件内容，因此不能判断该文件包含什么或是否在其他入口继续公开。","action":"将该条保留为链接异常。如有版本对照指向素材或具体技术内容变化，再分析该内容。","cutline":"下载状态","missing":"缺当日文件版本或可定位的存档。找到后才能判断素材、技术内容或公开范围变化。","analysisSteps":[{"label":"读到的证据","text":"原日报只给出 PDF 地址返回 404。没有 PDF 内容、版本和该文件可能使用的其他入口。"},{"label":"确定影响范围","text":"该结果只支持这条地址不可下载。如要判断技术公开范围曾否减少，应定位同一版本是否已发布、有无替代入口和历史留存。"}]},"2026-11-20-fjd-landscaping-sports-field":{"state":"未发现新增知产风险","conclusion":"已取得的按钮文字前后一致，未见新增文字知产风险。媒体与链接目标的变化仍未知。","reason":"原日报的可见差异是等文案替换，不含当日按钮跳转目标和关联媒体。","action":"有原始快照再比较按钮目标、图片及视频。如确认新增外部素材，再评估具体用法。","cutline":"限可见文字","missing":"缺前后页面的按钮链接及媒体引用。补齐后可判断文字以外是否引入第三方素材。","change":"园林站运动场解决方案页有七处按钮差异块，所列按钮文字逐项相同。","analysisSteps":[{"label":"对照原日报前后文案","text":"Become a dealer、Watch Video、Start Now、Learn more 和 Request A Demo 等按钮在表 3 对照中逐项一致。"},{"label":"核验当前链接所能说明的事","text":"11 月 22 日打开德语页面的 Watch Video，当前指向 FJDLandscaping 发布的 YouTube 视频。可确认现时指向与发布者，旧地址及素材变化仍未知。"},{"label":"明确复评触发","text":"若历史快照显示视频 ID 或媒体引用改变，应只按实际新增媒体检查第三方图形、人物或素材。"}],"checkedDate":"2026-11-22","evidence":[{"label":"德语方案页当前视频","url":"https://www.youtube.com/watch?v=7In6_DKFCAA"}]}};
+const publishedIpProvenance = {"a":{"2026-11-20-fjd-agriculture-famaq":{"verified":false,"locator":"已核对上传原件 · 第 26 段／表格 1"},"2026-11-20-fjd-agriculture-fieldfusion":{"verified":false,"locator":"已核对上传原件 · 第 26 段／表格 1"},"2026-11-20-fjd-agriculture-case-hub":{"verified":false,"locator":"已核对上传原件 · 第 28 段／表格 2"},"2026-11-20-fjd-landscaping-sports-field":{"verified":false,"locator":"已核对上传原件 · 第 30 段／表格 3"},"2026-11-20-fjd-agriculture-atx":{"verified":false,"locator":"已核对上传原件 · 第 24 段"},"2026-11-20-fjd-international-n10-pdf":{"verified":false,"locator":"已核对上传原件 · 第 32 段"},"2026-11-20-fjd-international-spraying-pdf":{"verified":false,"locator":"已核对上传原件 · 第 34 段"},"2026-11-20-fjd-cn-no-change":{"verified":false,"locator":"已核对上传原件 · 中国官网变化明细"},"2026-11-20-237412aa679eb733":{"verified":false,"locator":"已核对上传原件 · 第 26 段／表格 1"},"2026-11-19-a9675fc15538789b":{"verified":false,"locator":"已核对上传原件 · 国际官网变化明细"},"2026-11-19-80efc114807ccadc":{"verified":false,"locator":"已核对上传原件 · 第 28 段"},"2026-11-19-9cc3d4404073adea":{"verified":false,"locator":"已核对上传原件 · 第 12 段／第 13 段"},"2026-11-18-fd36fa65946d72e1":{"verified":false,"locator":"已核对上传原件 · 第 33 段"},"2026-11-18-51148b7a1b97f1dd":{"verified":false,"locator":"已核对上传原件 · 第 12 段／第 13 段"},"2026-11-18-c36edbcc0311d9a7":{"verified":false,"locator":"已核对上传原件 · 第 35 段／图片变化第 24 段"},"2026-11-18-b0692a317f3f0366":{"verified":false,"locator":"已核对上传原件 · 第 37 段／图片变化第 25 段"},"2026-11-17-bb1570761b88d6ba":{"verified":false,"locator":"已核对上传原件 · 第 29 段"},"2026-11-17-b5e029ccf386ced8":{"verified":false,"locator":"已核对上传原件 · 第 12 段／第 13 段"},"2026-11-17-a8ed340eec13f598":{"verified":false,"locator":"已核对上传原件 · 第 31 段／表格 1"},"2026-11-17-2f8251e762df75a6":{"verified":false,"locator":"已核对上传原件 · 第 31 段／表格 1"},"2026-11-16-bb8f8e1d17be0494":{"verified":false,"locator":"已核对上传原件 · 中国官网变化明细"},"2026-11-16-0ddfe1543a7d6f2d":{"verified":false,"locator":"已核对上传原件 · 第 11 段"},"2026-11-16-327e4a475e6fb392":{"verified":false,"locator":"已核对上传原件 · 第 37 段"},"2026-11-16-1c3c07cddd856977":{"verified":false,"locator":"已核对上传原件 · 第 39 段／图片变化第 26 段"},"2026-11-16-4a4972255251cd18":{"verified":false,"locator":"已核对上传原件 · 第 47 段"},"2026-11-16-e1bc1babe3c1fefc":{"verified":false,"locator":"已核对上传原件 · 第 41 段／图片变化第 27 段起"},"2026-11-15-30945d2dcce7da05":{"verified":false,"locator":"已核对上传原件 · 中国官网变化明细"},"2026-11-15-1e91bfd1a6817018":{"verified":false,"locator":"已核对上传原件 · 第 11 段"},"2026-11-15-7aace744eabd0701":{"verified":false,"locator":"已核对上传原件 · 第 37 段"},"2026-11-15-76700e33ac28a3b5":{"verified":false,"locator":"已核对上传原件 · 第 39 段／图片变化第 26 段"},"2026-11-15-e47548f302599671":{"verified":false,"locator":"已核对上传原件 · 第 47 段"},"2026-11-15-7bd2e384b66a7c93":{"verified":false,"locator":"已核对上传原件 · 第 41 段／图片变化第 27 段起"},"2026-11-14-4187c599be63e020":{"verified":false,"locator":"已核对上传原件 · 中国官网变化明细"},"2026-11-14-49b58058bc8a7cfc":{"verified":false,"locator":"已核对上传原件 · 第 11 段"},"2026-11-14-a06d11ede428a30a":{"verified":false,"locator":"已核对上传原件 · 第 40 段"},"2026-11-14-35f3215839a3460c":{"verified":false,"locator":"已核对上传原件 · 第 42 段／图片变化第 28 段"},"2026-11-14-50de78d0444fd1ef":{"verified":false,"locator":"已核对上传原件 · 第 44 段／图片变化第 29 段"},"2026-11-14-0e3d85736cda5c4b":{"verified":false,"locator":"已核对上传原件 · 第 46 段／图片变化第 30 段"},"2026-11-14-967b4dfc76eefc66":{"verified":false,"locator":"已核对上传原件 · 第 48 段"},"2026-11-14-400dd45204505b74":{"verified":false,"locator":"已核对上传原件 · 第 50 段／表格 1"},"2026-11-14-067d22b43f819588":{"verified":false,"locator":"已核对上传原件 · 第 52 段／图片变化第 31 段"},"2026-11-14-61e4c1a6369def52":{"verified":false,"locator":"已核对上传原件 · 第 54 段／图片变化第 32 段"}},"b":{"2026-11-14-35f3215839a3460c":{"verified":true,"locator":"农业站｜首页动画"},"2026-11-14-50de78d0444fd1ef":{"verified":true,"locator":"农业站｜首页动画"},"2026-11-14-0e3d85736cda5c4b":{"verified":true,"locator":"农业站｜首页动画"},"2026-11-14-967b4dfc76eefc66":{"verified":true,"locator":"园林站｜RM21 产品页"},"2026-11-14-400dd45204505b74":{"verified":true,"locator":"园林站｜S100 Pro R 产品页"},"2026-11-14-067d22b43f819588":{"verified":true,"locator":"园林站｜S100 Pro R 产品页"},"2026-11-14-61e4c1a6369def52":{"verified":true,"locator":"园林站｜S100 Pro R 产品页"},"2026-11-15-76700e33ac28a3b5":{"verified":true,"locator":"农业站｜首页与共用图标"},"2026-11-15-7bd2e384b66a7c93":{"verified":true,"locator":"农业站｜首页与共用图标"},"2026-11-15-e47548f302599671":{"verified":true,"locator":"园林站｜RM21 产品页续报"},"2026-11-16-1c3c07cddd856977":{"verified":true,"locator":"农业站｜首页与共用图标续报"},"2026-11-16-e1bc1babe3c1fefc":{"verified":true,"locator":"农业站｜首页与共用图标续报"},"2026-11-16-4a4972255251cd18":{"verified":true,"locator":"园林站｜RM21 产品页续报"},"2026-11-17-b5e029ccf386ced8":{"verified":true,"locator":"中国站｜Trion Model 安装包"},"2026-11-17-a8ed340eec13f598":{"verified":true,"locator":"农业站｜首页新增 Sekido 采访标题"},"2026-11-17-2f8251e762df75a6":{"verified":true,"locator":"农业站｜首页移出 FieldFusion 土耳其报道标题"},"2026-11-18-51148b7a1b97f1dd":{"verified":true,"locator":"中国站｜Trion Model 安装包续报"},"2026-11-18-c36edbcc0311d9a7":{"verified":true,"locator":"农业站｜首页检出 Sekido 采访封面"},"2026-11-18-b0692a317f3f0366":{"verified":true,"locator":"农业站｜首页移出 FieldFusion 土耳其文章封面续报"},"2026-11-19-9cc3d4404073adea":{"verified":true,"locator":"中国站｜Trion Model 安装包续报"},"2026-11-20-fjd-agriculture-famaq":{"verified":true,"locator":"农业站｜首页新增 FAMAQ 展会报道标题"},"2026-11-20-fjd-agriculture-fieldfusion":{"verified":true,"locator":"农业站｜首页移出 FJD AYM／FieldFusion 测产报道标题"},"2026-11-20-fjd-agriculture-case-hub":{"verified":true,"locator":"农业站｜Field Case Hub 计数及筛选项"},"2026-11-20-fjd-landscaping-sports-field":{"verified":true,"locator":"园林站｜运动场方案按钮"},"2026-11-20-237412aa679eb733":{"verified":true,"locator":"农业站｜Sekido 首页标题续报"},"2026-11-20-fjd-international-n10-pdf":{"verified":true,"locator":"附件下载｜两个画册链接"},"2026-11-20-fjd-international-spraying-pdf":{"verified":true,"locator":"附件下载｜两个画册链接"}},"period":{"start":"2026-11-14","end":"2026-11-20"}};
 const publishedIpEvents = new Map(state.data.events.map(event => [event.id, JSON.stringify(event)]));
 function renderPublishedIpDaily() {
   const rows = state.data.events.filter(event => publishedIpEvents.get(event.id) === JSON.stringify(event));
@@ -2228,7 +2425,7 @@ function renderPublishedIpDaily() {
   const assessments = Object.fromEntries(Object.entries(publishedIpAssessments).filter(([id]) => accepted.has(id)));
   const sourcesA = Object.fromEntries(Object.entries(publishedIpProvenance.a || {}).filter(([id]) => accepted.has(id)));
   const sourcesB = Object.fromEntries(rows.flatMap(event => {
-    const source = publishedIpProvenance.b?.[event.id] || publishedIpProvenance.b?.[event.date];
+    const source = publishedIpProvenance.b?.[event.id];
     return source ? [[event.id, source]] : [];
   }));
   renderIpDailyView(state.data, assessments, {...publishedIpProvenance, a: sourcesA, b: sourcesB});
