@@ -22,7 +22,8 @@
   --red:#933739;
   --red-soft:#faeceb;
   --radius:10px;
-  --shell:1360px;
+  --page-gutter:clamp(24px,1.6vw,32px);
+  --reading-width:56rem;
 }
 * { box-sizing:border-box }
 [hidden] { display:none!important }
@@ -47,10 +48,8 @@ a { color:var(--blue);overflow-wrap:anywhere;text-underline-offset:.18em }
 h1,h2,h3,h4,p,figure { margin:0 }
 header { background:var(--card);border-bottom:1px solid var(--line) }
 .top {
-  max-width:var(--shell);
-  min-height:64px;
-  margin:auto;
-  padding:0 2rem;
+  min-height:56px;
+  padding:0 var(--page-gutter);
   display:flex;
   align-items:center;
   gap:1.65rem;
@@ -82,19 +81,6 @@ h1 {
   background:currentColor;
 }
 .brand-icon span { margin:3px 0;width:10px }
-.top-nav { display:flex;align-self:stretch;align-items:stretch;gap:.65rem }
-.top-nav button {
-  border:0;
-  border-bottom:2px solid transparent;
-  border-radius:0;
-  padding:0 .55rem;
-  background:transparent;
-  color:var(--muted);
-  white-space:nowrap;
-  font-weight:610;
-}
-.top-nav button:hover { color:var(--blue) }
-.top-nav button:is([aria-current=page],[aria-pressed=true]) { border-bottom-color:var(--blue);color:var(--blue) }
 .top-actions { margin-left:auto;position:relative;flex:none }
 .top-actions summary {
   display:flex;
@@ -136,15 +122,15 @@ h1 {
 .tools-menu button { text-align:left;border-color:transparent;font-size:.88rem }
 .tools-menu button:hover { background:var(--wash) }
 
-main { max-width:var(--shell);margin:auto;padding:1.5rem 2rem 1.5rem }
-.workbench-heading,.archive-heading {
+main { padding:1.12rem var(--page-gutter) 1.12rem }
+.workbench-heading {
   display:flex;
   align-items:baseline;
   justify-content:space-between;
   gap:.4rem 1rem;
-  margin:0 0 .95rem;
+  margin:0 0 .68rem;
 }
-.workbench-heading h2,.archive-heading h2 {
+.workbench-heading h2 {
   font-size:clamp(1.25rem,2.5vw,1.56rem);
   font-weight:700;
   line-height:1.35;
@@ -153,10 +139,10 @@ main { max-width:var(--shell);margin:auto;padding:1.5rem 2rem 1.5rem }
 .view-meta { color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums }
 .workbench-layout {
   display:grid;
-  grid-template-columns:minmax(17rem,21rem) minmax(0,1fr);
+  grid-template-columns:clamp(280px,21vw,336px) minmax(0,1fr);
   min-height:30rem;
-  height:calc(100vh - 11.25rem);
-  height:calc(100dvh - 11.25rem);
+  height:calc(100vh - 12.35rem);
+  height:calc(100dvh - 12.35rem);
   overflow:hidden;
   border:1px solid var(--line);
   border-radius:var(--radius);
@@ -256,6 +242,7 @@ main { max-width:var(--shell);margin:auto;padding:1.5rem 2rem 1.5rem }
 .case-conclusion {
   margin:.23rem 0 0;
   padding:.76rem .92rem;
+  padding-inline-end:max(.92rem, calc(100% - var(--reading-width)));
   color:var(--ink);
   font-size:1.12rem;
   font-weight:680;
@@ -283,7 +270,7 @@ main { max-width:var(--shell);margin:auto;padding:1.5rem 2rem 1.5rem }
   grid-template-columns:3.15rem minmax(0,1fr);
   gap:.3rem .42rem;
 }
-.case-decision-points dd { margin:0;color:#31424a }
+.case-decision-points dd { margin:0;color:#31424a;max-inline-size:var(--reading-width) }
 .case-actions,.detail-links { display:flex;align-items:center;gap:.38rem .7rem;flex-wrap:wrap }
 .case-actions { margin-top:.8rem }
 .case-actions a,.case-actions button,.history-link,.current-case-open,.thread-open {
@@ -301,6 +288,8 @@ main { max-width:var(--shell);margin:auto;padding:1.5rem 2rem 1.5rem }
 .case-section-heading h3 { font-size:1rem;font-weight:690 }
 .case-section-heading time,.case-section-heading span { color:var(--muted);font-size:.8rem;font-weight:450 }
 .case-section p { font-size:.91rem }
+.case-section > p,.case-section .case-delta,.case-section .case-data-note,
+.case-section .evidence-list li,.analysis-points dd { max-inline-size:var(--reading-width) }
 .case-section p+p { margin-top:.36rem }
 .case-evidence,.case-records,.case-related,.case-scope-list,.case-analysis {
   display:grid;
@@ -367,10 +356,47 @@ main { max-width:var(--shell);margin:auto;padding:1.5rem 2rem 1.5rem }
 .analysis-points dd { margin:0 }
 .review-field>strong { font-weight:650 }
 
-.archive-view { max-width:1150px;margin:auto }
-.archive-heading { align-items:end }
-.archive-heading .archive-scope { color:var(--muted);font-size:.82rem;margin-top:.12rem }
-.archive-heading .archive-scope:empty,.view-meta:empty,#metrics:empty,#status:empty,#report-state:empty { display:none }
+.archive-view {
+  margin-top:.7rem;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--card);
+}
+.archive-view > summary {
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  min-height:46px;
+  padding:.55rem .9rem;
+  list-style:none;
+  border-radius:inherit;
+  font-weight:680;
+}
+.archive-view > summary:hover,.history-day > summary:hover { background:var(--wash) }
+.archive-view > summary::-webkit-details-marker,.history-day > summary::-webkit-details-marker { display:none }
+.archive-view > summary::before,.history-day > summary::before {
+  content:"";
+  flex:none;
+  width:.35rem;
+  height:.35rem;
+  border-right:1.5px solid currentColor;
+  border-bottom:1.5px solid currentColor;
+  transform:rotate(-45deg);
+  color:var(--blue);
+}
+.archive-view[open] > summary::before,.history-day[open] > summary::before { transform:rotate(45deg) translateY(-2px) }
+.archive-view[open] > summary { border-bottom:1px solid var(--line);border-radius:var(--radius) var(--radius) 0 0 }
+.archive-body { padding:.85rem .9rem 1rem;min-width:0 }
+.archive-heading {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:.15rem .9rem;
+  margin-bottom:.3rem;
+}
+.archive-scope { color:var(--muted);font-size:.84rem }
+.archive-scope:empty,.view-meta:empty,#metrics:empty,#status:empty,#report-state:empty { display:none }
 .archive-view #status { color:var(--muted);font-size:.84rem;margin-bottom:.5rem }
 .report-state { margin:0 0 .75rem;color:var(--muted);font-size:.86rem }
 .archive-line {
@@ -399,10 +425,14 @@ main { max-width:var(--shell);margin:auto;padding:1.5rem 2rem 1.5rem }
 .filters input,.filters select { width:100%;font-weight:400 }
 .thread-filter { display:flex;align-items:center;justify-content:space-between;gap:.7rem;margin:0 0 .85rem;padding:.46rem .64rem;background:var(--soft);border-radius:6px;font-size:.86rem }
 .thread-filter button { color:var(--blue);font-size:.82rem }
-.day { margin-bottom:1.3rem }
+.day { margin-bottom:.58rem }
 .day-heading { display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap;margin-bottom:.4rem }
 .day time { font-size:.99rem;letter-spacing:.015em;font-weight:720;font-variant-numeric:tabular-nums }
 .day-heading .count { color:var(--muted);font-size:.82rem;font-weight:430 }
+.history-day { border:1px solid var(--line);border-radius:7px;padding:0 .7rem }
+.history-day > summary { align-items:center;min-height:37px;margin:0 -.7rem;padding:.31rem .7rem;border-radius:7px;list-style:none }
+.history-day[open] > summary { margin-bottom:.46rem;border-bottom:1px solid var(--line);border-radius:7px 7px 0 0 }
+.history-day > .entries { margin:.45rem 0 .65rem }
 .coverage {
   display:grid;
   gap:.29rem;
@@ -459,7 +489,7 @@ main { max-width:var(--shell);margin:auto;padding:1.5rem 2rem 1.5rem }
   display:block;
   width:100%;
   height:auto;
-  max-height:16rem;
+  max-height:clamp(16rem,24vw,29rem);
   object-fit:contain;
   object-position:center;
   margin-top:.24rem;
@@ -480,25 +510,30 @@ dialog p,dialog li { margin-top:.51rem }
 dialog ol { padding-left:1.38rem }
 
 @media(max-width:970px) {
-  .top,main { padding-inline:1.35rem }
-  .workbench-layout { grid-template-columns:minmax(14.4rem,17.5rem) minmax(0,1fr) }
   .case-detail-header,.case-decision { padding-inline:1.35rem }
   .case-section { margin-inline:1.35rem }
+  .filters { grid-template-columns:repeat(3,minmax(0,1fr)) }
+}
+@media(min-width:1550px) {
+  .case-section > .evidence-list,.case-section > .case-records {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    column-gap:2rem;
+  }
+  .case-event-row { align-content:start }
+  .case-event-row+.case-event-row { border-top:0 }
 }
 @media(max-width:700px) {
-  .top { min-height:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;padding:.54rem .85rem 0;gap:.18rem .5rem }
-  .top h1 { font-size:1rem;line-height:1.25;gap:.47rem }
+  .top { min-height:49px;padding:.32rem .85rem;gap:.5rem }
+  .top h1 { min-width:0;font-size:1rem;line-height:1.25;gap:.47rem }
   .brand-icon { width:26px;height:26px }
-  .top-nav { grid-row:2;grid-column:1/-1;gap:.75rem;min-height:39px }
-  .top-nav button { padding:.27rem .32rem .32rem;font-size:.87rem }
-  .top-actions { grid-row:1;grid-column:2 }
   .top-actions summary { padding:.3rem .48rem;font-size:.78rem }
-  main { padding:1rem .85rem 1.45rem }
-  .workbench-heading,.archive-heading { margin-bottom:.65rem;align-items:start;flex-wrap:wrap }
+  main { padding:.85rem .85rem 1.25rem }
+  .workbench-heading { margin-bottom:.65rem;align-items:start;flex-wrap:wrap }
   .workbench-heading .view-meta,.archive-heading .view-meta { font-size:.77rem }
   .workbench-layout { display:block;height:auto;min-height:0;overflow:visible;border-radius:8px }
   .queue-pane,.detail-pane { border:0;scrollbar-gutter:auto;overscroll-behavior:auto;overflow:visible }
-  .workbench-layout:not([data-mode=queue]) .queue-pane,.workbench-layout[data-mode=queue] .detail-pane { display:none }
+  .workbench-layout:not([data-mode=queue]) .queue-pane { display:none }
+  .workbench-layout[data-mode=queue] .queue-pane { border-bottom:1px solid var(--line) }
   .queue-toolbar { min-height:43px;padding:.46rem .63rem }
   .review-row { min-height:61px;padding:.54rem .68rem }
   .review-mobile-toggle {
@@ -530,6 +565,7 @@ dialog ol { padding-left:1.38rem }
   .case-section p { font-size:.86rem }
   .case-compare,.case-media-pair { gap:.35rem }
   .case-compare>:is(div,figure),.case-media-pair>figure { padding:.35rem .39rem;font-size:.81rem }
+  .archive-body { padding:.6rem .63rem .7rem }
   .filters { grid-template-columns:repeat(2,minmax(0,1fr));padding:.55rem;gap:.48rem }
   .filters label:first-child { grid-column:1/-1 }
   .entry { padding:.58rem .63rem }
@@ -545,10 +581,6 @@ dialog ol { padding-left:1.38rem }
 <header>
   <div class="top">
     <h1><span class="brand-icon" aria-hidden="true"><span></span></span>官网变更与风险轨迹</h1>
-    <nav class="top-nav" aria-label="看板视图">
-      <button id="nav-review" type="button" aria-current="page" aria-controls="review-queue">复核工作台</button>
-      <button id="nav-archive" type="button" aria-controls="archive-view">变更档案</button>
-    </nav>
     <details class="top-actions">
       <summary>工具</summary>
       <div class="tools-menu">
@@ -584,27 +616,27 @@ dialog ol { padding-left:1.38rem }
       <div id="review-detail" class="detail-pane" aria-label="事项详情"></div>
     </div>
   </section>
-  <section id="archive-view" class="archive-view" aria-labelledby="archive-title" hidden>
-    <div class="archive-heading">
-      <div>
-        <h2 id="archive-title">变更档案</h2>
+  <details id="archive-view" class="archive-view" aria-labelledby="archive-title">
+    <summary id="history-toggle"><span id="archive-title">历史记录</span></summary>
+    <div class="archive-body">
+      <div class="archive-heading">
         <p id="scope-title" class="archive-scope" tabindex="-1"></p>
+        <p id="scope-subtitle" class="view-meta"></p>
       </div>
-      <p id="scope-subtitle" class="view-meta"></p>
+      <p id="status" role="status" aria-live="polite"></p>
+      <div id="report-state" class="report-state" role="status" aria-live="polite"></div>
+      <div id="metrics" class="archive-line" aria-label="历史记录摘要"></div>
+      <div class="filters" aria-label="历史记录筛选">
+        <label>搜索<input id="search" type="search" placeholder="标题、网址或证据"></label>
+        <label id="site-overview">站点<select id="site"><option value="">全部站点</option></select></label>
+        <label>日期<select id="date"><option value="">所有日期</option></select></label>
+        <label>记录类型<select id="type"><option value="">所有类型</option><option>变更</option><option>复核观察</option><option>采集异常</option><option>无变更</option></select></label>
+        <label>历史风险<select id="risk"><option value="">全部</option><option value="review">新增线索或风险升高</option><option value="lower">风险降低</option><option value="unknown">历史证据未齐</option><option value="stable">风险不变</option></select></label>
+      </div>
+      <div class="thread-filter" id="thread-filter" hidden><strong id="thread-title"></strong><button id="reset-thread" type="button">返回完整时间线</button></div>
+      <div id="timeline"></div>
     </div>
-    <p id="status" role="status" aria-live="polite"></p>
-    <div id="report-state" class="report-state" role="status" aria-live="polite"></div>
-    <div id="metrics" class="archive-line" aria-label="档案摘要"></div>
-    <div class="filters" aria-label="档案筛选">
-      <label>搜索<input id="search" type="search" placeholder="标题、网址或证据"></label>
-      <label id="site-overview">站点<select id="site"><option value="">全部站点</option></select></label>
-      <label>日期<select id="date"><option value="">所有日期</option></select></label>
-      <label>记录类型<select id="type"><option value="">所有类型</option><option>变更</option><option>复核观察</option><option>采集异常</option><option>无变更</option></select></label>
-      <label>历史风险<select id="risk"><option value="">全部</option><option value="review">新增线索或风险升高</option><option value="lower">风险降低</option><option value="unknown">历史证据未齐</option><option value="stable">风险不变</option></select></label>
-    </div>
-    <div class="thread-filter" id="thread-filter" hidden><strong id="thread-title"></strong><button id="reset-thread" type="button">返回完整时间线</button></div>
-    <div id="timeline"></div>
-  </section>
+  </details>
 </main>
 <dialog id="method" aria-labelledby="method-title">
   <div class="dialog-head"><h2 id="method-title">评估口径</h2><button id="close-method" type="button">关闭</button></div>
@@ -1000,7 +1032,7 @@ function renderWorkbenchDetail(event, decision, {openEvent, openThread, caseEven
     records.append(row);
   }
   related.append(records);
-  if (caseEvents.length > 1) related.append(workbenchButton('在变更档案查看这 ' + caseEvents.length + ' 条记录', () => openThread(key)));
+  if (caseEvents.length > 1) related.append(workbenchButton('在历史记录查看这 ' + caseEvents.length + ' 条记录', () => openThread(key)));
 
   const actions = doc('div', 'case-actions');
   for (const [label, section] of [['查看证据', check && current], ['查看相关事件', caseEvents.length > 1 && related]]) {
@@ -1020,23 +1052,28 @@ function renderWorkbenchDetail(event, decision, {openEvent, openThread, caseEven
 }
 
 const routeParams = {
-  view:'view', caseKey:'case', category:'category', mobile:'mobile',
+  caseKey:'case', category:'category', mobile:'mobile',
   site:'site', date:'date', query:'q', type:'type', risk:'risk', thread:'thread', eventId:'event'
 };
 const defaultRoute = {
-  view:'review', caseKey:'', category:'', mobile:'home',
+  historyOpen:false, caseKey:'', category:'', mobile:'home',
   site:'', date:'', query:'', type:'', risk:'', thread:'', eventId:''
 };
 const archiveFields = new Map([['site','site'],['date','date'],['search','query'],['type','type'],['risk','risk']]);
+const archiveRouteFields = [...archiveFields.values(),'thread','eventId'];
 const legacyArchive = new Set(['archive-view','site-overview','scope-title','timeline','sites','scope-note','search','date','type','risk']);
 const narrowWorkspace = window.matchMedia('(max-width: 700px)');
 const positionsKey = 'fjd-site-history:view-positions';
 const titlesBySite = () => new Map(state.data.sites.map(site=>[site.id,site.label]));
+const historyPanel = el('archive-view');
 let route;
 let queueFingerprint;
 let detailFingerprint=null;
+let archiveFingerprint;
 let scrollTimer;
 let queueMobileScroll = 0;
+const expandedDays = new Set();
+const collapsedDays = new Set();
 
 function formatPeriod(dates) {
   return dates.length>1?dates.at(-1)+' 至 '+dates[0]:dates[0]||'';
@@ -1057,6 +1094,9 @@ function readRoute() {
   for(const [field,param] of Object.entries(routeParams)) {
     if(url.searchParams.has(param)) values[field]=url.searchParams.get(param);
   }
+  const disclosure=url.searchParams.get('history');
+  values.historyOpen=disclosure==='open'||(disclosure!=='closed'&&
+    (url.searchParams.get('view')==='archive'||archiveRouteFields.some(field=>values[field])));
   let anchor='';
   try { anchor=decodeURIComponent(url.hash.slice(1)); } catch { /* Malformed anchors do not change the view. */ }
   if(anchor) {
@@ -1065,13 +1105,11 @@ function readRoute() {
     const eventId=anchor.startsWith('event-')?anchor.slice(6):anchor;
     const event=state.data.events.find(item=>item.id===eventId);
     if(cases.has(caseKey)&&!anchor.startsWith('event-')) {
-      Object.assign(values,{view:'review',caseKey,mobile:'detail'});
+      Object.assign(values,{caseKey,mobile:'detail'});
     } else if(event) {
-      Object.assign(values,{view:'archive',site:'',date:'',query:'',type:'',risk:'',thread:event.thread||'',eventId:event.id});
+      Object.assign(values,{historyOpen:true,site:'',date:'',query:'',type:'',risk:'',thread:event.thread||'',eventId:event.id});
     } else if(legacyArchive.has(anchor)) {
-      values.view='archive';
-    } else if(['review-queue','review-list','review-detail'].includes(anchor)) {
-      values.view='review';
+      values.historyOpen=true;
     }
   }
   return values;
@@ -1079,7 +1117,6 @@ function readRoute() {
 
 function normalizeRoute(values) {
   const next={...values};
-  if(next.view!=='archive') next.view='review';
   if(!['home','queue','detail'].includes(next.mobile)) next.mobile='home';
   if(!decisionAreas.has(next.category)) next.category='';
   if(!state.data.sites.some(site=>site.id===next.site)) next.site='';
@@ -1095,6 +1132,10 @@ function normalizeRoute(values) {
 function routeURL(next) {
   const url=new URL(location.href);
   url.hash='';
+  url.searchParams.delete('view');
+  if(next.historyOpen) url.searchParams.set('history','open');
+  else if(archiveRouteFields.some(field=>next[field])) url.searchParams.set('history','closed');
+  else url.searchParams.delete('history');
   for(const [field,param] of Object.entries(routeParams)) {
     if(next[field]===defaultRoute[field]) url.searchParams.delete(param);
     else url.searchParams.set(param,next[field]);
@@ -1107,7 +1148,9 @@ function scrollPositions() {
     page:window.scrollY,
     queue:el('review-queue-panel').scrollTop,
     detail:el('review-detail').scrollTop,
-    queueMobile:queueMobileScroll
+    queueMobile:queueMobileScroll,
+    days:[...expandedDays],
+    collapsed:[...collapsedDays]
   };
 }
 
@@ -1118,7 +1161,10 @@ function storedPositions() {
 
 function saveViewPosition() {
   if(!route) return;
-  if(route.view==='review'&&route.mobile==='queue'&&narrowWorkspace.matches) queueMobileScroll=window.scrollY;
+  if(route.mobile==='queue'&&narrowWorkspace.matches) {
+    const queueTop=el('review-queue').getBoundingClientRect();
+    if(queueTop.bottom>0) queueMobileScroll=window.scrollY;
+  }
   const position=scrollPositions();
   history.replaceState({...history.state,fjdPosition:position},'');
   try {
@@ -1139,51 +1185,55 @@ function applyViewPosition(position, target) {
     if(target) {
       const node=document.getElementById(target);
       node?.scrollIntoView({block:'start'});
-      node?.querySelector('summary')?.focus({preventScroll:true});
+      if(node?.matches('summary')) node.focus({preventScroll:true});
+      else if(node?.matches('details')) node.querySelector('summary')?.focus({preventScroll:true});
+      else if(node?.id==='review-detail') {
+        const heading=node.querySelector('.case-title');
+        if(heading) {
+          heading.tabIndex=-1;
+          heading.focus({preventScroll:true});
+        }
+      }
     }
   });
 }
 
-function navigate(patch,{replace=false,resetPage=false,target=''}={}) {
+function navigate(patch,{replace=false,target=''}={}) {
   clearTimeout(scrollTimer);
   saveViewPosition();
   const position=scrollPositions();
   const before=route;
   const next=normalizeRoute({...before,...patch});
   const url=routeURL(next);
-  const viewChanged=before.view!==next.view;
   const modeChanged=before.mobile!==next.mobile&&narrowWorkspace.matches;
   const selectionChanged=before.caseKey!==next.caseKey;
-  const reset=resetPage||viewChanged||modeChanged||(selectionChanged&&narrowWorkspace.matches);
-  if(reset) position.page=next.view==='review'&&next.mobile==='queue'&&narrowWorkspace.matches?queueMobileScroll:0;
+  if(modeChanged) position.page=next.mobile==='queue'?queueMobileScroll:0;
   if(selectionChanged) position.detail=0;
-  if(target) position.page=0;
-  const previousEntry=storedPositions()[url.pathname+url.search];
-  const restore=target?position:viewChanged&&previousEntry?previousEntry:position;
-  if(url.href===location.href) history.replaceState({...history.state,fjdPosition:restore},'',url);
-  else if(replace) history.replaceState({fjdPosition:restore},'',url);
-  else history.pushState({fjdPosition:restore},'',url);
+  if(url.href===location.href) history.replaceState({...history.state,fjdPosition:position},'',url);
+  else if(replace) history.replaceState({fjdPosition:position},'',url);
+  else history.pushState({fjdPosition:position},'',url);
   route=next;
   renderWorkbenchApp();
-  applyViewPosition(restore,target);
+  applyViewPosition(position,target);
 }
 
-function selectWorkbenchCase(caseKey) {
+function selectWorkbenchCase(caseKey, focusDetail=false) {
   const entry=workbenchEntries().get(caseKey);
   if(!entry) return;
   const area=caseDecision(entry).area;
-  navigate({view:'review',caseKey,mobile:'detail',category:route.category===area?area:''});
+  navigate({caseKey,mobile:'detail',category:route.category===area?area:''},
+    {target:focusDetail?'review-detail':''});
 }
 
 function openEvent(eventId) {
   const event=state.data.events.find(row=>row.id===eventId);
   if(!event) return;
-  navigate({view:'archive',site:'',date:'',query:'',type:'',risk:'',thread:reviewKey(event),eventId},
+  navigate({historyOpen:true,site:'',date:'',query:'',type:'',risk:'',thread:reviewKey(event),eventId},
     {target:'event-'+eventId});
 }
 
 function openThread(thread) {
-  navigate({view:'archive',site:'',date:'',query:'',type:'',risk:'',thread,eventId:''},{resetPage:true});
+  navigate({historyOpen:true,site:'',date:'',query:'',type:'',risk:'',thread,eventId:''},{target:'history-toggle'});
 }
 
 function caseDecision(event) {
@@ -1256,6 +1306,10 @@ function archiveNeedsHistory(event) {
   return event.risk==='无法判断'||event.priority==='证据不足';
 }
 
+function archiveRouteFingerprint() {
+  return JSON.stringify(archiveRouteFields.map(field=>route[field]));
+}
+
 function updateOptions(select, choices, selected) {
   const index=JSON.stringify(choices);
   if(select.dataset.options!==index) {
@@ -1271,10 +1325,11 @@ function archiveCard(event, siteLabels, hasCase) {
   card.dataset.eventId=event.id;
   card.open=route.eventId===event.id;
   card.addEventListener('toggle',()=>{
-    if(!card.isConnected||route.view!=='archive') return;
+    if(!card.isConnected||!route.historyOpen) return;
     const eventId=card.open?event.id:route.eventId===event.id?'':route.eventId;
     if(eventId===route.eventId) return;
     route={...route,eventId};
+    archiveFingerprint=archiveRouteFingerprint();
     history.replaceState(history.state,'',routeURL(route));
     saveViewPosition();
   });
@@ -1304,7 +1359,7 @@ function archiveCard(event, siteLabels, hasCase) {
   if(hasCase) {
     const view=doc('button','current-case-open','打开复核事项');
     view.type='button';
-    view.addEventListener('click',()=>selectWorkbenchCase(reviewKey(event)));
+    view.addEventListener('click',()=>selectWorkbenchCase(reviewKey(event),true));
     actions.append(view);
   }
   const related=event.thread?state.data.events.filter(item=>item.thread===event.thread).length:0;
@@ -1325,9 +1380,8 @@ function renderArchive() {
   const scope=filteredScope();
   const dates=eventDays(scope);
   const dateChoices=route.date&&!dates.includes(route.date)?[...dates,route.date].sort().reverse():dates;
-  const allDates=eventDays(state.data);
   el('scope-title').textContent=site?.label||'全部站点';
-  el('scope-subtitle').textContent=[site?.host,formatPeriod(allDates)].filter(Boolean).join(' · ');
+  el('scope-subtitle').textContent=site?.host||'';
   updateOptions(el('site'),[['全部站点',''],...state.data.sites.map(entry=>[entry.label,entry.id])],route.site);
   updateOptions(el('date'),[['所有日期',''],...dateChoices.map(day=>[day,day])],route.date);
   for(const [id,field] of archiveFields) if(id!=='site'&&id!=='date'&&el(id).value!==route[field]) el(id).value=route[field];
@@ -1361,11 +1415,26 @@ function renderArchive() {
   }
   const cases=workbenchEntries();
   clean(el('timeline'),...visibleDates.map(day=>{
-    const group=doc('section','day');
-    const heading=doc('h3','day-heading');
+    const group=doc('details','day history-day');
+    const heading=doc('summary','day-heading');
     const time=doc('time','',day);
     time.dateTime=day;
     const rows=results.filter(event=>event.date===day);
+    group.open=rows.some(event=>event.id===route.eventId)||
+      (!collapsedDays.has(day)&&(expandedDays.has(day)||route.date===day||(!!route.thread&&visibleDates.length<=3)));
+    let previousOpen=group.open;
+    group.addEventListener('toggle',()=>{
+      if(!group.isConnected||group.open===previousOpen) return;
+      previousOpen=group.open;
+      if(group.open) {
+        collapsedDays.delete(day);
+        expandedDays.add(day);
+      } else {
+        expandedDays.delete(day);
+        collapsedDays.add(day);
+      }
+      saveViewPosition();
+    });
     heading.append(time,doc('span','count',`${rows.length} 条记录`));
     group.append(heading);
     const dayWindows=windows.filter(item=>item.date===day);
@@ -1389,26 +1458,34 @@ function renderArchive() {
 }
 
 function renderWorkbenchApp() {
-  const isArchive=route.view==='archive';
   state.site=route.site;
-  el('archive-view').hidden=!isArchive;
-  el('review-queue').hidden=isArchive;
-  el('nav-archive').setAttribute('aria-current',isArchive?'page':'false');
-  el('nav-review').setAttribute('aria-current',isArchive?'false':'page');
-  if(isArchive) renderArchive();
-  else renderReviewWorkspace();
+  historyPanel.open=route.historyOpen;
+  renderReviewWorkspace();
+  if(!route.historyOpen) return;
+  const fingerprint=archiveRouteFingerprint();
+  if(fingerprint===archiveFingerprint) return;
+  archiveFingerprint=fingerprint;
+  renderArchive();
 }
 
 function useLocation() {
   clearTimeout(scrollTimer);
-  route=normalizeRoute(readRoute());
-  renderWorkbenchApp();
   const key=location.pathname+location.search+location.hash;
   const position=history.state?.fjdPosition||storedPositions()[key];
+  const restoredDays=Array.isArray(position?.days)?position.days:[];
+  const restoredCollapsed=Array.isArray(position?.collapsed)?position.collapsed:[];
+  expandedDays.clear();
+  restoredDays.forEach(day=>expandedDays.add(day));
+  collapsedDays.clear();
+  restoredCollapsed.forEach(day=>collapsedDays.add(day));
+  route=normalizeRoute(readRoute());
+  archiveFingerprint=undefined;
+  renderWorkbenchApp();
   let anchor='';
   try { anchor=decodeURIComponent(location.hash.slice(1)); } catch { /* Ignore malformed anchors. */ }
-  const target=!position&&route.view==='archive'?(route.eventId?'event-'+route.eventId:legacyArchive.has(anchor)?anchor:''):'';
-  applyViewPosition(position||{page:0,queue:0,detail:0,queueMobile:queueMobileScroll},target);
+  const target=!position&&route.historyOpen
+    ? (route.eventId?'event-'+route.eventId:legacyArchive.has(anchor)&&el(anchor)?anchor:'history-toggle'):'';
+  applyViewPosition(position||{page:0,queue:0,detail:0,queueMobile:0},target);
 }
 
 function scheduleSavePosition() {
@@ -1422,8 +1499,9 @@ for(const pane of ['review-queue-panel','review-detail']) el(pane).addEventListe
 window.addEventListener('pagehide',saveViewPosition);
 window.addEventListener('popstate',useLocation);
 window.addEventListener('hashchange',useLocation);
-el('nav-review').addEventListener('click',()=>{if(route.view!=='review') navigate({view:'review'});});
-el('nav-archive').addEventListener('click',()=>{if(route.view!=='archive') navigate({view:'archive'});});
+historyPanel.addEventListener('toggle',()=>{
+  if(route&&historyPanel.open!==route.historyOpen) navigate({historyOpen:historyPanel.open});
+});
 el('review-mobile-toggle').addEventListener('click',()=>navigate({mobile:route.mobile==='queue'?'detail':'queue'}));
 el('review-filter').addEventListener('change',event=>navigate({category:event.target.value}));
 el('reset-thread').addEventListener('click',()=>navigate({thread:'',eventId:''}));
@@ -1443,8 +1521,8 @@ el('file').addEventListener('change',async event=>{
   }
   el('status').textContent=[count?`已载入 ${count} 份日报数据文件`:'',...errors].filter(Boolean).join('；');
   event.target.value='';
-  if(count) { queueFingerprint=undefined; detailFingerprint=null; }
-  navigate({view:'archive'},{resetPage:true});
+  if(count) { queueFingerprint=undefined; detailFingerprint=null; archiveFingerprint=undefined; }
+  navigate({historyOpen:true},{target:'history-toggle'});
 });
 el('open-import').addEventListener('click',()=>el('file').click());
 el('open-method').addEventListener('click',()=>el('method').showModal());
